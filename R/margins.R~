@@ -1,0 +1,502 @@
+#' brmsmargins
+#'
+#' @param m model
+#' @param cond stuff
+#' @param ci ci
+#' @param CIType the type
+#' @param prob is it a probability
+#' @param rope rope
+#' @param mid mid
+#' @export
+
+
+
+
+library(brms)
+library(data.table)
+library(bayestestR)
+library(emmeans)
+library(extraoperators)
+
+.percent <- function(x, window = NULL, within = TRUE) {
+  if (isTRUE(is.null(window))) {
+    window <- NA_real_
+    pi <- NA_real_
+    lab <- NA_character_
+  } else {
+    stopifnot(isTRUE(is.numeric(window)) && identical(length(window), 2L))
+    if (isTRUE(within)) {
+      lab <- sprintf("[%s, %s]",
+                     as.character(min(window)),
+                     as.character(max(window)))
+    } else if (isFALSE(within)) {
+      lab <- sprintf("[-Inf, %s] | [%s, Inf]",
+                     as.character(min(window)),
+                     as.character(max(window)))      
+    }
+    pi <- mean(x %e% lab, na.rm = TRUE) * 100
+  }
+  list(
+    Window = window,
+    Percent = pi,
+    Label = lab)  
+}
+
+bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
+  ropes <- .percent(x, window = ROPE, within = TRUE)
+  mids <- .percent(x, window = MID, within = FALSE)  
+  
+  m <- mean(x, na.rm = TRUE)
+  mdn <- median(x, na.rm = TRUE)
+  cis <- bayestestR::ci(x, ci = CI, method = type)
+  out <- data.table(
+    M = m,
+    Mdn = mdn,
+    LL = cis$CI_low,
+    UL = cis$CI_high,
+    PercentROPE = ropes$Percent,
+    PercentMID = mids$Percent,
+    CI = CI,
+    CIType = type,
+    ROPE = ropes$Label,
+    MID = mids$Label)
+    
+  return(out)
+}
+
+.predict <- function(object, data, summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL, ...) {
+  out <- list(
+    Summary = NULL,
+    Posterior = NULL)
+  
+  out$Posterior <- rowMeans(fitted(
+    object = object,
+    newdata = data,
+    re_formula = re_formula,
+    scale = "response",
+    dpar = dpar,
+    summary = FALSE), na.rm = TRUE)
+
+  if (isTRUE(summarize)) {
+    out$Summary <- bsummary(out$Posterior, ...)
+  } 
+  if (isFALSE(posterior)) {
+    out$Posterior <- NULL
+  }
+  return(out)  
+}
+
+.checktab <- function(x, requireNames = TRUE) {
+  xclass <- paste(class(x), collapse = "; ")
+  pass1 <- isTRUE(inherits(x, "tbl")) ||
+    isTRUE(is.data.frame(x)) ||
+    isTRUE(is.data.table(x)) ||
+    is.matrix(x)
+
+  cnames <- colnames(x)
+  pass2 <- isFALSE(is.null(cnames))
+
+  errmsg1 <- errmsg2 <- ""
+  
+  if (isFALSE(pass1)) {
+    errmsg1 <- sprintf(paste0(
+      "Object is of class %s ",
+      "but must be a matrix, data.frame, data.table, or tbl.\n"),
+      xclass)
+  }
+  if (isFALSE(pass2)) {
+    errmsg2 <- "Variables/Columns must be named, but column names were NULL.\n"
+  }
+
+  if (isTRUE(requireNames)) {
+    out <- paste0(errmsg1, errmsg2)
+  } else {
+    out <- errmsg1
+  }
+  return(out)
+}
+
+## object <- mbin
+## at <- data.table(Tx = 0:1)
+## add <- NULL
+## newdata <- model.frame(object)
+## contrasts <- matrix(c(-1, 1), nrow = 2)
+
+## object <- mbin
+## at <- expand.grid(Tx = 0:1, x = c(-4, +4))
+## add <- NULL
+## newdata <- model.frame(object)
+## contrasts <- matrix(c(-1, 1, 0, 0, 0, 0, -1, 1), nrow = 4)
+brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(object),
+                        CI = .99, CIType = "HDI", contrasts = NULL,
+                        ROPE = NULL, MID = NULL, subset = NULL, ...) {
+  
+  chknewdata <- .checktab(newdata)
+  if (isTRUE(nzchar(chknewdata))) {
+    stop(paste0("newdata: ", chknewdata))
+  }
+  newdata <- copy(as.data.table(newdata))
+
+  if (isFALSE(is.null(subset))) {
+    if (isFALSE(is.character(subset))) {
+      stop("subset must be a character string that results in a logical statement evaluated in the data.")
+    }
+    newdata <- subset(
+      newdata,
+      subset = eval(parse(text = subset)))
+  }
+  
+  if (isFALSE(is.null(at))) {
+    chkat <- .checktab(at)
+    if (isTRUE(nzchar(chkat))) {
+      stop(paste0("at: ", chkat))
+    } 
+    at <- copy(as.data.table(at))
+  }
+  
+  if (isFALSE(is.null(add))) {
+    chkadd <- .checktab(add)
+    if (isTRUE(nzchar(chkadd))) {
+      stop(paste0("add: ", chkadd))
+    }     
+    add <- copy(as.data.table(add))
+  }
+
+  if (isFALSE(is.null(contrasts))) {
+    chkcontrasts <- .checktab(contrasts, requireNames = FALSE)
+    if (isTRUE(nzchar(chkcontrasts))) {
+      stop(paste0("contrasts: ", chkcontrasts))
+    }     
+    contrasts <- as.matrix(contrasts)
+  }
+
+  if (isFALSE(is.null(at)) && isFALSE(is.null(add))) {
+    stop(paste("Currently only 'at' or 'add' may be specified.",
+               "Including both is not currently supported.",
+               sep = "\n"))
+  }
+
+  if (isFALSE(is.null(at))) {
+    out <- vector("list", nrow(at))
+    for (i in 1:nrow(at)) {
+      for (v in names(at)) {
+        newdata[, (v) := at[i, get(v)]]
+      }
+      out[[i]] <- .predict(object, data = newdata,
+                           ROPE = ROPE, MID = MID,
+                           posterior = TRUE, ...)
+    }
+    
+    post <- do.call(cbind, lapply(out, `[[`, "Posterior"))
+    s <- do.call(rbind, lapply(out, `[[`, "Summary"))
+
+    rm(out)
+    gc()
+  }
+  
+  if (isFALSE(is.null(add))) {
+    out <- vector("list", nrow(add))
+    for (i in 1:nrow(add)) {
+      tmp <- copy(newdata)
+      for (v in names(add)) {
+        value <- add[i, get(v)]
+        tmp[, (v) := get(v) + value]
+      }
+      out[[i]] <- .predict(object, data = tmp,
+                           ROPE = ROPE, MID = MID,
+                           posterior = TRUE, ...)
+    }
+
+    post <- do.call(cbind, lapply(out, `[[`, "Posterior"))
+    s <- do.call(rbind, lapply(out, `[[`, "Summary"))
+    
+    rm(out)
+    gc()    
+  }
+
+  if (isFALSE(is.null(contrasts))) {
+    res <- post %*% contrasts
+    contrastsum <- apply(res, 2, bsummary,
+          CI = CI, type = CIType,
+          ROPE = ROPE, MID = MID)
+    
+  } else {
+    res <- NA
+    contrastsum <- NA
+  }
+
+  out <- list(
+    Posterior = post,
+    Summary = s,
+    Contrasts = res,
+    ContrastSummary = contrastsum)
+  
+  return(out)
+}
+
+mbin <- brm(ybin ~ Tx + x, data = logitd, family = bernoulli())
+
+library(lme4)
+data(sleepstudy)
+fit <- brm(Reaction ~ 1 + Days + (1+ Days | Subject), 
+           data = sleepstudy,
+           cores = 4)
+
+summary(fit) 
+
+tmp <- f(fit, add = data.table(Days = c(0, 1)),
+  contrasts = matrix(c(-1, 1), nrow = 2))
+
+bsummary(tmp$Contrasts[,1], CI=.95)
+
+tmp2 <- f(fit, add = data.table(Days = c(0, 1)),
+         contrasts = matrix(c(-1, 1), nrow = 2),
+         newlevels = TRUE)
+
+bsummary(tmp2$Contrasts[,1], CI=.95)
+
+tmp2b <- f(fit, add = data.table(Days = c(0, 1)),
+         contrasts = matrix(c(-1, 1), nrow = 2),
+         newlevels = TRUE)
+
+bsummary(tmp2b$Contrasts[,1], CI=.95)
+
+tmp2c <- f(fit, add = data.table(Days = c(0, 1)),
+         contrasts = matrix(c(-1, 1), nrow = 2),
+         newlevels = TRUE)
+
+bsummary(tmp2c$Contrasts[,1], CI=.95)
+
+tmp2d <- f(fit, add = data.table(Days = c(0, 1)),
+         contrasts = matrix(c(-1, 1), nrow = 2),
+         newlevels = TRUE)
+
+bsummary(tmp2d$Contrasts[,1], CI=.95)
+
+
+tmp2e <- f(fit, add = data.table(Days = c(0, 1)),
+         contrasts = matrix(c(-1, 1), nrow = 2),
+         newlevels = TRUE)
+
+bsummary(tmp2e$Contrasts[,1], CI=.95)
+
+tmp3 <- f(fit, add = data.table(Days = c(0, 1)),
+         contrasts = matrix(c(-1, 1), nrow = 2),
+         re_formula = NA)
+
+bsummary(tmp3$Contrasts[,1], CI=.95)
+
+  ## object <- mbin
+  ## at <- expand.grid(Tx = 0:1, x = c(-4, +4))
+  ## add <- NULL
+  ## newdata <- model.frame(object)
+  ## contrasts <- matrix(c(-1, 1, 0, 0, 0, 0, -1, 1), nrow = 4)
+
+
+set.seed(1234)
+logitd <- data.frame(
+  Tx = rep(0:1, each = 50),
+  ybin = c(rep(0:1, c(40,10)),
+           rep(0:1, c(10,40))))
+logitd$x <- rnorm(100, mean = logitd$ybin, sd = 2)
+
+mbin <- brm(ybin ~ Tx + x, data = logitd, family = bernoulli())
+
+.predict(mbin, data = model.frame(mbin))
+.predict(mbin, data = model.frame(mbin), ROPE = c(-1, 1), MID = c(-3, 3))
+.predict(mbin, data = model.frame(mbin), posterior = TRUE)
+
+emmeans(mbin, ~ Tx, transform = "response")
+
+yhat <- fitted(mbin,
+  data.frame(Tx = c(0, 1), x = mean(logitd$x)),
+  scale = "response", summary = FALSE)
+describe_posterior(yhat[,1])
+describe_posterior(yhat[,2])
+
+mf <- model.frame(logitd)
+yhat0 <- fitted(mbin,
+                subset(mf, Tx == 0),
+                scale = "response", summary = FALSE)
+yhat1 <- fitted(mbin,
+                subset(mf, Tx == 1),
+                scale = "response", summary = FALSE)
+
+describe_posterior(rowMeans(yhat0))
+describe_posterior(rowMeans(yhat1))
+
+## marginal treatment effect
+describe_posterior(rowMeans(yhat1 - yhat0), centrality = "mean")
+
+pairs(emmeans(mbin, ~ Tx, transform = "response"))
+
+mf <- model.frame(logitd)
+mf$Tx <- 0
+yhat0b <- fitted(mbin,
+                mf,
+                scale = "response", summary = FALSE)
+mf$Tx <- 1
+yhat1b <- fitted(mbin,
+                mf,
+                scale = "response", summary = FALSE)
+
+describe_posterior(rowMeans(yhat0b))
+describe_posterior(rowMeans(yhat1b))
+
+## marginal treatment effect
+describe_posterior(rowMeans(yhat1b - yhat0b))
+
+describe_posterior(rowMeans(yhat1b) - rowMeans(yhat0b))
+
+
+
+predict(mbin, newdata = subset(mf, Tx == 0), type = "response")
+mean(predict(mbin, newdata = subset(mf, Tx == 1), type = "response"))
+
+mean(predict(mbin, newdata = subset(mf, Tx == 1), type = "response")) - 
+mean(predict(mbin, newdata = subset(mf, Tx == 0), type = "response"))
+     
+mf$Tx <- 0
+mean(predict(mbin, newdata = mf, type = "response"))
+
+mf$Tx <- 1
+mean(predict(mbin, newdata = mf, type = "response"))
+
+predict(
+  mbin,
+  data.frame(Tx = c(0, 1),
+             x = c(mean(subset(logitd, Tx == 0)$x),
+                   mean(subset(logitd, Tx == 1)$x))),
+  type = "response")
+
+
+
+
+dummy <- mtcars
+dummy$Time <- mtcars$am
+dummy$Tx <- mtcars$vs
+
+m1 <- brm(mpg ~ Time + Time:Tx + (1 | cyl), data = dummy, cores = 4)
+
+mf <- model.frame(m1)
+mf <- mf
+mf$Tx <- 0
+mf$Time <- 0
+yhat00 <- fitted(m1, newdata = mf, scale = "response", 
+                 re_formula = NULL, summary = FALSE)
+mf$Time <- 1
+yhat01 <- fitted(m1, newdata = mf, scale = "response", 
+                 re_formula = NULL, summary = FALSE)
+
+bayestestR::describe_posterior(m1)
+bayestestR::describe_posterior(rowMeans(yhat01 - yhat00))
+
+
+m2 <- brm(mpg ~ Time + Time:Tx + (1 + Time + Time:Tx | cyl), data = dummy, cores = 4)
+
+mf <- model.frame(m2)
+mf <- mf
+mf$Tx <- 0
+mf$Time <- 0
+yhat00 <- fitted(m2, newdata = mf, scale = "response", 
+                 re_formula = NULL, summary = FALSE)
+mf$Time <- 1
+yhat01 <- fitted(m2, newdata = mf, scale = "response", 
+                 re_formula = NULL, summary = FALSE)
+bayestestR::describe_posterior(m2)
+bayestestR::describe_posterior(rowMeans(yhat01 - yhat00))
+
+
+
+
+
+
+brmsmargins <- function(m, cond = expand.grid(Time = 1, Tx = 0:1), ci, CIType, prob = TRUE,
+                        rope, mid) {
+  stopifnot(cond$Tx %ain% 0:1)
+  stopifnot(cond$Time %ain% 0:1)  
+  stopifnot(names(cond) %ain% c("Time", "Tx"))
+  if (isTRUE(missingArg(rope))) {
+    rope <- c(0, 0)
+  }
+  stopifnot(isTRUE(is.numeric(rope)) && identical(length(rope), 2L))
+
+  if (isTRUE(missingArg(mid))) {
+    mid <- c(0, 0)
+  }
+  stopifnot(isTRUE(is.numeric(mid)) && identical(length(mid), 2L))
+  
+  
+  ## original model frame
+  mf <- model.frame(m)
+
+  ## ## use only Time 0
+  ## mf <- subset(mf, Time == 0)
+  
+  cond <- as.data.table(cond)
+  cond[, Labels := sprintf("%s - %s",
+                           fifelse(Time == 1, "Post", "Baseline"),
+                           fifelse(Tx == 1, "Counter Tx", "Counter Ctrl"))]
+  cond[, Index := 1:.N]
+
+  value.cond <- lapply(1:nrow(cond), function(i) {
+    tmp <- mf
+    if ("Time" %in% names(tmp)) {
+      tmp$Time <- cond$Time[i]
+    }
+    tmp$Tx <- cond$Tx[i]
+    yhat <- fitted(m, newdata = tmp, re_formula = NULL,
+                   scale = "response", summary = FALSE)
+    list(
+      Est = yhat,
+      Results = bSummary(rowMeans(yhat), cond$Labels[i], ci = ci, CIType = CIType,
+                         rope = rope, mid = mid))    
+  })
+
+
+  if (length(unique(cond$Time)) > 1) {
+    yhat.ctrl <- value.cond[[cond[Tx==0 & Time == 1, Index]]]$Est - value.cond[[cond[Tx==0 & Time == 0, Index]]]$Est
+    value.ctrl <- list(
+      Est = yhat.ctrl,
+      Results = bSummary(rowMeans(yhat.ctrl), "Diff - Ctrl", ci = ci, CIType = CIType,
+                         rope = rope, mid = mid))
+
+    yhat.tx <- value.cond[[cond[Tx==1 & Time == 1, Index]]]$Est - value.cond[[cond[Tx==1 & Time == 0, Index]]]$Est
+    value.tx <- list(
+      Est = yhat.tx,
+      Results = bSummary(rowMeans(yhat.tx), "Diff - Tx", ci = ci, CIType = CIType,
+                         rope = rope, mid = mid))
+
+    yhat.diff <- yhat.tx - yhat.ctrl
+    value.diff <- list(
+      Est = yhat.diff,
+      Results = bSummary(rowMeans(yhat.diff), "Diff - Diff", ci = ci, CIType = CIType,
+                         rope = rope, mid = mid))
+
+    value.alldiffs <- list(
+      Ctrl = value.ctrl,
+      Tx = value.tx,
+      Diff = value.diff)   
+  } else {
+    stopifnot(cond$Time %ain% 1)
+    yhat.diff <- value.cond[[cond[Tx==1 & Time == 1, Index]]]$Est - value.cond[[cond[Tx==0 & Time == 1, Index]]]$Est
+    value.alldiffs <- list(
+      Diff = list(
+        Results = bSummary(rowMeans(yhat.diff), "Diff", ci = ci, CIType = CIType,
+                           rope = rope, mid = mid)))
+    
+    if (isTRUE(prob)) {
+      value.alldiffs <- c(
+        value.alldiffs,
+        list(
+          NNT = list(
+            Results = bSummary(1 / rowMeans(yhat.diff), "NNT", ci = ci, CIType = CIType,
+                               rope = c(20, Inf), mid = c(0, 10)))))
+    }
+  }
+
+  do.call(rbind, c(
+    lapply(value.cond, function(x) x$Results),
+    lapply(value.alldiffs, function(x) x$Results)))
+}
+

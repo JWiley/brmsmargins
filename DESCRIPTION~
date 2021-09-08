@@ -1,0 +1,23 @@
+Package: brmsmargins
+Title: Calculate marginal estimates and average marginal effects for brms
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Joshua F.",
+           family = "Wiley",
+           role = c("aut", "cre"),
+           email = "jwiley.psych@gmail.com",
+           comment = c(ORCID = "0000-0002-0271-6702"))
+Description: Used as a follow-up to a brms model, to calculate marginal estimates and
+  average marginal effects (AMEs). This is a supplement as existing packages,
+  such as emmeans calculate marginal effects at the means (MEMs) and not AMEs.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    data.table
+Suggests: 
+    testthat (>= 3.0.0),
+    covr
+Config/testthat/edition: 3

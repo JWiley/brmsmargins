@@ -1,0 +1,7 @@
+# import the brms package
+#' @import brms
+NULL
+
+# import the bayestestR package
+#' @import bayestestR
+NULL
