@@ -2,33 +2,165 @@
 % Please edit documentation in R/margins.R
 \name{brmsmargins}
 \alias{brmsmargins}
-\title{brmsmargins}
+\title{Calculate Average Marginal Effects (AMEs) from brms models}
 \usage{
 brmsmargins(
-  m,
-  cond = expand.grid(Time = 1, Tx = 0:1),
-  ci,
-  CIType,
-  prob = TRUE,
-  rope,
-  mid
+  object,
+  at = NULL,
+  add = NULL,
+  newdata = model.frame(object),
+  CI = 0.99,
+  CIType = "HDI",
+  contrasts = NULL,
+  ROPE = NULL,
+  MID = NULL,
+  subset = NULL,
+  ...
 )
 }
 \arguments{
-\item{m}{model}
+\item{object}{A fitted brms model object. Required.}
 
-\item{cond}{stuff}
+\item{at}{An optional object inheriting from data frame indicating
+the values to hold specific variables at when calculating average
+predictions. This is intended for AMEs from categorical variables.}
 
-\item{ci}{ci}
+\item{add}{An optional object inheriting from data frame indicating
+the values to add to specific variables at when calculating average
+predictions. This is intended for AMEs for continuous variables.}
 
-\item{CIType}{the type}
+\item{newdata}{An object inheriting from data frame indicating
+the baseline values to use for predictions and AMEs.
+Defaults to be the model frame.}
 
-\item{prob}{is it a probability}
+\item{CI}{A numeric value specifying the width of the credible interval.
+Defaults to \code{0.99}.}
 
-\item{rope}{rope}
+\item{CIType}{A character string specifying the type of credible interval
+(e.g., highest density interval). It is passed down to
+\code{\link{bsummary}} which in turn passes it to
+\code{\link[bayestestR]{ci}}. Defaults to \dQuote{HDI}.}
 
-\item{mid}{mid}
+\item{contrasts}{An optional contrast matrix. The posterior predictions matrix
+is post multiplied by the contrast matrix, so they must be conformable.
+The posterior predictions matrix has a separate column for each row in the
+\code{at} or \code{add} object, so the contrast matrix should have the same
+number of rows. It can have multiple columns, if you desire multiple specific
+contrasts.}
+
+\item{ROPE}{Either left as \code{NULL}, the default, or a numeric vector of
+length 2, specifying the lower and upper thresholds for the
+Region of Practical Equivalence (ROPE).}
+
+\item{MID}{Either left as \code{NULL}, the default, or a numeric vector of
+length 2, specifying the lower and upper thresholds for a
+Minimally Important Difference (MID). Unlike the ROPE, percentages for
+the MID are calculated as at or exceeding the bounds specified by this
+argument, whereas the ROPE is the percentage of the posterior at or inside
+the bounds specified.}
+
+\item{subset}{A character string that is a valid \code{R} expression
+used to subset the dataset passed in \code{newdata},
+prior to analysis. Defaults to \code{NULL}.}
+
+\item{...}{Additional arguments passed on to \code{\link{.predict}}.}
+}
+\value{
+A list. TODO describe more.
 }
 \description{
-brmsmargins
+This function is designed to help calculate average marginal
+effects (AMEs) from brms models.
+Currently, only one of \code{at} or \code{add} can be specified.
+It is hoped to relax this in the future.
+TODO add more documentation and technical definitions.
+}
+\examples{
+\dontrun{
+#### Testing ####
+## sample data and logistic model with brms
+set.seed(1234)
+Tx <- rep(0:1, each = 50)
+ybin <- c(rep(0:1, c(40,10)), rep(0:1, c(10,40)))
+logitd <- data.frame(Tx = Tx, ybin = ybin)
+logitd$x <- rnorm(100, mean = logitd$ybin, sd = 2)
+
+mbin <- brms::brm(ybin ~ Tx + x, data = logitd, family = brms::bernoulli())
+
+summary(mbin)
+
+## predictions + summary 
+test1 <- brmsmargins:::.predict(mbin,
+         model.frame(mbin),
+         summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL,
+         resample = 0L)
+test1
+
+## check that bootstrapping the sample / population assumed as part of the
+## AME indeed increases the uncertainty interval
+## TODO: point estimates (M, Mdn) should be based on the actual data
+## not the bootstrapped
+test2 <- brmsmargins:::.predict(mbin,
+         model.frame(mbin),
+         summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL,
+         resample = 100L, seed = 1234)
+test2
+
+
+## now check AME for Tx
+tmp <- brmsmargins(
+  object = mbin,
+  at = data.table::data.table(Tx = 0:1),
+  contrasts = matrix(c(-1, 1), nrow = 2),
+  ROPE = c(-.05, +.05),
+  MID = c(-.10, +.10))
+
+tmp$Summary
+tmp$ContrastSummary ## Tx AME
+
+
+## now check AME for Tx with bootstrapping the AME population
+tmpalt <- brmsmargins(
+  object = mbin,
+  at = data.table::data.table(Tx = 0:1),
+  contrasts = matrix(c(-1, 1), nrow = 2),
+  ROPE = c(-.05, +.05),
+  MID = c(-.10, +.10),
+  resample = 100L)
+
+tmpalt$Summary
+tmpalt$ContrastSummary ## Tx AME
+
+## now check AME for continuous predictor, x
+## use .01 as an approximation for first derivative
+## 1 / .01 in the contrast matrix to get back to a one unit change metric
+tmp2 <- brmsmargins(
+  object = mbin,
+  add = data.table::data.table(x = c(0, .01)),
+  contrasts = matrix(c(-1/.01, 1/.01), nrow = 2),
+  ROPE = c(-.05, +.05),
+  MID = c(-.10, +.10))
+
+tmp2$ContrastSummary ## x AME
+
+if (FALSE) {
+  library(lme4)
+  data(sleepstudy)
+  fit <- brms::brm(Reaction ~ 1 + Days + (1+ Days | Subject), 
+             data = sleepstudy,
+             cores = 4)
+
+  summary(fit) 
+
+  tmp <- brmsmargins(
+    object = fit,
+    at = data.table::data.table(Days = 0:1),
+    contrasts = matrix(c(-1, 1), nrow = 2),
+    ROPE = c(-.05, +.05),
+    MID = c(-.10, +.10))
+
+  tmp$Summary
+  tmp$ContrastSummary
+  }
+}
 }

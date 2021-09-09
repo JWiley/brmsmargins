@@ -1,3 +1,7 @@
+#' @useDynLib brmsmargins
+#' @importFrom Rcpp sourceCpp
+NULL
+
 # import the brms package
 #' @import brms
 NULL
