@@ -1,4 +1,3 @@
-docs
 desktop.ini
 .Rhistory
 .RData
@@ -8,4 +7,3 @@ desktop.ini
 *.Rcheck
 *.tar.gz
 Rplots.pdf
-inst/doc
