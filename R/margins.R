@@ -174,6 +174,9 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
       stop(paste0("contrasts: ", chkcontrasts))
     }     
     contrasts <- as.matrix(contrasts)
+    if (isTRUE(is.null(colnames(contrasts)))) {
+      colnames(contrasts) <- paste0("Contrast_", 1:ncol(contrasts))
+    }
   }
 
   if (isFALSE(is.null(at)) && isFALSE(is.null(add))) {
@@ -225,7 +228,8 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
     contrastsum <- apply(res, 2, bsummary,
           CI = CI, type = CIType,
           ROPE = ROPE, MID = MID)
-    
+    contrastsum <- do.call(rbind, contrastsum)
+    contrastsum[, Label := colnames(contrasts)]    
   } else {
     res <- NA
     contrastsum <- NA
