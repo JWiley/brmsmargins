@@ -7,6 +7,8 @@ Authors@R:
            role = c("aut", "cre"),
            email = "jwiley.psych@gmail.com",
            comment = c(ORCID = "0000-0002-0271-6702"))
+URL: https://joshuawiley.com/brmsmargins, https://github.com/JWiley/brmsmargins
+BugReports: https://github.com/JWiley/brmsmargins/issues
 Description: Used as a follow-up to a brms model, to calculate marginal estimates and
   average marginal effects (AMEs). This is a supplement as existing packages,
   such as emmeans calculate marginal effects at the means (MEMs) and not AMEs.
