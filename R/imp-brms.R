@@ -1,5 +1,11 @@
-#' @useDynLib brmsmargins
+## usethis namespace: start
+#' @useDynLib brmsmargins, .registration = TRUE
+## usethis namespace: end
+NULL
+
+## usethis namespace: start
 #' @importFrom Rcpp sourceCpp
+## usethis namespace: end
 NULL
 
 # import the brms package

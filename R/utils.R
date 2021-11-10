@@ -37,14 +37,14 @@
     } else if (isFALSE(within)) {
       lab <- sprintf("[-Inf, %s] | [%s, Inf]",
                      as.character(min(window)),
-                     as.character(max(window)))      
+                     as.character(max(window)))
     }
     pi <- mean(x %e% lab, na.rm = TRUE) * 100
   }
   list(
     Window = window,
     Percent = pi,
-    Label = lab)  
+    Label = lab)
 }
 
 #' A Personal Preference Based Bayesian Summary Function
@@ -99,12 +99,12 @@
 #' @examples
 #'
 #' bsummary(rnorm(10000))
-#' 
+#'
 #' bsummary(rnorm(10000), ROPE = c(-.5, .5), MID = c(-1, 1))
 bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
   ropes <- .percent(x, window = ROPE, within = TRUE)
-  mids <- .percent(x, window = MID, within = FALSE)  
-  
+  mids <- .percent(x, window = MID, within = FALSE)
+
   m <- mean(x, na.rm = TRUE)
   mdn <- median(x, na.rm = TRUE)
   cis <- bayestestR::ci(x, ci = CI, method = type)
@@ -119,77 +119,8 @@ bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
     CIType = type,
     ROPE = ropes$Label,
     MID = mids$Label)
-    
+
   return(out)
-}
-
-#' Function to generate posterior predictions and summaries from a brms model
-#'
-#' This is an internal function that is essentially a fancy wrapper for
-#' \code{fitted()}.
-#'
-#' @param object A fitted brms model object. Required.
-#' @param data A data frame or data table passed to \code{fitted()}
-#'   as the new data to be used for predictions. Required.
-#' @param summarize A logical value, whether or not to
-#'   calculate summaries of the posterior predictions.
-#'   Defaults to \code{TRUE}.
-#' @param posterior A logical value whether or not to
-#'   save and return the posterior samples. Defaults
-#'   to \code{FALSE} as the assumption is a typical
-#'   use case is to return the summaries only.
-#' @param dpar Parameter passed on the \code{dpar}
-#'   argument of \code{fitted()} in brms.
-#' @param re_formula Parameter passed on the \code{re_formula}
-#'   argument of \code{fitted()} in brms.
-#' @param resample An integer indicating the number of
-#'   bootstrap resamples of the posterior predictions to
-#'   use when calculating summaries. Defaults to \code{0L}.
-#'   See the details section for more informations as its implementation
-#'   is experimental and it may not operate as one would expect.
-#' @param seed A seed for random number generation. Missing by default.
-#'   Only needed if \code{resample} is a non zero integer.
-#' @param ... Additional arguments passed to \code{fitted()}
-#' @return A list with \code{Summary} and \code{Posterior}.
-#'   Some of these may be \code{NULL} depending on the arguments used.
-#' @keywords internal
-#' @importFrom stats fitted
-.predict <- function(object, data, summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL, resample = 0L, seed, ...) {
-  out <- list(
-    Summary = NULL,
-    Posterior = NULL)
-
-  out$Posterior <- fitted(
-    object = object,
-    newdata = data,
-    re_formula = re_formula,
-    scale = "response",
-    dpar = dpar,
-    summary = FALSE)
-
-  if (isTRUE(resample == 0)) {
-    out$Posterior <- rowMeans(out$Posterior, na.rm = TRUE)
-  } else if (isTRUE(resample > 0)) {
-    if (isFALSE(missingArg(seed))) {
-      set.seed(seed)
-    }
-
-    yhat <- matrix(NA_real_, nrow = nrow(out$Posterior), ncol = resample)
-    for (i in 1:resample) {
-      yhat[, i] <- rowBootMeans(out$Posterior)
-    }
-    
-    out$Posterior <- as.vector(yhat)
-    rm(yhat)
-  }
-
-  if (isTRUE(summarize)) {
-    out$Summary <- bsummary(out$Posterior, ...)
-  } 
-  if (isFALSE(posterior)) {
-    out$Posterior <- NULL
-  }
-  return(out)  
 }
 
 #' Function to check that something is a valid data object
@@ -215,7 +146,7 @@ bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
   pass2 <- isFALSE(is.null(cnames))
 
   errmsg1 <- errmsg2 <- ""
-  
+
   if (isFALSE(pass1)) {
     errmsg1 <- sprintf(paste0(
       "Object is of class %s ",
@@ -232,4 +163,68 @@ bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
     out <- errmsg1
   }
   return(out)
+}
+
+
+#' Function to check that something is a brmsfit object
+#'
+#' Internal utility function to check, with a useful error if not,
+#' whether and object has class \code{brmsfit}.
+#'
+#' @param object An object to be evaluated.
+#' @return An informative error if not of class \code{brmsfit},
+#'   otherwise invisibly returns \code{TRUE}.
+#' @keywords internal
+#' @importFrom brms is.brmsfit
+check.brmsfit <- function(object) {
+  if (!isTRUE(is.brmsfit(object))) {
+    stop(sprintf("object must be of class 'brmsfit', but was %s",
+                 paste(class(object), collapse = "; ")))
+  } else {
+    invisible(TRUE)
+  }
+}
+
+#' Function to check whether a brmsfit has random effects
+#'
+#' Internal utility function to check whether a \code{brmsfit}
+#' object has any random effects, or not.
+#'
+#' @param object An object to be evaluated.
+#' @return \code{TRUE} if any random effects present.
+#'   \code{FALSE} if no random effects present.
+#' @keywords internal
+is.random <- function(object) {
+  check.brmsfit(object)
+
+  isTRUE(nrow(object$ranef) >= 1L)
+}
+
+#' Function to check whether a brmsfit with random effects are all gaussian
+#'
+#' Internal utility function to check whether a \code{brmsfit}
+#' object has all gaussian random effects.
+#'
+#' @param object An object to be evaluated.
+#' @return \code{TRUE} if all random effects present are Gaussian or
+#'   if there are no random effects.
+#'   \code{FALSE} if any random effect present is not Gaussian.
+#' @keywords internal
+check.gaussian <- function(object) {
+  check.brmsfit(object)
+
+  result <- FALSE
+  if (isTRUE(is.random(object))) {
+    if (isFALSE(all(object$ranef$dist == "gaussian"))) {
+      err <- sprintf(paste0("Currently only gaussian random effects are supported, ",
+                            "but the following distribution(s) were found %s."),
+                     paste(unique(object$ranef$dist), collapse = "; "))
+      stop(err)
+    } else {
+      result <- TRUE
+    }
+  } else {
+    result <- TRUE
+  }
+  invisible(result)
 }
