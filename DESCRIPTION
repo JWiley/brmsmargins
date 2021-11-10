@@ -31,4 +31,5 @@ Suggests:
     covr
 Config/testthat/edition: 3
 LinkingTo: 
+    RcppArmadillo,
     Rcpp
