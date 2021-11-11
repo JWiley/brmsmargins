@@ -20,30 +20,34 @@ integratemvn <- function(X, k, sd, chol) {
     .Call(`_brmsmargins_integratemvn`, X, k, sd, chol)
 }
 
-#' To write
+#' Convert a row of a table to a matrix
 #'
 #' TODO: write description.
 #'
-#' @param obj A list
-#' @return A numeric matrix with random values
+#' @param X a matrix
+#' @return A numeric matrix with one row.
 #' @export
 #' @examples
 #'
-tab2mat <- function(X, index) {
-    .Call(`_brmsmargins_tab2mat`, X, index)
+tab2mat <- function(X) {
+    .Call(`_brmsmargins_tab2mat`, X)
 }
 
-#' To write
+#' Integrate over Random Effects
 #'
 #' TODO: write description.
 #'
-#' @param obj A list
+#' @param d A list
+#' @param sd A list
+#' @param L A list
+#' @param k An integer, the number of samples
+#' @param yhat A matrix of the fixed effects predictions
 #' @return A numeric matrix with random values
 #' @export
 #' @examples
 #'
-integratere <- function(obj) {
-    .Call(`_brmsmargins_integratere`, obj)
+integratere <- function(d, sd, L, k, yhat) {
+    .Call(`_brmsmargins_integratere`, d, sd, L, k, yhat)
 }
 
 #' Bootstrap row means

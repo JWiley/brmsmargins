@@ -2,15 +2,15 @@
 % Please edit documentation in R/RcppExports.R
 \name{tab2mat}
 \alias{tab2mat}
-\title{To write}
+\title{Convert a row of a table to a matrix}
 \usage{
-tab2mat(X, index)
+tab2mat(X)
 }
 \arguments{
-\item{obj}{A list}
+\item{X}{a matrix}
 }
 \value{
-A numeric matrix with random values
+A numeric matrix with one row.
 }
 \description{
 TODO: write description.

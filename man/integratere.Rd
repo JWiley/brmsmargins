@@ -2,12 +2,20 @@
 % Please edit documentation in R/RcppExports.R
 \name{integratere}
 \alias{integratere}
-\title{To write}
+\title{Integrate over Random Effects}
 \usage{
-integratere(obj)
+integratere(d, sd, L, k, yhat)
 }
 \arguments{
-\item{obj}{A list}
+\item{d}{A list}
+
+\item{sd}{A list}
+
+\item{L}{A list}
+
+\item{k}{An integer, the number of samples}
+
+\item{yhat}{A matrix of the fixed effects predictions}
 }
 \value{
 A numeric matrix with random values
