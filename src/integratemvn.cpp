@@ -19,15 +19,16 @@ using namespace Rcpp;
 //' integratemvn(matrix(1, 1, 2), 100L, c(10, 5), chol(matrix(c(1, .5, .5, 1), 2)))
 //' integratemvn(matrix(1, 1, 1), 100L, c(5), matrix(1))
 // [[Rcpp::export]]
-arma::mat integratemvn(arma::mat X, int k, arma::vec sd, arma::mat chol) {
-  int n = sd.n_elem;
+arma::mat integratemvn(arma::mat X, int k, Rcpp::NumericVector sd, arma::mat chol) {
+  int n = sd.length();
   arma::mat Z = arma::randn(k, n);
   if (n > 1) {
     Z = Z * chol;
   }
-  for(int i = 0; i < n; i++){
+  for (int i = 0; i < n; i++) {
     Z.col(i) *= sd(i);
   }
   arma::mat out = X * Z.t();
+  
   return(out);
 }
