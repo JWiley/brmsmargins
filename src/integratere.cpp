@@ -14,7 +14,7 @@ using namespace Rcpp;
 //' @examples
 //'
 // [[Rcpp::export]]
-arma::mat tab2mat(arma::mat X) {
+arma::mat tab2mat(const arma::mat& X) {
   int ncol = X.n_cols;
   double dims = sqrt(ncol); 
   arma::mat Z = arma::zeros(dims, dims);
@@ -36,12 +36,16 @@ arma::mat tab2mat(arma::mat X) {
 //' @param L A list
 //' @param k An integer, the number of samples
 //' @param yhat A matrix of the fixed effects predictions
+//' @param backtrans An integer, indicating the type of back transformation.
+//'   0 indicates inverse logit (e.g., for logistic regression).
+//'   1 indicates exponential (e.g., for poisson or negative binomial regression or if outcome was natural log transformed).
+//'   2 indicates square (e.g., if outcome was square root transformed).
 //' @return A numeric matrix with random values
 //' @export
 //' @examples
 //'
 // [[Rcpp::export]]
-arma::mat integratere(List d, List sd, List L, int k, arma::mat& yhat) {
+arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int backtrans) {
   int M = yhat.n_rows;
   int N = yhat.n_cols;
   int J = sd.length();
@@ -71,10 +75,16 @@ arma::mat integratere(List d, List sd, List L, int k, arma::mat& yhat) {
     for (int nsamp = 0; nsamp < k; nsamp++) {
       Zall.col(nsamp) = Zall.col(nsamp) + yhat.row(i).t();
     }
-    Zall = 1 / (1 + exp(-Zall));
+    if (backtrans == 0) {
+      Zall = 1 / (1 + exp(-Zall));
+    } else if (backtrans == 1) {
+      Zall = exp(Zall);
+    } else if (backtrans == 2) {
+      Zall = pow(Zall, 2);
+    }
     arma::colvec zm = arma::mean(Zall, 1);
     yhat2.row(i) = zm.t();
   }
-    
+
   return(yhat2);
 }

@@ -2,6 +2,6 @@
 #define __integratemvn__
 
 #include <RcppArmadillo.h>
-arma::mat integratemvn(arma::mat X, int k, Rcpp::NumericVector sd, arma::mat chol);
+arma::mat integratemvn(const arma::mat& X, const int k, const Rcpp::NumericVector& sd, const arma::mat& chol);
 
 #endif // __integratemvn__
