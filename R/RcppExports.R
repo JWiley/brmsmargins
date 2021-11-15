@@ -42,12 +42,16 @@ tab2mat <- function(X) {
 #' @param L A list
 #' @param k An integer, the number of samples
 #' @param yhat A matrix of the fixed effects predictions
+#' @param backtrans An integer, indicating the type of back transformation.
+#'   0 indicates inverse logit (e.g., for logistic regression).
+#'   1 indicates exponential (e.g., for poisson or negative binomial regression or if outcome was natural log transformed).
+#'   2 indicates square (e.g., if outcome was square root transformed).
 #' @return A numeric matrix with random values
 #' @export
 #' @examples
 #'
-integratere <- function(d, sd, L, k, yhat) {
-    .Call(`_brmsmargins_integratere`, d, sd, L, k, yhat)
+integratere <- function(d, sd, L, k, yhat, backtrans) {
+    .Call(`_brmsmargins_integratere`, d, sd, L, k, yhat, backtrans)
 }
 
 #' Bootstrap row means

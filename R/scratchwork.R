@@ -110,7 +110,7 @@
 ## k <- 100L  ## points for integration
 
 ## start <- proc.time()
-## yhat2 <- integratere(d, sd, L, 100L, yhat)
+## yhat2 <- integratere(d, sd, L, 100L, yhat, 0L)
 ## stop <- proc.time()
 
 ## stop - start

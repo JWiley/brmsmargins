@@ -4,7 +4,7 @@
 \alias{integratere}
 \title{Integrate over Random Effects}
 \usage{
-integratere(d, sd, L, k, yhat)
+integratere(d, sd, L, k, yhat, backtrans)
 }
 \arguments{
 \item{d}{A list}
@@ -16,6 +16,11 @@ integratere(d, sd, L, k, yhat)
 \item{k}{An integer, the number of samples}
 
 \item{yhat}{A matrix of the fixed effects predictions}
+
+\item{backtrans}{An integer, indicating the type of back transformation.
+0 indicates inverse logit (e.g., for logistic regression).
+1 indicates exponential (e.g., for poisson or negative binomial regression or if outcome was natural log transformed).
+2 indicates square (e.g., if outcome was square root transformed).}
 }
 \value{
 A numeric matrix with random values
