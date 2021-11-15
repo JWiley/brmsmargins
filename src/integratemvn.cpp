@@ -28,7 +28,6 @@ arma::mat integratemvn(const arma::mat& X, const int k, const Rcpp::NumericVecto
   for (int i = 0; i < n; i++) {
     Z.col(i) *= sd(i);
   }
-  arma::mat out = X * Z.t();
-  
+  arma::mat out = X * Z.t();  
   return(out);
 }

@@ -5,7 +5,7 @@
 
 
 
-## object <- JWileymisc::readRDSfst("../mixedlogit.RDS")
+## object2 <- JWileymisc::readRDSfst("../mixedlogit.RDS")
 ## object1 <- brm(y ~ 1 + x + (1 | ID),
 ##                family = bernoulli(),
 ##                data = model.frame(object),
@@ -96,6 +96,16 @@
 ##   Block1 = as.matrix(tmp[, "sd_idp__Intercept", drop = FALSE]),
 ##   Block2 = as.matrix(tmp[, c("sd_idt__Intercept", "sd_idt__Time", "sd_idt__Time:Tx"),
 ##                          drop = FALSE]))
+
+## sprintf("L_1[%s]",
+##         apply(expand.grid(Row = 1:2, Col = 1:2)[, c("Row", "Col")], 1, paste,
+##               collapse = ","))
+
+## L <- list(
+##   Block1 = as.matrix(tmp[,
+##                          sprintf("L_1[%s]",
+##         apply(expand.grid(Row = 1:2, Col = 1:2)[, c("Row", "Col")], 1, paste,
+##               collapse = ","))]))
 
 ## L <- list(
 ##   Block1 = matrix(1L, nrow = nrow(sd$Block1), ncol = 1),
