@@ -6,4 +6,7 @@ This package has functions to calculate Average Marginal Effects (AMEs)
 from `brms` models ( http://paul-buerkner.github.io/brms/ ).
 
 Currently the package only works correctly for models without random effects.
-Development work is ongoing to introduce support for mixed effects models.
+
+Preliminary, low level code has been added to integrate over random effects 
+that are (multivariate) normal, but this has not yet made its way into a 
+front end interface.

@@ -25,17 +25,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// tab2mat
-arma::mat tab2mat(const arma::mat& X);
-RcppExport SEXP _brmsmargins_tab2mat(SEXP XSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(tab2mat(X));
-    return rcpp_result_gen;
-END_RCPP
-}
 // integratere
 arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int backtrans);
 RcppExport SEXP _brmsmargins_integratere(SEXP dSEXP, SEXP sdSEXP, SEXP LSEXP, SEXP kSEXP, SEXP yhatSEXP, SEXP backtransSEXP) {
@@ -63,12 +52,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// tab2mat
+arma::mat tab2mat(const arma::mat& X);
+RcppExport SEXP _brmsmargins_tab2mat(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(tab2mat(X));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_brmsmargins_integratemvn", (DL_FUNC) &_brmsmargins_integratemvn, 4},
-    {"_brmsmargins_tab2mat", (DL_FUNC) &_brmsmargins_tab2mat, 1},
     {"_brmsmargins_integratere", (DL_FUNC) &_brmsmargins_integratere, 6},
     {"_brmsmargins_rowBootMeans", (DL_FUNC) &_brmsmargins_rowBootMeans, 1},
+    {"_brmsmargins_tab2mat", (DL_FUNC) &_brmsmargins_tab2mat, 1},
     {NULL, NULL, 0}
 };
 

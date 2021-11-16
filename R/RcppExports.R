@@ -20,19 +20,6 @@ integratemvn <- function(X, k, sd, chol) {
     .Call(`_brmsmargins_integratemvn`, X, k, sd, chol)
 }
 
-#' Convert a row of a table to a matrix
-#'
-#' TODO: write description.
-#'
-#' @param X a matrix
-#' @return A numeric matrix with one row.
-#' @export
-#' @examples
-#'
-tab2mat <- function(X) {
-    .Call(`_brmsmargins_tab2mat`, X)
-}
-
 #' Integrate over Random Effects
 #'
 #' TODO: write description.
@@ -74,5 +61,18 @@ integratere <- function(d, sd, L, k, yhat, backtrans) {
 #' replicate(10, rowBootMeans(x))
 rowBootMeans <- function(x) {
     .Call(`_brmsmargins_rowBootMeans`, x)
+}
+
+#' Convert a row of a table to a matrix
+#'
+#' TODO: write description.
+#'
+#' @param X a matrix
+#' @return A numeric matrix with one row.
+#' @export
+#' @examples
+#'
+tab2mat <- function(X) {
+    .Call(`_brmsmargins_tab2mat`, X)
 }
 
