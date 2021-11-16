@@ -29,12 +29,10 @@ arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int
   int J = sd.length();
   
   arma::mat yhat2 = arma::zeros(M, N);
-
-  // initialize matrix for all random effect predictions
-  arma::mat Zall = arma::zeros(N, k);
   
   for (int i = 0; i < M; i++) {
-    List Z(J);    
+    List Z(J);
+    
     for (int re = 0; re < J; re++) {
       NumericMatrix x = L[re];
       arma::mat xmat = arma::mat(x.begin(), x.nrow(), x.ncol(), false);
@@ -46,9 +44,14 @@ arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int
 
       Z[re] = integratemvn(dmat, k, sdvec, cholmat);
     }
-    for (int re = 0; re < J; re++) {
-      arma::mat tmp = Z[re];
-      Zall += tmp;
+
+    // initialize matrix for all random effect predictions
+    arma::mat Zall = Z[0];
+    if (J > 0) {
+      for (int re = 1; re < J; re++) {
+	arma::mat tmp = Z[re];
+	Zall += tmp;
+      }
     }
     for (int nsamp = 0; nsamp < k; nsamp++) {
       Zall.col(nsamp) = Zall.col(nsamp) + yhat.row(i).t();
@@ -63,6 +66,5 @@ arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int
     arma::colvec zm = arma::mean(Zall, 1);
     yhat2.row(i) = zm.t();
   }
-
   return(yhat2);
 }
