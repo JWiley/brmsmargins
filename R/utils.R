@@ -228,3 +228,86 @@ check.gaussian <- function(object) {
   }
   invisible(result)
 }
+
+#' Function to generate names of an L matrix from brms
+#'
+#' Internal utility function to check create the variable names for the
+#' Cholesky decomposition of the random effects correlation matrix in \code{brms}.
+#' \code{brms} returns the lower triangular matrix and we want the upper triangular
+#' matrix, so the names are transposed. The results can then be passed to
+#' the \code{tab2mat} function to convert the row vector into a matrix.
+#'
+#' @param block An integer, which random effect block object to be used.
+#' @param ncol An integer, the total number of columns. Since this is a square matrix,
+#'   this also defines how many rows.
+#' @return A character string of the names.
+#' @keywords internal
+#' @importFrom data.table as.data.table
+.lnames <- function(block, ncol) {
+  n <- expand.grid(Block = block,
+                   Row = seq_len(ncol),
+                   Col = seq_len(ncol))
+  n <- as.data.table(n)
+  n[, sprintf("L_%d[%d,%d]",
+              Block, Row, Col)]
+}
+
+
+
+
+
+
+
+
+
+
+## ## R code versions of C++ functions for testing and comparison purposes
+## integratemvnR <- function(X, k, sd, chol) {
+##   n <- length(sd)
+##   Z <- matrix(rnorm(k * n, mean = 0, sd = 1), nrow = k, ncol = n)
+##   if (n > 1) {
+##     Z <- Z %*% chol
+##   }
+##   for (i in seq_len(n)) {
+##     Z[, i] <- Z[, i] * sd[i]
+##   }
+##   X %*% t(Z)
+## }
+## tab2matR <- function(X) {
+##   X <- as.vector(X)
+##   dims <- sqrt(length(X))
+##   matrix(X, dims, dims, byrow = TRUE)
+## }
+## integratereR <- function(d, sd, L, k, yhat, backtrans) {
+##   M <- nrow(yhat)
+##   N <- ncol(yhat)
+##   J <- length(sd)
+##   yhat2 <- matrix(0, M, N)
+##   for (i in seq_len(M)) {
+##     Z <- vector("list", J)
+##     for (re in seq_len(J)) {
+##       cholmat <- tab2matR(L[[re]][i, ])
+##       dmat <- d[[re]]
+##       Z[[re]] <- integratemvnR(dmat, k, sd[[re]][i, ], cholmat)
+##     }
+##     Zall <- Z[[1]]
+##     if (J > 1) {
+##       for (re in 2:J) {
+##         Zall <- Zall + Z[[re]]
+##       }
+##     }
+##     for (nsamp in seq_len(k)) {
+##       Zall[, nsamp] <- Zall[, nsamp] + t(yhat[i, ])
+##     }
+##     if (backtrans == 0) {
+##       Zall <- 1 / (1 + exp(-Zall))
+##     } else if (backtrans == 1) {
+##       Zall <- exp(Zall)
+##     } else if (backtrans == 2) {
+##       Zall <- Zall^2
+##     }
+##     zm <- rowMeans(Zall)
+##     yhat2[i, ] <- t(zm)
+##   }
+##   return(yhat2)
+## }
