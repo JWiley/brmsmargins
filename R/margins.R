@@ -136,7 +136,7 @@
 brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(object),
                         CI = .99, CIType = "HDI", contrasts = NULL,
                         ROPE = NULL, MID = NULL, subset = NULL, ...) {
-  assert.brmsfit(object)
+  .assertbrmsfit(object)
   if (isTRUE(is.random(oject))) {
     stop("The brmsmargins function does not currently support models with random effects.")
   }

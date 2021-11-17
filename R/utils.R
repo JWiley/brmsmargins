@@ -176,7 +176,7 @@ bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
 #'   otherwise invisibly returns \code{TRUE}.
 #' @keywords internal
 #' @importFrom brms is.brmsfit
-assert.brmsfit <- function(object) {
+.assertbrmsfit <- function(object) {
   if (!isTRUE(is.brmsfit(object))) {
     stop(sprintf("object must be of class 'brmsfit', but was %s",
                  paste(class(object), collapse = "; ")))
@@ -195,7 +195,7 @@ assert.brmsfit <- function(object) {
 #'   \code{FALSE} if no random effects present.
 #' @keywords internal
 is.random <- function(object) {
-  assert.brmsfit(object)
+  .assertbrmsfit(object)
 
   isTRUE(nrow(object$ranef) >= 1L)
 }
@@ -210,8 +210,8 @@ is.random <- function(object) {
 #'   if there are no random effects.
 #'   \code{FALSE} if any random effect present is not Gaussian.
 #' @keywords internal
-check.gaussian <- function(object) {
-  assert.brmsfit(object)
+.assertgaussian <- function(object) {
+  .assertbrmsfit(object)
 
   result <- FALSE
   if (isTRUE(is.random(object))) {
@@ -243,17 +243,90 @@ check.gaussian <- function(object) {
 #' @return A character string of the names.
 #' @keywords internal
 #' @importFrom data.table as.data.table
-.lnames <- function(block, ncol) {
+.namesL <- function(block, number) {
   n <- expand.grid(Block = block,
-                   Row = seq_len(ncol),
-                   Col = seq_len(ncol))
+                   Row = seq_len(number),
+                   Col = seq_len(number))
   n <- as.data.table(n)
   n[, sprintf("L_%d[%d,%d]",
               Block, Row, Col)]
 }
 
+.buildL <- function(data, block, number) {
+  n <- .namesL(block, number)
+  as.matrix(data[, n])
+}
 
+.namesSD <- function(ranef, block) {
+  n <- subset(ranef, id == block)
+  n <- as.data.table(n)
+  n[, sprintf("sd_%s__%s", group, coef)]
+}
 
+.buildSD <- function(data, ranef, block) {
+  n <- .namesSD(ranef, block)
+  as.matrix(data[, n])
+}
+
+.namesZ <- function(block, number) {
+  n <- expand.grid(Block = block,
+                   Number = seq_len(number))
+  n <- as.data.table(n)
+  n[, sprintf("Z_%d_%d", Block, Number)]
+}
+
+.buildZ <- function(data, block, number) {
+  n <- .namesZ(block, number)
+  do.call(cbind, data[n])
+}
+
+.assertfamily <- function(object) {
+  family <- object$family$family
+  validlength <- identical(length(family), 1L)
+  if (isFALSE(validlength)) {
+    stop(sprintf("The 'family' must be a character string of length 1, but found length %d.",
+                 length(family)))
+  }
+
+  validclass <- is.character(family)
+  if (isFALSE(validclass)) {
+    stop(sprintf("The 'family' must be a character string, but a %s class was found.",
+                 paste(class(family), collapse = "; ")))
+  }
+
+  fams <- c("gaussian", "bernoulli", "poisson", "negbinomial")
+  validtype <- family %in% fams
+  if (isFALSE(validtype)) {
+    stop(sprintf("The 'family' must be one of (%s), but found %s.",
+                 paste(fams, collapse = ", "),
+                 family))
+  }
+  invisible(TRUE)
+}
+
+.assertlink <- function(object) {
+  link <- object$family$link
+  validlength <- identical(length(link), 1L)
+  if (isFALSE(validlength)) {
+    stop(sprintf("The 'link' must be a character string of length 1, but found length %d.",
+                 length(link)))
+  }
+
+  validclass <- is.character(link)
+  if (isFALSE(validclass)) {
+    stop(sprintf("The 'link' must be a character string, but a %s class was found.",
+                 paste(class(link), collapse = "; ")))
+  }
+
+  linkfun <- c("identity", "logit", "log")
+  validtype <- link %in% linkfun
+  if (isFALSE(validtype)) {
+    stop(sprintf("The 'link' must be one of (%s), but found %s.",
+                 paste(linkfun, collapse = ", "),
+                 link))
+  }
+  invisible(TRUE)
+}
 
 
 

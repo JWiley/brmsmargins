@@ -14,13 +14,6 @@
 ## object2 <- JWileymisc::readRDSfst("../../Projects/CodeRepos/mega-pri/m_pri_isi.RDS")
 ## object3 <- JWileymisc::readRDSfst("../mixedlogitnocor.RDS")
 
-
-
-## createCholesky <- function() {
-## }
-
-## ## https://knausb.github.io/2017/08/header-files-in-rcpp/
-
 ## ## model is object
 ## object
 

@@ -31,6 +31,7 @@
 #' @importFrom stats fitted
 .predict <- function(object, data, summarize = TRUE, posterior = FALSE,
                      dpar = NULL, re_formula = NULL, resample = 0L, seed, ...) {
+  .assertbrmsfit(object)
   out <- list(
     Summary = NULL,
     Posterior = NULL)
@@ -51,7 +52,7 @@
     }
 
     yhat <- matrix(NA_real_, nrow = nrow(out$Posterior), ncol = resample)
-    for (i in 1:resample) {
+    for (i in seq_len(resample)) {
       yhat[, i] <- rowBootMeans(out$Posterior)
     }
 
