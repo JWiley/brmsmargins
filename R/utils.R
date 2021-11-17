@@ -176,7 +176,7 @@ bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
 #'   otherwise invisibly returns \code{TRUE}.
 #' @keywords internal
 #' @importFrom brms is.brmsfit
-check.brmsfit <- function(object) {
+assert.brmsfit <- function(object) {
   if (!isTRUE(is.brmsfit(object))) {
     stop(sprintf("object must be of class 'brmsfit', but was %s",
                  paste(class(object), collapse = "; ")))
@@ -195,7 +195,7 @@ check.brmsfit <- function(object) {
 #'   \code{FALSE} if no random effects present.
 #' @keywords internal
 is.random <- function(object) {
-  check.brmsfit(object)
+  assert.brmsfit(object)
 
   isTRUE(nrow(object$ranef) >= 1L)
 }
@@ -211,7 +211,7 @@ is.random <- function(object) {
 #'   \code{FALSE} if any random effect present is not Gaussian.
 #' @keywords internal
 check.gaussian <- function(object) {
-  check.brmsfit(object)
+  assert.brmsfit(object)
 
   result <- FALSE
   if (isTRUE(is.random(object))) {

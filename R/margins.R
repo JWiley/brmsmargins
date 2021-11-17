@@ -32,7 +32,7 @@
 #'   length 2, specifying the lower and upper thresholds for the
 #'   Region of Practical Equivalence (ROPE).
 #' @param MID Either left as \code{NULL}, the default, or a numeric vector of
-#'   length 2, specifying the lower and upper thresholds for a 
+#'   length 2, specifying the lower and upper thresholds for a
 #'   Minimally Important Difference (MID). Unlike the ROPE, percentages for
 #'   the MID are calculated as at or exceeding the bounds specified by this
 #'   argument, whereas the ROPE is the percentage of the posterior at or inside
@@ -42,7 +42,7 @@
 #'   prior to analysis. Defaults to \code{NULL}.
 #' @param ... Additional arguments passed on to \code{\link{.predict}}.
 #' @importFrom stats model.frame
-#' @importFrom data.table as.data.table copy
+#' @importFrom data.table as.data.table copy :=
 #' @return A list. TODO describe more.
 #' @export
 #' @examples
@@ -54,18 +54,18 @@
 #' ybin <- c(rep(0:1, c(40,10)), rep(0:1, c(10,40)))
 #' logitd <- data.frame(Tx = Tx, ybin = ybin)
 #' logitd$x <- rnorm(100, mean = logitd$ybin, sd = 2)
-#' 
+#'
 #' mbin <- brms::brm(ybin ~ Tx + x, data = logitd, family = brms::bernoulli())
-#' 
+#'
 #' summary(mbin)
-#' 
-#' ## predictions + summary 
+#'
+#' ## predictions + summary
 #' test1 <- brmsmargins:::.predict(mbin,
 #'          model.frame(mbin),
 #'          summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL,
 #'          resample = 0L)
 #' test1
-#' 
+#'
 #' ## check that bootstrapping the sample / population assumed as part of the
 #' ## AME indeed increases the uncertainty interval
 #' ## TODO: point estimates (M, Mdn) should be based on the actual data
@@ -75,8 +75,8 @@
 #'          summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL,
 #'          resample = 100L, seed = 1234)
 #' test2
-#' 
-#' 
+#'
+#'
 #' ## now check AME for Tx
 #' tmp <- brmsmargins(
 #'   object = mbin,
@@ -84,11 +84,11 @@
 #'   contrasts = matrix(c(-1, 1), nrow = 2),
 #'   ROPE = c(-.05, +.05),
 #'   MID = c(-.10, +.10))
-#' 
+#'
 #' tmp$Summary
 #' tmp$ContrastSummary ## Tx AME
-#' 
-#' 
+#'
+#'
 #' ## now check AME for Tx with bootstrapping the AME population
 #' tmpalt <- brmsmargins(
 #'   object = mbin,
@@ -97,10 +97,10 @@
 #'   ROPE = c(-.05, +.05),
 #'   MID = c(-.10, +.10),
 #'   resample = 100L)
-#' 
+#'
 #' tmpalt$Summary
 #' tmpalt$ContrastSummary ## Tx AME
-#' 
+#'
 #' ## now check AME for continuous predictor, x
 #' ## use .01 as an approximation for first derivative
 #' ## 1 / .01 in the contrast matrix to get back to a one unit change metric
@@ -110,7 +110,7 @@
 #'   contrasts = matrix(c(-1/.01, 1/.01), nrow = 2),
 #'   ROPE = c(-.05, +.05),
 #'   MID = c(-.10, +.10))
-#' 
+#'
 #' tmp2$ContrastSummary ## x AME
 #'
 #' if (FALSE) {
@@ -119,16 +119,16 @@
 #'   fit <- brms::brm(Reaction ~ 1 + Days + (1+ Days | Subject), 
 #'              data = sleepstudy,
 #'              cores = 4)
-#' 
-#'   summary(fit) 
-#' 
+#'
+#'   summary(fit)
+#'
 #'   tmp <- brmsmargins(
 #'     object = fit,
 #'     at = data.table::data.table(Days = 0:1),
 #'     contrasts = matrix(c(-1, 1), nrow = 2),
 #'     ROPE = c(-.05, +.05),
 #'     MID = c(-.10, +.10))
-#' 
+#'
 #'   tmp$Summary
 #'   tmp$ContrastSummary
 #'   }
@@ -136,7 +136,10 @@
 brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(object),
                         CI = .99, CIType = "HDI", contrasts = NULL,
                         ROPE = NULL, MID = NULL, subset = NULL, ...) {
-  
+  assert.brmsfit(object)
+  if (isTRUE(is.random(oject))) {
+    stop("The brmsmargins function does not currently support models with random effects.")
+  }
   chknewdata <- .checktab(newdata)
   if (isTRUE(nzchar(chknewdata))) {
     stop(paste0("newdata: ", chknewdata))
@@ -151,20 +154,20 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
       newdata,
       subset = eval(parse(text = subset)))
   }
-  
+
   if (isFALSE(is.null(at))) {
     chkat <- .checktab(at)
     if (isTRUE(nzchar(chkat))) {
       stop(paste0("at: ", chkat))
-    } 
+    }
     at <- copy(as.data.table(at))
   }
-  
+
   if (isFALSE(is.null(add))) {
     chkadd <- .checktab(add)
     if (isTRUE(nzchar(chkadd))) {
       stop(paste0("add: ", chkadd))
-    }     
+    }
     add <- copy(as.data.table(add))
   }
 
@@ -172,10 +175,10 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
     chkcontrasts <- .checktab(contrasts, requireNames = FALSE)
     if (isTRUE(nzchar(chkcontrasts))) {
       stop(paste0("contrasts: ", chkcontrasts))
-    }     
+    }
     contrasts <- as.matrix(contrasts)
     if (isTRUE(is.null(colnames(contrasts)))) {
-      colnames(contrasts) <- paste0("Contrast_", 1:ncol(contrasts))
+      colnames(contrasts) <- paste0("Contrast_", seq_len(ncol(contrasts)))
     }
   }
 
@@ -187,7 +190,7 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
 
   if (isFALSE(is.null(at))) {
     out <- vector("list", nrow(at))
-    for (i in 1:nrow(at)) {
+    for (i in seq_len(nrow(at))) {
       for (v in names(at)) {
         newdata[, (v) := at[i, get(v)]]
       }
@@ -195,17 +198,17 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
                            ROPE = ROPE, MID = MID,
                            posterior = TRUE, ...)
     }
-    
+
     post <- do.call(cbind, lapply(out, `[[`, "Posterior"))
     s <- do.call(rbind, lapply(out, `[[`, "Summary"))
 
     rm(out)
     gc()
   }
-  
+
   if (isFALSE(is.null(add))) {
     out <- vector("list", nrow(add))
-    for (i in 1:nrow(add)) {
+    for (i in seq_len(nrow(add))) {
       tmp <- copy(newdata)
       for (v in names(add)) {
         value <- add[i, get(v)]
@@ -218,9 +221,9 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
 
     post <- do.call(cbind, lapply(out, `[[`, "Posterior"))
     s <- do.call(rbind, lapply(out, `[[`, "Summary"))
-    
+
     rm(out)
-    gc()    
+    gc()
   }
 
   if (isFALSE(is.null(contrasts))) {
@@ -229,7 +232,7 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
           CI = CI, type = CIType,
           ROPE = ROPE, MID = MID)
     contrastsum <- do.call(rbind, contrastsum)
-    contrastsum[, Label := colnames(contrasts)]    
+    contrastsum[, Label := colnames(contrasts)]
   } else {
     res <- NA
     contrastsum <- NA
@@ -240,54 +243,6 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
     Summary = s,
     Contrasts = res,
     ContrastSummary = contrastsum)
-  
+
   return(out)
 }
-
-## library(brms)
-## library(brmsmargins)
-
-## income_options <- c("below_20", "20_to_40", "40_to_100", "greater_100")
-## income <- factor(sample(income_options, 100, TRUE), 
-##                  levels = income_options, ordered = TRUE)
-## mean_ls <- c(30, 60, 70, 75)
-## ls <- mean_ls[income] + rnorm(100, sd = 7)
-## dat <- data.frame(income, ls)
-
-## fit1 <- brm(ls ~ mo(income), data = dat)
-
-## marg <- brmsmargins(
-##   fit1,
-##   at = data.frame(
-##     income = factor(levels(dat$income), ordered = TRUE)),
-##   ## sequential, pairwise contrasts
-##   contrasts = matrix(c(rep(c(-1, 1, 0, 0, 0), 2),-1, 1), 4))
-
-
-## ## these should be the same
-## conditional_effects(fit1, plot = FALSE)$income
-
-## ##        income       ls cond__   effect1__ estimate__     se__  lower__  upper__
-## ## 1    below_20 57.40319      1    below_20   29.46575 1.181903 27.16700 32.00974
-## ## 2    20_to_40 57.40319      1    20_to_40   60.45641 1.154384 58.16923 62.78298
-## ## 3   40_to_100 57.40319      1   40_to_100   71.00420 1.240089 68.53623 73.33976
-## ## 4 greater_100 57.40319      1 greater_100   74.39849 1.364693 71.94436 77.12927
-
-## marg$Summary
-## ##           M      Mdn       LL       UL PercentROPE PercentMID   CI CIType ROPE
-## ## 1: 29.49498 29.46575 26.71083 32.88775          NA         NA 0.99    HDI <NA>
-## ## 2: 60.46622 60.45641 57.47392 63.50555          NA         NA 0.99    HDI <NA>
-## ## 3: 70.98177 71.00420 67.80697 74.09095          NA         NA 0.99    HDI <NA>
-## ## 4: 74.43314 74.39849 70.99505 77.74676          NA         NA 0.99    HDI <NA>
-
-## ## these give the pairwise contrasts
-## marg$ContrastSummary
-
-## ##            M       Mdn         LL        UL PercentROPE PercentMID   CI CIType
-## ## 1: 30.971235 30.997266 26.3899437 34.851657          NA         NA 0.99    HDI
-## ## 2: 10.515554 10.507766  6.1273547 14.900275          NA         NA 0.99    HDI
-## ## 3:  3.451367  3.348807  0.0188492  7.900816          NA         NA 0.99    HDI
-## ##    ROPE  MID      Label
-## ## 1: <NA> <NA> Contrast_1
-## ## 2: <NA> <NA> Contrast_2
-## ## 3: <NA> <NA> Contrast_3

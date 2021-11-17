@@ -89,7 +89,7 @@ mbin <- brms::brm(ybin ~ Tx + x, data = logitd, family = brms::bernoulli())
 
 summary(mbin)
 
-## predictions + summary 
+## predictions + summary
 test1 <- brmsmargins:::.predict(mbin,
          model.frame(mbin),
          summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL,
@@ -150,7 +150,7 @@ if (FALSE) {
              data = sleepstudy,
              cores = 4)
 
-  summary(fit) 
+  summary(fit)
 
   tmp <- brmsmargins(
     object = fit,
