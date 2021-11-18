@@ -30,18 +30,10 @@
 #' @importFrom stats fitted formula
 #' @importFrom posterior as_draws_df
 #' @importFrom brms make_standata
-
-
-object <- JWileymisc::readRDSfst("../mixedlogit.RDS")
-data <- model.frame(object)[1:2, ]
-data$x <- c(0, 1)
-dpar <- NULL
-index <- seq_len(ndraws(object))
-index <- 1:5
-k <- 1000L
-
-test <- .predictre(object = object, data = data, index = 1:5)
-
+## object <- JWileymisc::readRDSfst("../mixedlogit.RDS")
+## data <- model.frame(object)[1:2, ]
+## data$x <- c(0, 1)
+## test <- .predictre(object = object, data = data, index = 1:5)
 .predictre <- function(object, data, backtrans = NULL, index,
                        summarize = TRUE, posterior = FALSE,
                        dpar = NULL, re_formula = NULL, k = 100L, resample = 0L, seed, ...) {
