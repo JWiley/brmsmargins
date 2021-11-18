@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Calculate the percent of observations within or without a window — .percent • brmsmargins</title>
+<title>Function to generate posterior predictions and summaries from a brms model with random effects — .predictre • brmsmargins</title>
 
 
 <!-- jquery -->
@@ -65,14 +65,8 @@
 
 
 
-<meta property="og:title" content="Calculate the percent of observations within or without a window — .percent" />
-<meta property="og:description" content="This is an internal helper function to calculate and label
-the percentage of a posterior distribution that falls within
-the Region of Practical Equivalence (ROPE) or
-at or beyond a Minimally Important Difference (MID).
-It is designed to fail gracefully if no window given, and to
-give some useful labels about the windows / range used.
-Intended for use internally as part of brmsmargins." />
+<meta property="og:title" content="Function to generate posterior predictions and summaries from a brms model with random effects — .predictre" />
+<meta property="og:description" content="This is an early developmental function." />
 
 
 
@@ -151,81 +145,89 @@ Intended for use internally as part of brmsmargins." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate the percent of observations within or without a window</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JWiley/brmsmargins/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>dot-percent.Rd</code></div>
+    <h1>Function to generate posterior predictions and summaries from a brms model with random effects</h1>
+    <small class="dont-index">Source: <a href='https://github.com/JWiley/brmsmargins/blob/master/R/predictre.R'><code>R/predictre.R</code></a></small>
+    <div class="hidden name"><code>dot-predictre.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This is an internal helper function to calculate and label
-the percentage of a posterior distribution that falls within
-the Region of Practical Equivalence (ROPE) or
-at or beyond a Minimally Important Difference (MID).
-It is designed to fail gracefully if no window given, and to
-give some useful labels about the windows / range used.
-Intended for use internally as part of <code><a href='brmsmargins.html'>brmsmargins</a></code>.</p>
+    <p>This is an early developmental function.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>.percent</span><span class='op'>(</span><span class='va'>x</span>, window <span class='op'>=</span> <span class='cn'>NULL</span>, within <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>.predictre</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  <span class='va'>data</span>,
+  backtrans <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>index</span>,
+  summarize <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  posterior <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  dpar <span class='op'>=</span> <span class='cn'>NULL</span>,
+  re_formula <span class='op'>=</span> <span class='cn'>NULL</span>,
+  k <span class='op'>=</span> <span class='fl'>100L</span>,
+  resample <span class='op'>=</span> <span class='fl'>0L</span>,
+  <span class='va'>seed</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A vector of values to evaluate. Required.</p></td>
+      <th>object</th>
+      <td><p>A fitted brms model object. Required.</p></td>
     </tr>
     <tr>
-      <th>window</th>
-      <td><p>An optional numeric vector giving a window.</p></td>
+      <th>data</th>
+      <td><p>A data frame or data table passed to <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code>
+as the new data to be used for predictions. Required.</p></td>
     </tr>
     <tr>
-      <th>within</th>
-      <td><p>A logical value indicating whether to calculate the
-percentage within the window (if <code>TRUE</code>) or the
-percentage at or outside the window (if <code>FALSE</code>).
+      <th>summarize</th>
+      <td><p>A logical value, whether or not to
+calculate summaries of the posterior predictions.
 Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>posterior</th>
+      <td><p>A logical value whether or not to
+save and return the posterior samples. Defaults
+to <code>FALSE</code> as the assumption is a typical
+use case is to return the summaries only.</p></td>
+    </tr>
+    <tr>
+      <th>dpar</th>
+      <td><p>Parameter passed on the <code>dpar</code>
+argument of <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code> in brms.</p></td>
+    </tr>
+    <tr>
+      <th>re_formula</th>
+      <td><p>Parameter passed on the <code>re_formula</code>
+argument of <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code> in brms.</p></td>
+    </tr>
+    <tr>
+      <th>resample</th>
+      <td><p>An integer indicating the number of
+bootstrap resamples of the posterior predictions to
+use when calculating summaries. Defaults to <code>0L</code>.
+See the details section for more informations as its implementation
+is experimental and it may not operate as one would expect.</p></td>
+    </tr>
+    <tr>
+      <th>seed</th>
+      <td><p>A seed for random number generation. Missing by default.
+Only needed if <code>resample</code> is a non zero integer.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments passed to <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list with the <code>Window</code>, if specified else <code>NULL</code>,
-the <code>Percent</code> of observations, and a <code>Label</code> specifying the
-exact window used in human readable format.</p>
+    <p>A list with <code>Summary</code> and <code>Posterior</code>.
+Some of these may be <code>NULL</code> depending on the arguments used.</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'><span class='fu'>brmsmargins</span><span class='fu'>:::</span><span class='fu'>.percent</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, window <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Window</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] NA</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Percent</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] NA</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Label</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] NA</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-in'><span class='fu'>brmsmargins</span><span class='fu'>:::</span><span class='fu'>.percent</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, window <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Window</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 3 5</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Percent</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 30</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Label</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "[3, 5]"</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-in'><span class='fu'>brmsmargins</span><span class='fu'>:::</span><span class='fu'>.percent</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, window <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>6</span><span class='op'>)</span>, within <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Window</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 2 6</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Percent</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 70</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Label</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "[-Inf, 2] | [6, Inf]"</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Calculate the percent of observations within or without a window — .percent • brmsmargins</title>
+<title>Internal functions to check assertions about a brmsfit model object — assertall • brmsmargins</title>
 
 
 <!-- jquery -->
@@ -65,14 +65,14 @@
 
 
 
-<meta property="og:title" content="Calculate the percent of observations within or without a window — .percent" />
-<meta property="og:description" content="This is an internal helper function to calculate and label
-the percentage of a posterior distribution that falls within
-the Region of Practical Equivalence (ROPE) or
-at or beyond a Minimally Important Difference (MID).
-It is designed to fail gracefully if no window given, and to
-give some useful labels about the windows / range used.
-Intended for use internally as part of brmsmargins." />
+<meta property="og:title" content="Internal functions to check assertions about a brmsfit model object — assertall" />
+<meta property="og:description" content="These are a set of internal utility functions.
+They are not intended for general use.
+Instead, they are intended to be called in circumstances
+where the expected result is TRUE.
+All of them are designed to try to give informative error
+messages if the assertion is not met.
+All of them result in a stop() error if the assertion is not met." />
 
 
 
@@ -151,81 +151,53 @@ Intended for use internally as part of brmsmargins." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate the percent of observations within or without a window</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JWiley/brmsmargins/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>dot-percent.Rd</code></div>
+    <h1>Internal functions to check assertions about a <code>brmsfit</code> model object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/JWiley/brmsmargins/blob/master/R/assert.R'><code>R/assert.R</code></a></small>
+    <div class="hidden name"><code>assertall.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This is an internal helper function to calculate and label
-the percentage of a posterior distribution that falls within
-the Region of Practical Equivalence (ROPE) or
-at or beyond a Minimally Important Difference (MID).
-It is designed to fail gracefully if no window given, and to
-give some useful labels about the windows / range used.
-Intended for use internally as part of <code><a href='brmsmargins.html'>brmsmargins</a></code>.</p>
+    <p>These are a set of internal utility functions.
+They are not intended for general use.
+Instead, they are intended to be called in circumstances
+where the expected result is <code>TRUE</code>.
+All of them are designed to try to give informative error
+messages if the assertion is not met.
+All of them result in a <code><a href='https://rdrr.io/r/base/stop.html'>stop()</a></code> error if the assertion is not met.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>.percent</span><span class='op'>(</span><span class='va'>x</span>, window <span class='op'>=</span> <span class='cn'>NULL</span>, within <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>.assertbrmsfit</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='fu'>.assertgaussian</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='fu'>.assertfamily</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='fu'>.assertlink</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A vector of values to evaluate. Required.</p></td>
-    </tr>
-    <tr>
-      <th>window</th>
-      <td><p>An optional numeric vector giving a window.</p></td>
-    </tr>
-    <tr>
-      <th>within</th>
-      <td><p>A logical value indicating whether to calculate the
-percentage within the window (if <code>TRUE</code>) or the
-percentage at or outside the window (if <code>FALSE</code>).
-Defaults to <code>TRUE</code>.</p></td>
+      <th>object</th>
+      <td><p>A <code>brmsfit</code> model object to be evaluated.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list with the <code>Window</code>, if specified else <code>NULL</code>,
-the <code>Percent</code> of observations, and a <code>Label</code> specifying the
-exact window used in human readable format.</p>
+    <p>An invisible, logical <code>TRUE</code> if the assertion is met.
+An (informative) error message if the assertion is not met.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'><span class='fu'>brmsmargins</span><span class='fu'>:::</span><span class='fu'>.percent</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, window <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Window</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] NA</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Percent</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] NA</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Label</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] NA</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-in'><span class='fu'>brmsmargins</span><span class='fu'>:::</span><span class='fu'>.percent</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, window <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Window</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 3 5</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Percent</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 30</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Label</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "[3, 5]"</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-in'><span class='fu'>brmsmargins</span><span class='fu'>:::</span><span class='fu'>.percent</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, window <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>6</span><span class='op'>)</span>, within <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Window</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 2 6</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Percent</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 70</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $Label</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "[-Inf, 2] | [6, Inf]"</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-</pre>
+    
+<ul>
+<li><p><code>.assertbrmsfit</code>asserts that the object should be of class <code>brmsfit</code>.</p></li>
+<li><p><code>.assertgaussian</code>asserts that all random effects are Gaussian.</p></li>
+<li><p><code>.assertfamily</code>asserts that the distribution (family) of the outcome is a currently supported family. Only applies when integrating out random effects.</p></li>
+<li><p><code>.assertlink</code>asserts that the link function is a currently supported link function. Only applies when integrating out random effects.</p></li>
+</ul>
+
+
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
