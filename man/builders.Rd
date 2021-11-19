@@ -53,4 +53,7 @@ They are not intended for general use.
 \item{\code{.buildZ}}{Return matrix of data for random effect predictions.}
 }
 }
+\examples{
+brmsmargins:::.namesL(1, 3)
+}
 \keyword{internal}

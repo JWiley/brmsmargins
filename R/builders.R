@@ -22,7 +22,6 @@
 #'   Only used for \code{.namesSD} and \code{.buildSD}.
 #' @param block Which random effect block to use. An integer.
 #' @param number The number of elements in that random effect block. An integer.
-#' 
 #' @return A character vector for all \code{.names} functions or a matrix
 #'   for all \code{.build} functions.
 #' @keywords internal
@@ -31,6 +30,9 @@ NULL
 
 #' @rdname builders
 #' @importFrom data.table as.data.table
+#' @examples
+#' brmsmargins:::.namesL(1, 3)
+#' tab2matR(matrix(brmsmargins:::.namesL(1, 3), 1))
 .namesL <- function(block, number) {
   n <- expand.grid(Block = block,
                    Row = seq_len(number),
@@ -60,6 +62,8 @@ NULL
 }
 
 #' @rdname builders
+#' @examples
+#' brmsmargins:::.namesZ(1, 3)
 .namesZ <- function(block, number) {
   n <- expand.grid(Block = block,
                    Number = seq_len(number))
