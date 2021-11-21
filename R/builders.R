@@ -44,21 +44,23 @@ NULL
 
 #' @rdname builders
 .buildL <- function(data, block, number) {
+  stopifnot(is.data.table(data))
   n <- .namesL(block, number)
-  as.matrix(data[, n, drop = FALSE])
+  as.matrix(data[, ..n])
 }
 
 #' @rdname builders
 .namesSD <- function(ranef, block) {
-  n <- subset(ranef, id == block)
-  n <- as.data.table(n)
+  stopifnot(is.data.table(ranef))
+  n <- ranef[id == block]
   n[, sprintf("sd_%s__%s", group, coef)]
 }
 
 #' @rdname builders
 .buildSD <- function(data, ranef, block) {
+  stopifnot(is.data.table(data))
   n <- .namesSD(ranef, block)
-  as.matrix(data[, n, drop = FALSE])
+  as.matrix(data[, ..n])
 }
 
 #' @rdname builders

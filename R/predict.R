@@ -16,55 +16,131 @@
 #' @param dpar Parameter passed on the \code{dpar}
 #'   argument of \code{fitted()} in brms.
 #' @param re_formula Parameter passed on the \code{re_formula}
-#'   argument of \code{fitted()} in brms.
+#'   argument of \code{fitted()} in brms. Defaults to \code{NA}
+#'   meaning that no random effects should be used.
+#'   Irrelevant in models without any random effects.
 #' @param resample An integer indicating the number of
 #'   bootstrap resamples of the posterior predictions to
 #'   use when calculating summaries. Defaults to \code{0L}.
-#'   See the details section for more informations as its implementation
-#'   is experimental and it may not operate as one would expect.
-#' @param seed A seed for random number generation. Missing by default.
-#'   Only needed if \code{resample} is a non zero integer.
+#'   See documentation from [.averagePosterior()] for more details.
+#' @param seed A seed for random number generation. Defaults to \code{FALSE},
+#'   which means no seed is set.
+#'   Only used if \code{resample} is a positive, non-zero integer.
+#'   See documentation from [.averagePosterior()] for more details.
 #' @param ... Additional arguments passed to \code{fitted()}
 #' @return A list with \code{Summary} and \code{Posterior}.
 #'   Some of these may be \code{NULL} depending on the arguments used.
 #' @keywords internal
-#' @importFrom stats fitted
+#' @importFrom data.table as.data.table
+#' @importFrom stats fitted formula
+#' @importFrom posterior as_draws_df ndraws
+#' @importFrom brms make_standata
+## object <- JWileymisc::readRDSfst("../mixedlogit.RDS")
+## data <- model.frame(object)[1:2, ]
+## data$x <- c(0, 1)
+## system.time(test <- .predict(object = object, data = data, k = 1000L, index = 1:4000))
 .predict <- function(object, data, summarize = TRUE, posterior = FALSE,
-                     dpar = NULL, re_formula = NULL, resample = 0L, seed, ...) {
+                     index, dpar = NULL, resample = 0L, seed = FALSE,
+                     integrateoutRE = is.random(object),
+                     backtrans = NULL, k = 100L, re_formula = NA, ...) {
   .assertbrmsfit(object)
+
+  if (isTRUE(missingArg(index))) {
+    index <- seq_len(ndraws(object))
+  }
+
+  if (isFALSE(integrateoutRE)) {
+  posterior <- fitted(
+    object = object, newdata = data,
+    re_formula = re_formula, scale = "response", dpar = dpar,
+    draw_ids = index, summary = FALSE)
+  }
+
+  if (isTRUE(integrateoutRE)) {
+    ## this function only for random effect models
+    if (isFALSE(is.random(object))) {
+      stop("integrateoutRE can only be TRUE for models with random effects")
+    }
+
+    ## assert the assumed family / distribution is a supported one
+    .assertfamily(object)
+    ## assert the link function used is a supported one
+    .assertlink(object)
+    ## assert that all random effects in the model are Gaussian
+    .assertgaussian(object)
+
+    ## back transformation
+    if (is.null(backtrans)) {
+      if (object$family$link == "identity") {
+        backtrans <- "identity"
+      }
+      if (object$family$link == "logit") {
+        backtrans <- "invlogit"
+      }
+      if (object$family$link == "log") {
+        backtrans <- "exp"
+      }
+      ## if (object$family$link == "sqrt") {
+      ##   backtrans <- "square"
+      ## }
+    }
+    stopifnot(backtrans %in% c("identity", "invlogit", "exp", "square"))
+
+    backtransnum <- switch(backtrans,
+                           identity = NA_integer_,
+                           invlogit = 0L,
+                           exp = 1L,
+                           square = 2L)
+
+    posterior <- fitted(
+      object = object, newdata = data,
+      re_formula = NA, scale = "linear", dpar = dpar,
+      draw_ids = index, summary = FALSE)
+
+    if (isTRUE(backtrans != "identity")) {
+      post <- as.data.table(posterior::as_draws_df(object))[index, ]
+
+      dtmp <- make_standata(formula(object), data = data)
+
+      re <- as.data.table(object$ranef)
+
+      if (is.null(dpar)) {
+        usedpar <- ""
+      }
+
+      re <- re[dpar == usedpar]
+
+      blocks <- unique(re$id)
+      nblocks <- length(blocks)
+
+      d2 <- sd <- L <- vector("list", nblocks)
+
+      for (i in seq_len(nblocks)) {
+        useblock <- blocks[i]
+        usere <- re[id == useblock]
+        num <- max(usere$cn)
+        d2[[i]] <- .buildZ(data = dtmp, block = useblock, number = num)
+        sd[[i]] <- .buildSD(data = post, ranef = usere, block = useblock)
+        L[[i]] <- .buildL(data = post, block = useblock, number = num)
+        names(d2)[i] <- names(sd)[i] <- names(L)[i] <- sprintf("Block%d", useblock)
+      }
+
+      posterior <- integratere(d = d2, sd = sd, L = L, k = k,
+                               yhat = posterior, backtrans = backtransnum)
+    }
+  }
+
+  posterior <- averagePosterior(posterior, resample = resample, seed = seed)
+
   out <- list(
     Summary = NULL,
     Posterior = NULL)
 
-  out$Posterior <- fitted(
-    object = object,
-    newdata = data,
-    re_formula = re_formula,
-    scale = "response",
-    dpar = dpar,
-    summary = FALSE)
-
-  if (isTRUE(resample == 0)) {
-    out$Posterior <- rowMeans(out$Posterior, na.rm = TRUE)
-  } else if (isTRUE(resample > 0)) {
-    if (isFALSE(missingArg(seed))) {
-      set.seed(seed)
-    }
-
-    yhat <- matrix(NA_real_, nrow = nrow(out$Posterior), ncol = resample)
-    for (i in seq_len(resample)) {
-      yhat[, i] <- rowBootMeans(out$Posterior)
-    }
-
-    out$Posterior <- as.vector(yhat)
-    rm(yhat)
-  }
-
   if (isTRUE(summarize)) {
-    out$Summary <- bsummary(out$Posterior, ...)
+    out$Summary <- bsummary(posterior, ...)
   }
-  if (isFALSE(posterior)) {
-    out$Posterior <- NULL
+  if (isTRUE(posterior)) {
+    out$Posterior <- posterior
   }
   return(out)
 }
