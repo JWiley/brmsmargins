@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Function to generate posterior predictions and summaries from a brms model — .predict • brmsmargins</title>
+<title>Internal function to average over posterior predictions — .averagePosterior • brmsmargins</title>
 
 
 <!-- jquery -->
@@ -65,9 +65,8 @@
 
 
 
-<meta property="og:title" content="Function to generate posterior predictions and summaries from a brms model — .predict" />
-<meta property="og:description" content="This is an internal function that is essentially a fancy wrapper for
-fitted()." />
+<meta property="og:title" content="Internal function to average over posterior predictions — .averagePosterior" />
+<meta property="og:description" content="TODO" />
 
 
 
@@ -146,119 +145,45 @@ fitted()." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function to generate posterior predictions and summaries from a brms model</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JWiley/brmsmargins/blob/master/R/predict.R'><code>R/predict.R</code></a></small>
-    <div class="hidden name"><code>dot-predict.Rd</code></div>
+    <h1>Internal function to average over posterior predictions</h1>
+    <small class="dont-index">Source: <a href='https://github.com/JWiley/brmsmargins/blob/master/R/averageposterior.R'><code>R/averageposterior.R</code></a></small>
+    <div class="hidden name"><code>dot-averagePosterior.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This is an internal function that is essentially a fancy wrapper for
-<code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code>.</p>
+    <p>TODO</p>
     </div>
 
-    <pre class="usage"><span class='fu'>.predict</span><span class='op'>(</span>
-  <span class='va'>object</span>,
-  <span class='va'>data</span>,
-  summarize <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  posterior <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  <span class='va'>index</span>,
-  dpar <span class='op'>=</span> <span class='cn'>NULL</span>,
-  resample <span class='op'>=</span> <span class='fl'>0L</span>,
-  seed <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  effects <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fixedonly"</span>, <span class='st'>"includeRE"</span>, <span class='st'>"integrateoutRE"</span><span class='op'>)</span>,
-  backtrans <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"response"</span>, <span class='st'>"linear"</span>, <span class='st'>"identity"</span>, <span class='st'>"invlogit"</span>, <span class='st'>"exp"</span>, <span class='st'>"square"</span><span class='op'>)</span>,
-  k <span class='op'>=</span> <span class='fl'>100L</span>,
-  <span class='va'>...</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>.averagePosterior</span><span class='op'>(</span><span class='va'>posterior</span>, resample <span class='op'>=</span> <span class='fl'>0L</span>, seed <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>A fitted brms model object. Required.</p></td>
-    </tr>
-    <tr>
-      <th>data</th>
-      <td><p>A data frame or data table passed to <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code>
-as the new data to be used for predictions. Required.</p></td>
-    </tr>
-    <tr>
-      <th>summarize</th>
-      <td><p>A logical value, whether or not to
-calculate summaries of the posterior predictions.
-Defaults to <code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
       <th>posterior</th>
-      <td><p>A logical value whether or not to
-save and return the posterior samples. Defaults
-to <code>FALSE</code> as the assumption is a typical
-use case is to return the summaries only.</p></td>
-    </tr>
-    <tr>
-      <th>index</th>
-      <td><p>An optional integer vector, giving the posterior draws
-to be used in the calculations. If omitted, defaults to all
-posterior draws.</p></td>
-    </tr>
-    <tr>
-      <th>dpar</th>
-      <td><p>Parameter passed on the <code>dpar</code>
-argument of <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code> in brms. Defaults to <code>NULL</code>
-indicating the mean or location parameter typically.</p></td>
+      <td><p>A posterior matrix type object. It is assumed that different
+predictions to be averaged over are on different columns. Different posterior
+draws are on different rows.</p></td>
     </tr>
     <tr>
       <th>resample</th>
       <td><p>An integer indicating the number of
 bootstrap resamples of the posterior predictions to
 use when calculating summaries. Defaults to <code>0L</code>.
-See documentation from <code><a href='.averagePosterior.html'>.averagePosterior()</a></code> for more details.</p></td>
+See the details section for more informations as its implementation
+is experimental and it may not operate as one would expect.</p></td>
     </tr>
     <tr>
       <th>seed</th>
       <td><p>A seed for random number generation. Defaults to <code>FALSE</code>,
 which means no seed is set.
-Only used if <code>resample</code> is a positive, non-zero integer.
-See documentation from <code><a href='.averagePosterior.html'>.averagePosterior()</a></code> for more details.</p></td>
-    </tr>
-    <tr>
-      <th>effects</th>
-      <td><p>A character string indicating the type of
-prediction to be made. Can be one of
-&#8220;fixedonly&#8221; meaning only use fixed effects,
-&#8220;includeRE&#8221; meaning that random effects should be
-included in the predictions, or
-&#8220;integrateoutRE&#8221; meaning that random effects should be
-integrated out / over in the predictions.</p></td>
-    </tr>
-    <tr>
-      <th>backtrans</th>
-      <td><p>A character string indicating the type of
-back transformation to be applied. Can be one of
-&#8220;response&#8221; meaning to use the response scale,
-&#8220;linear&#8221; or &#8220;identity&#8221; meaning to use the linear predictor scale,
-or a specific back transformation desired, from a possible list of
-&#8220;invlogit&#8221;, &#8220;exp&#8221;, or &#8220;square&#8221;.
-Custom back transformations should only be needed if, for example,
-the outcome variable was transformed prior to fitting the model.</p></td>
-    </tr>
-    <tr>
-      <th>k</th>
-      <td><p>An integer providing the number of random draws to use for
-integrating out the random effects. Only relevant when <code>effects</code>
-is &#8220;integrateoutRE&#8221;.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Additional arguments passed to <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code></p></td>
+Only used if <code>resample</code> is a positive, non-zero integer.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list with <code>Summary</code> and <code>Posterior</code>.
-Some of these may be <code>NULL</code> depending on the arguments used.</p>
+    <p>A vector of the averaged posterior.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
