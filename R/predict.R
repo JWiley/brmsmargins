@@ -111,16 +111,16 @@
 
   ## generate all predictions (if fixedonly or includeRE)
   ## or generate just the fixed effects predictions (if integrateRE)
-  posterior <- fitted(
+  yhat <- fitted(
     object = object, newdata = data,
     re_formula = useRE,
     scale = links$scale, dpar = dpar,
     draw_ids = index, summary = FALSE)
-  posterior <- links$ifun(posterior)
+  yhat <- links$ifun(yhat)
 
   if (isTRUE(effects == "integrateoutRE")) {
     if (isTRUE(links$ilink != "identity")) {
-      post <- as.data.table(posterior::as_draws_df(object))[index, ]
+      post <- as.data.table(as_draws_df(object))[index, ]
 
       dtmp <- make_standata(formula(object), data = data)
 
@@ -147,24 +147,24 @@
         names(d2)[i] <- names(sd)[i] <- names(L)[i] <- sprintf("Block%d", useblock)
       }
 
-      posterior <- integratere(d = d2, sd = sd, L = L, k = k,
-                               yhat = posterior, backtrans = links$ilinknum)
+      yhat <- integratere(d = d2, sd = sd, L = L, k = k,
+                               yhat = yhat, backtrans = links$ilinknum)
     }
   }
 
   ## average across rows
   ## either using row wise means, or row wise bootstrapped means
-  posterior <- .averagePosterior(posterior, resample = resample, seed = seed)
+  yhat <- .averagePosterior(yhat, resample = resample, seed = seed)
 
   out <- list(
     Summary = NULL,
     Posterior = NULL)
 
   if (isTRUE(summarize)) {
-    out$Summary <- bsummary(posterior, ...)
+    out$Summary <- bsummary(yhat, ...)
   }
   if (isTRUE(posterior)) {
-    out$Posterior <- posterior
+    out$Posterior <- yhat
   }
   return(out)
 }

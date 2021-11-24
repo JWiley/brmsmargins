@@ -62,7 +62,7 @@
 #' ## predictions + summary
 #' test1 <- brmsmargins:::.predict(mbin,
 #'          model.frame(mbin),
-#'          summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL,
+#'          summarize = TRUE, posterior = FALSE, dpar = NULL,
 #'          resample = 0L)
 #' test1
 #'
@@ -72,7 +72,7 @@
 #' ## not the bootstrapped
 #' test2 <- brmsmargins:::.predict(mbin,
 #'          model.frame(mbin),
-#'          summarize = TRUE, posterior = FALSE, dpar = NULL, re_formula = NULL,
+#'          summarize = TRUE, posterior = FALSE, dpar = NULL,
 #'          resample = 100L, seed = 1234)
 #' test2
 #'
@@ -116,18 +116,18 @@
 #' if (FALSE) {
 #'   library(lme4)
 #'   data(sleepstudy)
-#'   fit <- brms::brm(Reaction ~ 1 + Days + (1+ Days | Subject), 
+#'   fit <- brms::brm(Reaction ~ 1 + Days + (1+ Days | Subject),
 #'              data = sleepstudy,
 #'              cores = 4)
 #'
-#'   summary(fit)
+#'   summary(fit, prob = 0.99)
 #'
 #'   tmp <- brmsmargins(
 #'     object = fit,
 #'     at = data.table::data.table(Days = 0:1),
 #'     contrasts = matrix(c(-1, 1), nrow = 2),
 #'     ROPE = c(-.05, +.05),
-#'     MID = c(-.10, +.10))
+#'     MID = c(-.10, +.10), CIType = "ETI", effects = "integrateoutRE", k = 5L)
 #'
 #'   tmp$Summary
 #'   tmp$ContrastSummary
@@ -137,9 +137,6 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
                         CI = .99, CIType = "HDI", contrasts = NULL,
                         ROPE = NULL, MID = NULL, subset = NULL, ...) {
   .assertbrmsfit(object)
-  if (isTRUE(is.random(oject))) {
-    stop("The brmsmargins function does not currently support models with random effects.")
-  }
   chknewdata <- .checktab(newdata)
   if (isTRUE(nzchar(chknewdata))) {
     stop(paste0("newdata: ", chknewdata))
