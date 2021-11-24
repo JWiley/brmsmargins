@@ -213,13 +213,13 @@ is.random <- function(object) {
     ## predictions on the original response scale
     ## in this case we need to proceed differently depending on
     ## the 'effect' argument
-    if (isTRUE(effect %in% c("fixedonly", "includeRE"))) {
+    if (isTRUE(effects %in% c("fixedonly", "includeRE"))) {
       ## for both these 'effects' we can rely on fitted()
       ## to apply the correct back transformation, so we
       ## do not need to do anything other than set scale to "response"
       scale <- "response"
       inverselink <- "identity"
-    } else if (isTRUE(effect == "integrateoutRE")) {
+    } else if (isTRUE(effects == "integrateoutRE")) {
       ## when integrating out random effects
       ## we cannot rely on backtransformation being handled
       ## by fitted(), so we must do it manually
@@ -251,6 +251,13 @@ is.random <- function(object) {
                            invlogit = 0L,
                            exp = 1L,
                            square = 2L)
+
+  ## when integrating out REs, need to use identity inversefun
+  ## because the back transformation happens in C++ via inverselinknum
+  if (isTRUE(effects == "integrateoutRE")) {
+    inversefun <- function(x) x
+  }
+
   list(
     scale = scale,
     ilink = inverselink,

@@ -56,7 +56,18 @@
 ## object <- JWileymisc::readRDSfst("../mixedlogit.RDS")
 ## data <- model.frame(object)[1:2, ]
 ## data$x <- c(0, 1)
-## system.time(test <- .predict(object = object, data = data, k = 1000L, index = 1:4000))
+## system.time(test0 <- .predict(object = object, data = data[1, ], posterior = TRUE,
+##                              effects = "integrateoutRE", k = 1000L, index = 1:4000))
+## system.time(test1 <- .predict(object = object, data = data[2, ], posterior = TRUE,
+##                              effects = "integrateoutRE", k = 1000L, index = 1:4000))
+## system.time(test0f <- .predict(object = object, data = data[1, ], posterior = TRUE,
+##                              effects = "fixedonly", k = 1000L, index = 1:4000))
+## system.time(test1f <- .predict(object = object, data = data[2, ], posterior = TRUE,
+##                              effects = "fixedonly", k = 1000L, index = 1:4000))
+## system.time(test0re <- .predict(object = object, data = data[1, ], posterior = TRUE,
+##                              effects = "includeRE", k = 1000L, index = 1:4000))
+## system.time(test1re <- .predict(object = object, data = data[2, ], posterior = TRUE,
+##                              effects = "includeRE", k = 1000L, index = 1:4000))
 .predict <- function(object, data, summarize = TRUE, posterior = FALSE,
                      index, dpar = NULL, resample = 0L, seed = FALSE,
                      effects = c("fixedonly", "includeRE", "integrateoutRE"),
@@ -143,7 +154,7 @@
 
   ## average across rows
   ## either using row wise means, or row wise bootstrapped means
-  posterior <- averagePosterior(posterior, resample = resample, seed = seed)
+  posterior <- .averagePosterior(posterior, resample = resample, seed = seed)
 
   out <- list(
     Summary = NULL,
