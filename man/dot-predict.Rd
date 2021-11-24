@@ -9,10 +9,13 @@
   data,
   summarize = TRUE,
   posterior = FALSE,
+  index,
   dpar = NULL,
-  re_formula = NULL,
   resample = 0L,
-  seed,
+  seed = FALSE,
+  effects = c("fixedonly", "includeRE", "integrateoutRE"),
+  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square"),
+  k = 100L,
   ...
 )
 }
@@ -31,20 +34,44 @@ save and return the posterior samples. Defaults
 to \code{FALSE} as the assumption is a typical
 use case is to return the summaries only.}
 
-\item{dpar}{Parameter passed on the \code{dpar}
-argument of \code{fitted()} in brms.}
+\item{index}{An optional integer vector, giving the posterior draws
+to be used in the calculations. If omitted, defaults to all
+posterior draws.}
 
-\item{re_formula}{Parameter passed on the \code{re_formula}
-argument of \code{fitted()} in brms.}
+\item{dpar}{Parameter passed on the \code{dpar}
+argument of \code{fitted()} in brms. Defaults to \code{NULL}
+indicating the mean or location parameter typically.}
 
 \item{resample}{An integer indicating the number of
 bootstrap resamples of the posterior predictions to
 use when calculating summaries. Defaults to \code{0L}.
-See the details section for more informations as its implementation
-is experimental and it may not operate as one would expect.}
+See documentation from \code{\link[=.averagePosterior]{.averagePosterior()}} for more details.}
 
-\item{seed}{A seed for random number generation. Missing by default.
-Only needed if \code{resample} is a non zero integer.}
+\item{seed}{A seed for random number generation. Defaults to \code{FALSE},
+which means no seed is set.
+Only used if \code{resample} is a positive, non-zero integer.
+See documentation from \code{\link[=.averagePosterior]{.averagePosterior()}} for more details.}
+
+\item{effects}{A character string indicating the type of
+prediction to be made. Can be one of
+\dQuote{fixedonly} meaning only use fixed effects,
+\dQuote{includeRE} meaning that random effects should be
+included in the predictions, or
+\dQuote{integrateoutRE} meaning that random effects should be
+integrated out / over in the predictions.}
+
+\item{backtrans}{A character string indicating the type of
+back transformation to be applied. Can be one of
+\dQuote{response} meaning to use the response scale,
+\dQuote{linear} or \dQuote{identity} meaning to use the linear predictor scale,
+or a specific back transformation desired, from a possible list of
+\dQuote{invlogit}, \dQuote{exp}, or \dQuote{square}.
+Custom back transformations should only be needed if, for example,
+the outcome variable was transformed prior to fitting the model.}
+
+\item{k}{An integer providing the number of random draws to use for
+integrating out the random effects. Only relevant when \code{effects}
+is \dQuote{integrateoutRE}.}
 
 \item{...}{Additional arguments passed to \code{fitted()}}
 }
