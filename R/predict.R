@@ -13,12 +13,12 @@
 #'   save and return the posterior samples. Defaults
 #'   to \code{FALSE} as the assumption is a typical
 #'   use case is to return the summaries only.
+#' @param index An optional integer vector, giving the posterior draws
+#'   to be used in the calculations. If omitted, defaults to all
+#'   posterior draws.
 #' @param dpar Parameter passed on the \code{dpar}
-#'   argument of \code{fitted()} in brms.
-#' @param re_formula Parameter passed on the \code{re_formula}
-#'   argument of \code{fitted()} in brms. Defaults to \code{NA}
-#'   meaning that no random effects should be used.
-#'   Irrelevant in models without any random effects.
+#'   argument of \code{fitted()} in brms. Defaults to \code{NULL}
+#'   indicating the mean or location parameter typically.
 #' @param resample An integer indicating the number of
 #'   bootstrap resamples of the posterior predictions to
 #'   use when calculating summaries. Defaults to \code{0L}.
@@ -27,6 +27,24 @@
 #'   which means no seed is set.
 #'   Only used if \code{resample} is a positive, non-zero integer.
 #'   See documentation from [.averagePosterior()] for more details.
+#' @param effects A character string indicating the type of
+#'   prediction to be made. Can be one of
+#'   \dQuote{fixedonly} meaning only use fixed effects,
+#'   \dQuote{includeRE} meaning that random effects should be
+#'   included in the predictions, or
+#'   \dQuote{integrateoutRE} meaning that random effects should be
+#'    integrated out / over in the predictions.
+#' @param backtrans A character string indicating the type of
+#'   back transformation to be applied. Can be one of
+#'   \dQuote{response} meaning to use the response scale,
+#'   \dQuote{linear} or \dQuote{identity} meaning to use the linear predictor scale,
+#'   or a specific back transformation desired, from a possible list of
+#'   \dQuote{invlogit}, \dQuote{exp}, or \dQuote{square}.
+#'   Custom back transformations should only be needed if, for example,
+#'   the outcome variable was transformed prior to fitting the model.
+#' @param k An integer providing the number of random draws to use for
+#'   integrating out the random effects. Only relevant when \code{effects}
+#'   is \dQuote{integrateoutRE}.
 #' @param ... Additional arguments passed to \code{fitted()}
 #' @return A list with \code{Summary} and \code{Posterior}.
 #'   Some of these may be \code{NULL} depending on the arguments used.
@@ -41,63 +59,56 @@
 ## system.time(test <- .predict(object = object, data = data, k = 1000L, index = 1:4000))
 .predict <- function(object, data, summarize = TRUE, posterior = FALSE,
                      index, dpar = NULL, resample = 0L, seed = FALSE,
-                     integrateoutRE = is.random(object),
-                     backtrans = NULL, k = 100L, re_formula = NA, ...) {
+                     effects = c("fixedonly", "includeRE", "integrateoutRE"),
+                     backtrans = c("response", "linear", "identity", "invlogit", "exp", "square"),
+                     k = 100L, ...) {
+  ## checks and assertions
   .assertbrmsfit(object)
 
-  if (isTRUE(missingArg(index))) {
-    index <- seq_len(ndraws(object))
-  }
-
-  if (isFALSE(integrateoutRE)) {
-  posterior <- fitted(
-    object = object, newdata = data,
-    re_formula = re_formula, scale = "response", dpar = dpar,
-    draw_ids = index, summary = FALSE)
-  }
-
-  if (isTRUE(integrateoutRE)) {
-    ## this function only for random effect models
-    if (isFALSE(is.random(object))) {
-      stop("integrateoutRE can only be TRUE for models with random effects")
+  if (isFALSE(is.random(object))) {
+    if (isFALSE(effects == "fixedonly")) {
+      stop("object does not have random effects: must use \"effects = 'fixedonly'\"")
     }
+  }
 
+  effects <- match.arg(effects, several.ok = FALSE)
+  backtrans <- match.arg(backtrans, several.ok = FALSE)
+
+  if (isTRUE(effects == "integrateoutRE")) {
     ## assert the assumed family / distribution is a supported one
     .assertfamily(object)
     ## assert the link function used is a supported one
     .assertlink(object)
     ## assert that all random effects in the model are Gaussian
     .assertgaussian(object)
+  }
 
-    ## back transformation
-    if (is.null(backtrans)) {
-      if (object$family$link == "identity") {
-        backtrans <- "identity"
-      }
-      if (object$family$link == "logit") {
-        backtrans <- "invlogit"
-      }
-      if (object$family$link == "log") {
-        backtrans <- "exp"
-      }
-      ## if (object$family$link == "sqrt") {
-      ##   backtrans <- "square"
-      ## }
-    }
-    stopifnot(backtrans %in% c("identity", "invlogit", "exp", "square"))
+  if (isTRUE(missingArg(index))) {
+    index <- seq_len(ndraws(object))
+  }
 
-    backtransnum <- switch(backtrans,
-                           identity = NA_integer_,
-                           invlogit = 0L,
-                           exp = 1L,
-                           square = 2L)
+  links <- .links(link = object$family$link,
+    effects = effects, backtrans = backtrans)
 
-    posterior <- fitted(
-      object = object, newdata = data,
-      re_formula = NA, scale = "linear", dpar = dpar,
-      draw_ids = index, summary = FALSE)
+  ## set whether fitted() should include RE (NULL) or not (NA)
+  ## see help for ?fitted.brmsfit for more details
+  if (isTRUE(effects %in% c("fixedonly", "integrateoutRE"))) {
+    useRE <- NA
+  } else if (isTRUE(effects == "includeRE")) {
+    useRE <- NULL
+  }
 
-    if (isTRUE(backtrans != "identity")) {
+  ## generate all predictions (if fixedonly or includeRE)
+  ## or generate just the fixed effects predictions (if integrateRE)
+  posterior <- fitted(
+    object = object, newdata = data,
+    re_formula = useRE,
+    scale = links$scale, dpar = dpar,
+    draw_ids = index, summary = FALSE)
+  posterior <- links$ifun(posterior)
+
+  if (isTRUE(effects == "integrateoutRE")) {
+    if (isTRUE(links$ilink != "identity")) {
       post <- as.data.table(posterior::as_draws_df(object))[index, ]
 
       dtmp <- make_standata(formula(object), data = data)
@@ -126,10 +137,12 @@
       }
 
       posterior <- integratere(d = d2, sd = sd, L = L, k = k,
-                               yhat = posterior, backtrans = backtransnum)
+                               yhat = posterior, backtrans = links$ilinknum)
     }
   }
 
+  ## average across rows
+  ## either using row wise means, or row wise bootstrapped means
   posterior <- averagePosterior(posterior, resample = resample, seed = seed)
 
   out <- list(

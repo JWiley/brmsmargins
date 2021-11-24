@@ -179,3 +179,81 @@ is.random <- function(object) {
 
   isTRUE(nrow(object$ranef) >= 1L)
 }
+
+
+#' Internal function to build out scale, inverselink and function
+#'
+#' Internal utility function used in \code{.predict()}
+#'
+#' @param link The link named in a \code{brmsfit} object
+#' @param effects A character string, the type of effect desired
+#' @param backtrans A character string, the type of back transformation
+#' @return A list. TODO.
+#' @keywords internal
+.links <- function(link,
+                   effects = c("fixedonly", "includeRE", "integrateoutRE"),
+                   backtrans = c("response", "linear", "identity", "invlogit", "exp", "square")) {
+  effects <- match.arg(effects, several.ok = FALSE)
+  backtrans <- match.arg(backtrans, several.ok = FALSE)
+
+  if (isTRUE(backtrans %in% c("linear", "identity"))) {
+    ## options if back transformation is linear (meaning on linear scale)
+    ## or identity, meaning no back transformation
+    ## either way we do the same thing which is nothing
+    scale <- "linear"
+    inverselink <- "identity"
+  } else if (isTRUE(backtrans %in% c("invlogit", "exp", "square"))) {
+    ## options if back transformations were custom specified
+    ## in these cases we get predictions on linear scale
+    ## and then manually apply back transformation
+    scale <- "linear"
+    inverselink <- backtrans
+  } else if (isTRUE(backtrans %in% "response")) {
+    ## options for when using the generic asking for
+    ## predictions on the original response scale
+    ## in this case we need to proceed differently depending on
+    ## the 'effect' argument
+    if (isTRUE(effect %in% c("fixedonly", "includeRE"))) {
+      ## for both these 'effects' we can rely on fitted()
+      ## to apply the correct back transformation, so we
+      ## do not need to do anything other than set scale to "response"
+      scale <- "response"
+      inverselink <- "identity"
+    } else if (isTRUE(effect == "integrateoutRE")) {
+      ## when integrating out random effects
+      ## we cannot rely on backtransformation being handled
+      ## by fitted(), so we must do it manually
+      scale <- "linear"
+      if (isTRUE(link == "identity")) {
+        inverselink <- "identity"
+      } else if (isTRUE(link == "logit")) {
+        inverselink <- "invlogit"
+      } else if (isTRUE(link == "log")) {
+        inverselink <- "exp"
+      } else if (isTRUE(link == "sqrt")) {
+        inverselink <- "square"
+      } else {
+        stop("non supported link function detected for integrating out REs")
+      }
+    }
+  }
+
+  ## inverse link function
+  inversefun <- switch(inverselink,
+                       identity = function(x) x,
+                       invlogit = plogis,
+                       exp = exp,
+                       square = function(x) x^2)
+
+  ## argument for integratere() C++ function
+  inverselinknum <- switch(inverselink,
+                           identity = -9L,
+                           invlogit = 0L,
+                           exp = 1L,
+                           square = 2L)
+  list(
+    scale = scale,
+    ilink = inverselink,
+    ifun = inversefun,
+    ilinknum = inverselinknum)
+}
