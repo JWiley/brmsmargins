@@ -4,7 +4,7 @@
 \alias{bsummary}
 \title{A Personal Preference Based Bayesian Summary Function}
 \usage{
-bsummary(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL)
+bsummary(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL)
 }
 \arguments{
 \item{x}{The posterior distribution of a parameter}
@@ -18,7 +18,7 @@ to be replicated.
 In any case, users should ideally specify a desired CI width, and not rely on
 defaults.}
 
-\item{type}{A character string indicating the type of credible interval, passed on
+\item{CIType}{A character string indicating the type of credible interval, passed on
 to the \code{\link[bayestestR]{ci}} function as the method for CIs.}
 
 \item{ROPE}{Either left as \code{NULL}, the default, or a numeric vector of

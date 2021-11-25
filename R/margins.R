@@ -191,9 +191,10 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
       for (v in names(at)) {
         newdata[, (v) := at[i, get(v)]]
       }
-      out[[i]] <- .predict(object, data = newdata,
-                           ROPE = ROPE, MID = MID,
-                           posterior = TRUE, ...)
+      out[[i]] <- .predict(
+        object, data = newdata,
+        ROPE = ROPE, MID = MID, posterior = TRUE,
+        CI = CI, CIType = CIType, ...)
     }
 
     post <- do.call(cbind, lapply(out, `[[`, "Posterior"))
@@ -211,9 +212,10 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
         value <- add[i, get(v)]
         tmp[, (v) := get(v) + value]
       }
-      out[[i]] <- .predict(object, data = tmp,
-                           ROPE = ROPE, MID = MID,
-                           posterior = TRUE, ...)
+      out[[i]] <- .predict(
+        object, data = tmp,
+        ROPE = ROPE, MID = MID, posterior = TRUE,
+        CI = CI, CIType = CIType, ...)
     }
 
     post <- do.call(cbind, lapply(out, `[[`, "Posterior"))
@@ -226,7 +228,7 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
   if (isFALSE(is.null(contrasts))) {
     res <- post %*% contrasts
     contrastsum <- apply(res, 2, bsummary,
-          CI = CI, type = CIType,
+          CI = CI, CIType = CIType,
           ROPE = ROPE, MID = MID)
     contrastsum <- do.call(rbind, contrastsum)
     contrastsum[, Label := colnames(contrasts)]

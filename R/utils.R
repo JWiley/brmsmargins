@@ -68,7 +68,7 @@
 #'   to be replicated.
 #'   In any case, users should ideally specify a desired CI width, and not rely on
 #'   defaults.
-#' @param type A character string indicating the type of credible interval, passed on
+#' @param CIType A character string indicating the type of credible interval, passed on
 #'   to the \code{\link[bayestestR]{ci}} function as the method for CIs.
 #' @param ROPE Either left as \code{NULL}, the default, or a numeric vector of
 #'   length 2, specifying the lower and upper thresholds for the
@@ -101,13 +101,13 @@
 #' bsummary(rnorm(10000))
 #'
 #' bsummary(rnorm(10000), ROPE = c(-.5, .5), MID = c(-1, 1))
-bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
+bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
   ropes <- .percent(x, window = ROPE, within = TRUE)
   mids <- .percent(x, window = MID, within = FALSE)
 
   m <- mean(x, na.rm = TRUE)
   mdn <- median(x, na.rm = TRUE)
-  cis <- bayestestR::ci(x, ci = CI, method = type)
+  cis <- bayestestR::ci(x, ci = CI, method = CIType)
   out <- data.table(
     M = m,
     Mdn = mdn,
@@ -116,7 +116,7 @@ bsummary <- function(x, CI = 0.99, type = "HDI", ROPE = NULL, MID = NULL) {
     PercentROPE = ropes$Percent,
     PercentMID = mids$Percent,
     CI = CI,
-    CIType = type,
+    CIType = CIType,
     ROPE = ropes$Label,
     MID = mids$Label)
 
