@@ -1,0 +1,473 @@
+---
+title: "Marginal Effects for Mixed Effects Models"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Marginal Effects for Fixed Effects Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+
+```r
+library(knitr)
+library(data.table)
+library(brms)
+library(brmsmargins)
+```
+
+This vignette provides a brief overview of how to calculate 
+marginal effects for Bayesian regression models involving 
+only mixed effects (i.e., fixed and random) and fit using 
+the `brms` package.
+
+A simpler introduction and very brief overview and motivation
+is available in the vignette for fixed effects only.
+When there are fixed and random effects, calculating 
+average marginal effects (AMEs) is more complicated. 
+Generally, predictions are **conditional** on the random effects.
+To deal with this, we need to integrate out the random effects 
+for every prediction. Please note that this is quite computationally 
+demanding, at least as currently implemented.
+For every predicted value and each posterior draw, 
+random samples from the model estimated random effects distribution are drawn, 
+added, back transformed, and averaged.
+
+Thus, if you wanted AMEs across a dataset of 1,000 people, 
+with 2,000 posterior draws, and you wanted to use 100 points for the 
+numerical integration, a total of 200 million (1,000 x 2,000 x 100) 
+values are calculated. The monte carlo integration is implemented in C++
+code to try to help speed up the process, but it is not "quick"
+and also may be memory intensive.
+
+Because of the complexity involved, only limited types of mixed effects
+models are supported.
+
+
+## AMEs for Mixed Effects Logistic Regression
+
+We will simulate some multilevel binary data for our 
+mixed effects logistic regression model with individual differences
+in both the intercept and slope.
+
+
+```r
+d <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + 1
+    d <- data.table(
+      x = rep(rep(0:1, each = nObs / 2), times = nGroups))
+    d[, ID := rep(seq_len(nGroups), each = nObs)]
+
+    for (i in seq_len(nGroups)) {
+      d[ID == i, y := rbinom(
+        n = nObs,
+        size = 1,
+        prob = plogis(theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(d)
+  })
+
+mlogit <- brms::brm(
+  y ~ 1 + x + (1 + x | ID), family = "bernoulli",
+  data = d, seed = 1234,
+  silent = 2, refresh = 0,
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+#> Compiling Stan program...
+```
+
+
+
+```r
+summary(mlogit)
+#>  Family: bernoulli 
+#>   Links: mu = logit 
+#> Formula: y ~ 1 + x + (1 + x | ID) 
+#>    Data: d (Number of observations: 2000) 
+#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Group-Level Effects: 
+#> ~ID (Number of levels: 100) 
+#>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> sd(Intercept)        1.18      0.19     0.85     1.59 1.00     1371     2302
+#> sd(x)                0.53      0.28     0.04     1.07 1.01      338     1039
+#> cor(Intercept,x)    -0.18      0.42    -0.83     0.81 1.00     1444     1313
+#> 
+#> Population-Level Effects: 
+#>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept    -2.47      0.19    -2.87    -2.13 1.00     1678     2281
+#> x             0.95      0.19     0.60     1.33 1.00     3021     2803
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+
+Now we can use `brmsmargins()`. By default, it will 
+only use the fixed effects. To integrate out random effects,
+we specify `effects = "integrateoutRE"`. The number of 
+values used for numerical integration are set via the argument, `k`,
+here `k = 100L`, the default. 
+More details are in: `?brmsmargins:::.predict`
+
+
+```r
+h <- .001
+ame1 <- brmsmargins(
+  mlogit,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.111| 0.111| 0.058| 0.168|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+We can follow a similar process getting discrete predictions at 
+x held at 0 or 1. In this instance, the summary of 
+predictions is more interesting as well, since they are at meaningfully
+different values of `x`. They also agree quite closely with the 
+average probability at different `x` values calculated in the data.
+
+
+```r
+ame2 <- brmsmargins(
+  mlogit,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+```
+
+Here is a summary of the predictions.
+
+
+```r
+knitr::kable(ame2$Summary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
+| 0.119| 0.118| 0.076| 0.174|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.230| 0.229| 0.163| 0.306|          NA|         NA| 0.99|HDI    |NA   |NA  |
+
+
+```r
+knitr::kable(ame2$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.111| 0.11| 0.061| 0.172|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+
+```r
+knitr::kable(d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x])
+```
+
+
+
+|  x|     M|
+|--:|-----:|
+|  0| 0.117|
+|  1| 0.228|
+
+Note that when integrating out random effects, the random seed is
+quite important. If the `seed` argument is not specified,
+`brmsmargins()` will randomly select one. This would not matter 
+when generating predictions only from fixed effects, but when 
+using random samples to integrate out random effects, if different 
+random seeds are used for different predictions, you would expect
+some (small) differences even for the same input data for prediction.
+This may not be an issue for predictions on their own. However,
+when numerically approximating a derivative by a very small difference 
+in predictions, such as with `h = .001` tiny differences are magnified.
+To see the impact, consider this example where we explicitly set multiple
+random seeds, one for each row of the data used for predictions.
+In both cases, we use exactly `x = 0`, so the difference is due to 
+Monte Carlo variation only, but with `k = 10L` the small error, 
+when divided by `h = .001` becomes very large, impossibly so.
+
+
+```r
+h <- .001
+ame.error <- brmsmargins(
+  mlogit,
+  add = data.frame(x = c(0, 0)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 10L, seed = c(1234, 54321))
+
+knitr::kable(ame.error$ContrastSummary, digits = 3)
+```
+
+
+
+|      M|    Mdn|       LL|      UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|------:|------:|--------:|-------:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| -0.679| -0.951| -165.694| 169.524|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+This disappears when we use the same seed for each row of the data 
+used for predictions. Here we get all zeros for the difference, as 
+we would expect. Note that you do not need to specify a seed for each
+row of the data. You can specify one seed (or rely on `brmsmargins()` default),
+which will then be used for all rows of the data.
+
+
+```r
+h <- .001
+ame.noerror <- brmsmargins(
+  mlogit,
+  add = data.frame(x = c(0, 0)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 10L, seed = c(1234, 1234))
+
+knitr::kable(ame.noerror$ContrastSummary, digits = 3)
+```
+
+
+
+|  M| Mdn| LL| UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|--:|---:|--:|--:|-----------:|----------:|----:|:------|:----|:---|:-----|
+|  0|   0|  0|  0|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+## AMEs for Mixed Effects Poisson Regression
+
+We will simulate some multilevel poisson data for our 
+mixed effects poisson regression model with individual differences
+in both the intercept and slope.
+
+
+```r
+dpoisson <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + 1
+    d <- data.table(
+      x = rep(rep(0:1, each = nObs / 2), times = nGroups))
+    d[, ID := rep(seq_len(nGroups), each = nObs)]
+
+    for (i in seq_len(nGroups)) {
+      d[ID == i, y := rpois(
+        n = nObs,
+        lambda = exp(theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(d)
+  })
+
+mpois <- brms::brm(
+  y ~ 1 + x + (1 + x | ID), family = "poisson",
+  data = dpoisson, seed = 1234,
+  chains = 4L, cores = 4L, backend = "cmdstanr",
+  silent = 2, refresh = 0)
+#> Compiling Stan program...
+#> 
+#> Warning: 9 of 4000 (0.0%) transitions ended with a divergence.
+#> This may indicate insufficient exploration of the posterior distribution.
+#> Possible remedies include: 
+#>   * Increasing adapt_delta closer to 1 (default is 0.8) 
+#>   * Reparameterizing the model (e.g. using a non-centered parameterization)
+#>   * Using informative or weakly informative prior distributions
+```
+
+
+```r
+summary(mpois)
+#> Warning: There were 9 divergent transitions after warmup. Increasing adapt_delta
+#> above may help. See http://mc-stan.org/misc/warnings.html#divergent-transitions-
+#> after-warmup
+#>  Family: poisson 
+#>   Links: mu = log 
+#> Formula: y ~ 1 + x + (1 + x | ID) 
+#>    Data: dpoisson (Number of observations: 2000) 
+#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Group-Level Effects: 
+#> ~ID (Number of levels: 100) 
+#>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> sd(Intercept)        1.18      0.15     0.91     1.50 1.00     1064     1495
+#> sd(x)                0.36      0.19     0.02     0.75 1.02      250      711
+#> cor(Intercept,x)    -0.04      0.41    -0.73     0.85 1.01     1426     1516
+#> 
+#> Population-Level Effects: 
+#>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept    -2.46      0.18    -2.82    -2.13 1.00     1338     1819
+#> x             0.97      0.15     0.67     1.27 1.00     2419     2022
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+We use `brmsmargins()` in the same way as for the mixed effects logistic regression.
+Here is an example with a numeric derivative treating `x` as continuous.
+
+
+```r
+h <- .001
+ame1.pois <- brmsmargins(
+  mpois,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1.pois$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.333| 0.311| 0.134| 0.729|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+Here is an example treating `x` as discrete.
+
+
+```r
+ame2.pois <- brmsmargins(
+  mpois,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame2.pois$ContrastSummary)
+```
+
+
+
+|         M|       Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|---------:|---------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.2954291| 0.2792047| 0.1133311| 0.6067961|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+
+## AMEs for Mixed Effects Negative Binomial Regression
+
+Negative binomial models work the same way as for poisson models.
+We use the same dataset, just for demonstration.
+
+
+```r
+mnb <- brms::brm(
+  y ~ 1 + x + (1 + x | ID), family = "negbinomial",
+  data = dpoisson, seed = 1234,
+  chains = 4L, cores = 4L, backend = "cmdstanr",
+  silent = 2, refresh = 0)
+#> Compiling Stan program...
+#> 
+#> Warning: 36 of 4000 (1.0%) transitions ended with a divergence.
+#> This may indicate insufficient exploration of the posterior distribution.
+#> Possible remedies include: 
+#>   * Increasing adapt_delta closer to 1 (default is 0.8) 
+#>   * Reparameterizing the model (e.g. using a non-centered parameterization)
+#>   * Using informative or weakly informative prior distributions
+```
+
+
+```r
+summary(mnb)
+#> Warning: There were 36 divergent transitions after warmup. Increasing
+#> adapt_delta above may help. See http://mc-stan.org/misc/warnings.html#divergent-
+#> transitions-after-warmup
+#>  Family: negbinomial 
+#>   Links: mu = log; shape = identity 
+#> Formula: y ~ 1 + x + (1 + x | ID) 
+#>    Data: dpoisson (Number of observations: 2000) 
+#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Group-Level Effects: 
+#> ~ID (Number of levels: 100) 
+#>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> sd(Intercept)        1.18      0.15     0.91     1.49 1.00      685     1459
+#> sd(x)                0.36      0.20     0.02     0.75 1.03      258      552
+#> cor(Intercept,x)    -0.06      0.42    -0.76     0.85 1.01     1323     1070
+#> 
+#> Population-Level Effects: 
+#>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept    -2.47      0.18    -2.85    -2.13 1.00      772     1423
+#> x             0.97      0.15     0.67     1.28 1.00     1850     1493
+#> 
+#> Family Specific Parameters: 
+#>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> shape    63.13     65.94     8.01   252.42 1.00     3422     2603
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+We use `brmsmargins()` in the same way as for the mixed effects poisson regression.
+Here is an example with a numeric derivative treating `x` as continuous.
+
+
+```r
+h <- .001
+ame1.nb <- brmsmargins(
+  mnb,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1.nb$ContrastSummary, digits = 3)
+```
+
+
+
+|    M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.33| 0.312| 0.137| 0.689|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+Here is an example treating `x` as discrete.
+
+
+```r
+ame2.nb <- brmsmargins(
+  mnb,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame2.nb$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.292| 0.279| 0.125| 0.59|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |

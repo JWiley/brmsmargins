@@ -124,6 +124,21 @@ uncertainty." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/fixed-effects-marginaleffects.html">Marginal Effects for Fixed Effects Models</a>
+    </li>
+    <li>
+      <a href="../articles/mixed-effects-marginaleffects.html">Marginal Effects for Mixed Effects Models</a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
@@ -170,7 +185,7 @@ important, which is distinct from the ROPE or general credible intervals capturi
 uncertainty.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>bsummary</span><span class='op'>(</span><span class='va'>x</span>, CI <span class='op'>=</span> <span class='fl'>0.99</span>, type <span class='op'>=</span> <span class='st'>"HDI"</span>, ROPE <span class='op'>=</span> <span class='cn'>NULL</span>, MID <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>bsummary</span><span class='op'>(</span><span class='va'>x</span>, CI <span class='op'>=</span> <span class='fl'>0.99</span>, CIType <span class='op'>=</span> <span class='st'>"HDI"</span>, ROPE <span class='op'>=</span> <span class='cn'>NULL</span>, MID <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -191,7 +206,7 @@ In any case, users should ideally specify a desired CI width, and not rely on
 defaults.</p></td>
     </tr>
     <tr>
-      <th>type</th>
+      <th>CIType</th>
       <td><p>A character string indicating the type of credible interval, passed on
 to the <code><a href='https://easystats.github.io/bayestestR/reference/ci.html'>ci</a></code> function as the method for CIs.</p></td>
     </tr>

@@ -65,6 +65,21 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/fixed-effects-marginaleffects.html">Marginal Effects for Fixed Effects Models</a>
+    </li>
+    <li>
+      <a href="articles/mixed-effects-marginaleffects.html">Marginal Effects for Mixed Effects Models</a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="news/index.html">Changelog</a>
 </li>
@@ -95,7 +110,30 @@
 
 
 <p>This package has functions to calculate Average Marginal Effects (AMEs) from <code>brms</code> models ( <a href="http://paul-buerkner.github.io/brms/" class="uri">http://paul-buerkner.github.io/brms/</a> ).</p>
-<p>Preliminary work has been done to implement integration over random effects that are (multivariate) normal to allow correct AMEs for models with fixed and random effects. Use this at your own risk as testing and evaluation is currently underway.</p>
+<p>The package is not yet on CRAN, so to install, you must use the development version. To install, run:</p>
+<pre><code>
+devtools::install_github("JWiley/brmsmargins")
+</code></pre>
+<p>The main function is <code><a href="reference/brmsmargins.html">brmsmargins()</a></code>. There is good support for single level models and a vignette for fixed effects only models including more details, motivation, and runnable examples. Here is simple example of how it may be run:</p>
+<pre><code>
+ames &lt;- brmsmargins(
+  object = mlogit,
+  at = data.table::data.table(x = 0:1),
+  contrasts = matrix(c(-1, 1), nrow = 2),
+  effects = "fixedonly")
+
+ames$Summary
+ames$ContrastSummary
+</code></pre>
+<p>Perhaps even more important than the work for single level models, <code><a href="reference/brmsmargins.html">brmsmargins()</a></code> has some support for AMEs with mixed effects / multilevel models. Specifically, for models with random effects that are (multivariate) normal, mixed effects logistic, poisson, and negative binomial models should be supported. Gaussian models with transformed outcomes (log, square root) are supported. For these models, <code><a href="reference/brmsmargins.html">brmsmargins()</a></code> should correctly integrate out the random effects, to give accurate point estimates and credible intervals.</p>
+<p>This is very much in development. Small scale simulations have been run showing accuracy of the results under select conditions, and some basic code tests are implemented. However, consider this alpha/beta features for now. There also is a vignette for mixed effects models with more examples and details, including code that can be run. Here is an example of how it may be run:</p>
+<pre><code>
+ames &lt;- brmsmargins(
+  object = mlogit,
+  at = data.table::data.table(x = 0:1),
+  contrasts = matrix(c(-1, 1), nrow = 2),
+  effects = "integrateoutRE", k = 100L)
+</code></pre>
 
   </div>
 

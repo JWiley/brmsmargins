@@ -1,6 +1,8 @@
 pandoc: 2.16.1
 pkgdown: 1.6.1
 pkgdown_sha: ~
-articles: {}
-last_built: 2021-11-24T09:19Z
+articles:
+  fixed-effects-marginaleffects: fixed-effects-marginaleffects.html
+  mixed-effects-marginaleffects: mixed-effects-marginaleffects.html
+last_built: 2021-11-26T20:25Z
 
