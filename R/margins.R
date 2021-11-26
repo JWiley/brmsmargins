@@ -40,6 +40,28 @@
 #' @param subset A character string that is a valid \code{R} expression
 #'   used to subset the dataset passed in \code{newdata},
 #'   prior to analysis. Defaults to \code{NULL}.
+#' @param seed Argument that controls whether (and if so what) random seed
+#'   to use. This does not matter when using fixed effects only. However,
+#'   when using Monte Carlo integration to integrate out random effects from
+#'   mixed effects models, it is critical if you are looking at a continuous
+#'   marginal effect with some small offset value as otherwise the
+#'   Monte Carlo error from one set of predictions to another may exceed
+#'   the true predicted difference.
+#'   If \code{seed} is left missing, the default, than a single, random integer
+#'   between +\- 1e7 is chosen and used to set the seed before each
+#'   prediction. If manually chosen (recommended for reproducibility),
+#'   the seed should either be a single value, in which case this single
+#'   value is used to set the seed before each prediction.
+#'   Alternately, it can be a vector of seeds with either the same length
+#'   as the number of rows in \code{at} or \code{add}, whichever was specified.
+#'   This is probably generally not what you want, as it means that even for
+#'   the same input data, you would get slightly different predictions
+#'   (when integrating out random effects) due to Monte Carlo variation.
+#'   Finally, rather than being missing, you can explicitly set
+#'   \code{seed = NULL}, if you do not want any seed to be set.
+#'   This would be fine, for instance, when only using fixed effects,
+#'   or if you know what you are doing and intend that behavior when
+#'   integrating out random effects.
 #' @param ... Additional arguments passed on to \code{\link{.predict}}.
 #' @importFrom stats model.frame
 #' @importFrom data.table as.data.table copy :=
@@ -135,13 +157,25 @@
 #' }
 brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(object),
                         CI = .99, CIType = "HDI", contrasts = NULL,
-                        ROPE = NULL, MID = NULL, subset = NULL, ...) {
+                        ROPE = NULL, MID = NULL, subset = NULL, seed, ...) {
   .assertbrmsfit(object)
   chknewdata <- .checktab(newdata)
   if (isTRUE(nzchar(chknewdata))) {
     stop(paste0("newdata: ", chknewdata))
   }
   newdata <- copy(as.data.table(newdata))
+
+  if (isFALSE(missingArg(seed))) {
+    if (isFALSE(is.null(seed))) {
+      stopifnot(
+        identical(length(seed), 1L) ||
+          identical(length(seed), nrow(at)) ||
+          identical(length(seed), nrow(add)))
+    }
+  } else if (isTRUE(missingArg(seed))) {
+    ## create a random seed somewhere between +/- 1e7
+    seed <- ceiling(runif(1, -1e7, 1e7))
+  }
 
   if (isFALSE(is.null(subset))) {
     if (isFALSE(is.character(subset))) {
@@ -191,6 +225,13 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
       for (v in names(at)) {
         newdata[, (v) := at[i, get(v)]]
       }
+      if (isFALSE(is.null(seed))) {
+        if (isTRUE(length(seed) > 1)) {
+          set.seed(seed[i])
+        } else {
+          set.seed(seed)
+        }
+      }
       out[[i]] <- .predict(
         object, data = newdata,
         ROPE = ROPE, MID = MID, posterior = TRUE,
@@ -211,6 +252,13 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
       for (v in names(add)) {
         value <- add[i, get(v)]
         tmp[, (v) := get(v) + value]
+      }
+      if (isFALSE(is.null(seed))) {
+        if (isTRUE(length(seed) > 1)) {
+          set.seed(seed[i])
+        } else {
+          set.seed(seed)
+        }
       }
       out[[i]] <- .predict(
         object, data = tmp,
