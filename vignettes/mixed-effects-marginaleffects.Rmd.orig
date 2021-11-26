@@ -102,47 +102,223 @@ Now we can use `brmsmargins()`. By default, it will
 only use the fixed effects. To integrate out random effects,
 we specify `effects = "integrateoutRE"`. The number of 
 values used for numerical integration are set via the argument, `k`,
-here `k = 1000L`, the default is `100L`. More details are in:
-`?brmsmargins:::.predict`
+here `k = 100L`, the default. 
+More details are in: `?brmsmargins:::.predict`
 
-Here
+```{r, results = 'asis'}
 
-```{r}
-
-h <- .01
+h <- .001
 ame1 <- brmsmargins(
   mlogit,
   add = data.frame(x = c(0, h)),
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
-  effects = "integrateoutRE", k = 1000L)
+  effects = "integrateoutRE", k = 100L, seed = 1234)
 
-ame1$Summary
+knitr::kable(ame1$ContrastSummary, digits = 3)
 
-summary(ame1$Posterior)
+```
 
-summary(ame1$Posterior[, 2] - ame1$Posterior[, 1])
+We can follow a similar process getting discrete predictions at 
+x held at 0 or 1. In this instance, the summary of 
+predictions is more interesting as well, since they are at meaningfully
+different values of `x`. They also agree quite closely with the 
+average probability at different `x` values calculated in the data.
 
-hist(ame1$Posterior[, 2] - ame1$Posterior[, 1])
-
-hist((ame1$Posterior[, 2] - ame1$Posterior[, 1]) / h, breaks = 50)
-
-hist((ame2$Posterior[, 2] - ame2$Posterior[, 1]), breaks = 50)
-
-summary((ame1$Posterior[, 2] - ame1$Posterior[, 1]) / h)
-summary((ame1$Posterior[, 2] - ame1$Posterior[, 1]) / h)
-
-summary(ame1$Contrasts)
-ame1$ContrastSummary
+```{r}
 
 ame2 <- brmsmargins(
   mlogit,
   at = data.frame(x = c(0, 1)),
   contrasts = cbind("AME x" = c(-1, 1)),
-  effects = "integrateoutRE", k = 100L)
+  effects = "integrateoutRE", k = 100L, seed = 1234)
 
-ame2$Summary
-ame2$ContrastSummary
+```
 
-d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x]
+Here is a summary of the predictions.
+
+```{r, results = 'asis'}
+
+knitr::kable(ame2$Summary, digits = 3)
+
+```
+
+```{r, results = 'asis'}
+
+knitr::kable(ame2$ContrastSummary, digits = 3)
+
+```
+
+```{r, results = 'asis'}
+
+knitr::kable(d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x])
+
+```
+
+Note that when integrating out random effects, the random seed is
+quite important. If the `seed` argument is not specified,
+`brmsmargins()` will randomly select one. This would not matter 
+when generating predictions only from fixed effects, but when 
+using random samples to integrate out random effects, if different 
+random seeds are used for different predictions, you would expect
+some (small) differences even for the same input data for prediction.
+This may not be an issue for predictions on their own. However,
+when numerically approximating a derivative by a very small difference 
+in predictions, such as with `h = .001` tiny differences are magnified.
+To see the impact, consider this example where we explicitly set multiple
+random seeds, one for each row of the data used for predictions.
+In both cases, we use exactly `x = 0`, so the difference is due to 
+Monte Carlo variation only, but with `k = 10L` the small error, 
+when divided by `h = .001` becomes very large, impossibly so.
+
+```{r, results = 'asis'}
+
+h <- .001
+ame.error <- brmsmargins(
+  mlogit,
+  add = data.frame(x = c(0, 0)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 10L, seed = c(1234, 54321))
+
+knitr::kable(ame.error$ContrastSummary, digits = 3)
+
+```
+
+This disappears when we use the same seed for each row of the data 
+used for predictions. Here we get all zeros for the difference, as 
+we would expect. Note that you do not need to specify a seed for each
+row of the data. You can specify one seed (or rely on `brmsmargins()` default),
+which will then be used for all rows of the data.
+
+```{r, results = 'asis'}
+
+h <- .001
+ame.noerror <- brmsmargins(
+  mlogit,
+  add = data.frame(x = c(0, 0)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 10L, seed = c(1234, 1234))
+
+knitr::kable(ame.noerror$ContrastSummary, digits = 3)
+
+```
+
+## AMEs for Mixed Effects Poisson Regression
+
+We will simulate some multilevel poisson data for our 
+mixed effects poisson regression model with individual differences
+in both the intercept and slope.
+
+```{r}
+
+dpoisson <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + 1
+    d <- data.table(
+      x = rep(rep(0:1, each = nObs / 2), times = nGroups))
+    d[, ID := rep(seq_len(nGroups), each = nObs)]
+
+    for (i in seq_len(nGroups)) {
+      d[ID == i, y := rpois(
+        n = nObs,
+        lambda = exp(theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(d)
+  })
+
+mpois <- brms::brm(
+  y ~ 1 + x + (1 + x | ID), family = "poisson",
+  data = dpoisson, seed = 1234,
+  chains = 4L, cores = 4L, backend = "cmdstanr",
+  silent = 2, refresh = 0)
+
+summary(mpois)
+
+```
+
+We use `brmsmargins()` in the same way as for the mixed effects logistic regression.
+Here is an example with a numeric derivative treating `x` as continuous.
+
+```{r, results = 'asis'}
+
+h <- .001
+ame1.pois <- brmsmargins(
+  mpois,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1.pois$ContrastSummary, digits = 3)
+
+```
+
+Here is an example treating `x` as discrete.
+
+```{r, results = 'asis'}
+
+ame2.pois <- brmsmargins(
+  mpois,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame2.pois$ContrastSummary)
+
+```
+
+
+## AMEs for Mixed Effects Negative Binomial Regression
+
+Negative binomial models work the same way as for poisson models.
+We use the same dataset, just for demonstration.
+
+```{r}
+
+mnb <- brms::brm(
+  y ~ 1 + x + (1 + x | ID), family = "negbinomial",
+  data = dpoisson, seed = 1234,
+  chains = 4L, cores = 4L, backend = "cmdstanr",
+  silent = 2, refresh = 0)
+
+summary(mnb)
+
+```
+
+We use `brmsmargins()` in the same way as for the mixed effects poisson regression.
+Here is an example with a numeric derivative treating `x` as continuous.
+
+```{r, results = 'asis'}
+
+h <- .001
+ame1.nb <- brmsmargins(
+  mnb,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1.nb$ContrastSummary, digits = 3)
+
+```
+
+Here is an example treating `x` as discrete.
+
+```{r, results = 'asis'}
+
+ame2.nb <- brmsmargins(
+  mnb,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame2.nb$ContrastSummary, digits = 3)
 
 ```

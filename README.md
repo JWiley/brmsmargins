@@ -14,8 +14,11 @@ devtools::install_github("JWiley/brmsmargins")
 
 ```
 
-The main function is `brmsmargins()`. There is good support for 
-single level models. Here is simple example of how it may be run:
+The main function is `brmsmargins()`. 
+There is good support for single level models and 
+a vignette for fixed effects only models including 
+more details, motivation, and runnable examples.
+Here is simple example of how it may be run:
 
 ```
 
@@ -41,6 +44,8 @@ to give accurate point estimates and credible intervals.
 This is very much in development. Small scale simulations have been run 
 showing accuracy of the results under select conditions, and some basic 
 code tests are implemented. However, consider this alpha/beta features for now.
+There also is a vignette for mixed effects models with more examples and details,
+including code that can be run.
 Here is an example of how it may be run:
 
 ```
@@ -52,3 +57,5 @@ ames <- brmsmargins(
   effects = "integrateoutRE", k = 100L)
 
 ```
+
+
