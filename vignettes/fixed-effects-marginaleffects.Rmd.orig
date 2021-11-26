@@ -21,6 +21,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+library(knitr)
+library(data.table)
 library(brms)
 library(brmsmargins)
 ```
@@ -44,11 +46,9 @@ can look at a linear regression model of the association between
 for `mpg`.
 
 ```{r}
-
 m.linear <- lm(hp ~ am + mpg, data = mtcars)
 
 coef(m.linear)["mpg"]
-
 ```
 
 In linear models with no interactions, no (non linear) transformations,
@@ -59,28 +59,24 @@ predicted difference in the outcome for a one unit difference in `mpg`
 from 0 to 1, holding `am = 0`.
 
 ```{r}
-
 yhat <- predict(
   m.linear,
   newdata = data.frame(am = 0, mpg = c(0, 1)),
   type = "response")
 
 diff(yhat)
-
 ```
 
 We can look at the same estimate but moving `mpg` from 
 10 to 11 instead 0 to 1, holding `am = 1`.
 
 ```{r}
-
 yhat <- predict(
   m.linear,
   newdata = data.frame(am = 1, mpg = c(10, 11)),
   type = "response")
 
 diff(yhat)
-
 ```
 
 All of these quantities are identical. In this case, the regression 
@@ -95,53 +91,45 @@ probability scale. This is not convenient for interpretation,
 as the log odds scale is not the same scale as our outcome.
 
 ```{r}
-
 m.logistic <- glm(vs ~ am + mpg, data = mtcars, family = binomial())
 
 coef(m.logistic)["mpg"]
-
 ```
 
 We can find predicted differences on the probability scale.
 Here moving `mpg` from 10 to 11 holding `am = 0`.
 
 ```{r}
-
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 0, mpg = c(10, 11)),
   type = "response")
 
 diff(yhat)
-
 ```
 
 We can look at the same estimate but moving `mpg` from 
 20 to 21 instead 10 to 11 again holding `am = 0`.
 
 ```{r}
-
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 0, mpg = c(20, 21)),
   type = "response")
 
 diff(yhat)
-
 ```
 
 We can look at the same estimate moving `mpg` from 
 20 to 21 as before, but this time holding `am = 1`.
 
 ```{r}
-
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 1, mpg = c(20, 21)),
   type = "response")
 
 diff(yhat)
-
 ```
 
 All the estimates in this case differ. The association between `mpg` and 
@@ -167,7 +155,6 @@ on the probability scale for a one unit shift in the predictor, `mpg`,
 for each person. When we average all of these, we get the AME.
 
 ```{r}
-
 h <- .001
 
 nd.1 <- nd.0 <- model.frame(m.logistic)
@@ -184,7 +171,6 @@ yhat.1 <- predict(
   type = "response")
 
 mean((yhat.1 - yhat.0) / h)
-
 ```
 
 Here is an example of a discrete AME. The variable,
@@ -193,7 +179,6 @@ predicted probabilities if everyone had `am = 0` and then
 again if everyone had `am = 1`.
 
 ```{r}
-
 nd.1 <- nd.0 <- model.frame(m.logistic)
 nd.0$am <- 0
 nd.1$am <- 1
@@ -209,7 +194,6 @@ yhat.1 <- predict(
   type = "response")
 
 mean((yhat.1 - yhat.0))
-
 ```
 
 In both these examples, we are averaging across the different values 
@@ -224,16 +208,16 @@ The main function for users to use is `brmsmargins()`. Here is an
 example calculating AMEs for `mpg` and `am`. First we will fit the same
 logistic regression model using `brms`.
 
-```{r}
-
+```{r, results = 'hide'}
 bayes.logistic <- brm(
   vs ~ am + mpg, data = mtcars,
   family = "bernoulli", seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
+```
 
+```{r}
 summary(bayes.logistic)
-
 ```
 
 Now we can use `brmsmargins()`. We give it the model object,
@@ -247,8 +231,7 @@ for the predictions, the posterior for the contrasts, and a
 summary of the posterior for the contrasts. Here we just have the 
 one contrast, but multiple could have been specified.
 
-```{r}
-
+```{r, results = 'asis'}
 h <- .001
 ame1 <- brmsmargins(
   bayes.logistic,
@@ -256,8 +239,7 @@ ame1 <- brmsmargins(
   contrasts = cbind("AME MPG" = c(-1 / h, 1 / h)),
   CI = 0.95, CIType = "HDI")
 
-ame1$ContrastSummary
-
+kable(ame1$ContrastSummary, digits = 3)
 ```
 
 Now we can look at how we could calculate a discrete AME.
@@ -268,17 +250,18 @@ Because 0 and 1 are meaningful values of `am`,
 we also look at the summary of the posterior for the predictions.
 These predictions average across all values of `mpg`.
 
-```{r}
-
+```{r, results = 'asis'}
 ame2 <- brmsmargins(
   bayes.logistic,
   at = data.frame(am = c(0, 1)),
   contrasts = cbind("AME am" = c(-1, 1)),
   CI = 0.95, CIType = "HDI")
 
-ame2$Summary
-ame2$ContrastSummary
+kable(ame2$Summary, digits = 3)
+```
 
+```{r, results = 'asis'}
+kable(ame2$ContrastSummary)
 ```
 
 Note that by default, `brmsmargins()` uses the model frame 
@@ -294,40 +277,38 @@ Here is a short example for Poisson regression used for
 count outcomes. We use a dataset drawn from:
 https://stats.idre.ucla.edu/r/dae/poisson-regression/
 
-```{r}
+```{r, results = 'hide'}
 
-d <- read.csv("https://stats.idre.ucla.edu/stat/data/poisson_sim.csv")
-d$prog <- factor(d$prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))
+d <- fread("https://stats.idre.ucla.edu/stat/data/poisson_sim.csv")
+d[, prog := factor(prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))]
 
 bayes.poisson <- brm(
   num_awards ~ prog + math, data = d,
   family = "poisson", seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
+```
 
+```{r}
 summary(bayes.poisson)
-
 ```
 
 AME for a continuous variable, using default CI interval and type.
 
-```{r}
-
+```{r, results = 'asis'}
 h <- .001
 ame1.p <- brmsmargins(
   bayes.poisson,
   add = data.frame(math = c(0, 0 + h)),
   contrasts = cbind("AME math" = c(-1 / h, 1 / h)))
 
-ame1.p$ContrastSummary
-
+kable(ame1.p$ContrastSummary, digits = 3)
 ```
 
 AME for a categorical variable. Here we calculate pairwise contrasts
 for all three program types. These are the predicted number of awards.
 
-```{r}
-
+```{r, results = 'asis'}
 ame2.p <- brmsmargins(
   bayes.poisson,
   at = data.frame(
@@ -338,9 +319,11 @@ ame2.p <- brmsmargins(
     "AME General v Vocational" = c(1, 0, -1),
     "AME Academic v Vocational" = c(0, 1, -1)))
     
-ame2.p$Summary
-ame2.p$ContrastSummary
+kable(ame2.p$Summary, digits = 3)
+```
 
+```{r, results = 'asis'}
+kable(ame2.p$ContrastSummary, digits = 3)
 ```
 
 
@@ -349,8 +332,7 @@ ame2.p$ContrastSummary
 Here is a short example for Negative Binomial regression used for 
 count outcomes. We use the same setup as for the Poisson regression example.
 
-```{r}
-
+```{r, results = 'hide'}
 d <- read.csv("https://stats.idre.ucla.edu/stat/data/poisson_sim.csv")
 d$prog <- factor(d$prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))
 
@@ -359,30 +341,28 @@ bayes.nb <- brm(
   family = "negbinomial", seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
+```
 
+```{r}
 summary(bayes.nb)
-
 ```
 
 AME for a continuous variable, using default CI interval and type.
 
-```{r}
-
+```{r, results = 'asis'}
 h <- .001
 ame1.nb <- brmsmargins(
   bayes.nb,
   add = data.frame(math = c(0, 0 + h)),
   contrasts = cbind("AME math" = c(-1 / h, 1 / h)))
 
-ame1.nb$ContrastSummary
-
+kable(ame1.nb$ContrastSummary, digits = 3)
 ```
 
 AME for a categorical variable. Here we calculate pairwise contrasts
 for all three program types. These are the predicted number of awards.
 
-```{r}
-
+```{r, results = 'asis'}
 ame2.nb <- brmsmargins(
   bayes.nb,
   at = data.frame(
@@ -393,9 +373,11 @@ ame2.nb <- brmsmargins(
     "AME General v Vocational" = c(1, 0, -1),
     "AME Academic v Vocational" = c(0, 1, -1)))
     
-ame2.nb$Summary
-ame2.nb$ContrastSummary
+kable(ame2.nb$Summary, digits = 3)
+```
 
+```{r, results = 'asis'}
+kable(ame2.nb$ContrastSummary, digits = 3)
 ```
 
 ## References

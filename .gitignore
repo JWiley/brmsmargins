@@ -3,7 +3,7 @@ desktop.ini
 R/.Rhistory
 .RData
 *~
-
+[#]*[#]
 # artifacts of R CMD check/build
 *.Rcheck
 *.tar.gz
