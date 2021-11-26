@@ -1,0 +1,148 @@
+---
+title: "Marginal Effects for Mixed Effects Models"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Marginal Effects for Fixed Effects Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(brms)
+library(brmsmargins)
+library(data.table)
+```
+
+This vignette provides a brief overview of how to calculate 
+marginal effects for Bayesian regression models involving 
+only mixed effects (i.e., fixed and random) and fit using 
+the `brms` package.
+
+A simpler introduction and very brief overview and motivation
+is available in the vignette for fixed effects only.
+When there are fixed and random effects, calculating 
+average marginal effects (AMEs) is more complicated. 
+Generally, predictions are **conditional** on the random effects.
+To deal with this, we need to integrate out the random effects 
+for every prediction. Please note that this is quite computationally 
+demanding, at least as currently implemented.
+For every predicted value and each posterior draw, 
+random samples from the model estimated random effects distribution are drawn, 
+added, back transformed, and averaged.
+
+Thus, if you wanted AMEs across a dataset of 1,000 people, 
+with 2,000 posterior draws, and you wanted to use 100 points for the 
+numerical integration, a total of 200 million (1,000 x 2,000 x 100) 
+values are calculated. The monte carlo integration is implemented in C++
+code to try to help speed up the process, but it is not "quick"
+and also may be memory intensive.
+
+Because of the complexity involved, only limited types of mixed effects
+models are supported.
+
+
+## AMEs for Mixed Effects Logistic Regression
+
+We will simulate some multilevel binary data for our 
+mixed effects logistic regression model with individual differences
+in both the intercept and slope.
+
+```{r}
+
+d <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + 1
+    d <- data.table(
+      x = rep(rep(0:1, each = nObs / 2), times = nGroups))
+    d[, ID := rep(seq_len(nGroups), each = nObs)]
+
+    for (i in seq_len(nGroups)) {
+      d[ID == i, y := rbinom(
+        n = nObs,
+        size = 1,
+        prob = plogis(theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(d)
+  })
+
+mlogit <- brms::brm(
+  y ~ 1 + x + (1 + x | ID), family = "bernoulli",
+  data = d, seed = 1234,
+  silent = 2, refresh = 0,
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+
+summary(mlogit)
+
+```
+
+Now we can use `brmsmargins()`. By default, it will 
+only use the fixed effects. To integrate out random effects,
+we specify `effects = "integrateoutRE"`. The number of 
+values used for numerical integration are set via the argument, `k`,
+here `k = 1000L`, the default is `100L`. More details are in:
+`?brmsmargins:::.predict`
+
+Here
+
+```{r}
+
+h <- .01
+ame1 <- brmsmargins(
+  mlogit,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 1000L)
+
+ame1$Summary
+
+summary(ame1$Posterior)
+
+summary(ame1$Posterior[, 2] - ame1$Posterior[, 1])
+
+hist(ame1$Posterior[, 2] - ame1$Posterior[, 1])
+
+hist((ame1$Posterior[, 2] - ame1$Posterior[, 1]) / h, breaks = 50)
+
+hist((ame2$Posterior[, 2] - ame2$Posterior[, 1]), breaks = 50)
+
+summary((ame1$Posterior[, 2] - ame1$Posterior[, 1]) / h)
+summary((ame1$Posterior[, 2] - ame1$Posterior[, 1]) / h)
+
+summary(ame1$Contrasts)
+ame1$ContrastSummary
+
+ame2 <- brmsmargins(
+  mlogit,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L)
+
+ame2$Summary
+ame2$ContrastSummary
+
+d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x]
+
+```

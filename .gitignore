@@ -8,3 +8,4 @@ R/.Rhistory
 *.Rcheck
 *.tar.gz
 Rplots.pdf
+inst/doc
