@@ -15,6 +15,7 @@ brmsmargins(
   ROPE = NULL,
   MID = NULL,
   subset = NULL,
+  dpar = NULL,
   seed,
   ...
 )
@@ -63,6 +64,10 @@ the bounds specified.}
 \item{subset}{A character string that is a valid \code{R} expression
 used to subset the dataset passed in \code{newdata},
 prior to analysis. Defaults to \code{NULL}.}
+
+\item{dpar}{Parameter passed on the \code{dpar}
+argument of \code{fitted()} in brms. Defaults to \code{NULL}
+indicating the mean or location parameter typically.}
 
 \item{seed}{Argument that controls whether (and if so what) random seed
 to use. This does not matter when using fixed effects only. However,

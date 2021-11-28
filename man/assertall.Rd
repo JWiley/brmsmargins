@@ -5,6 +5,7 @@
 \alias{.assertbrmsfit}
 \alias{.assertgaussian}
 \alias{.assertfamily}
+\alias{.assertdpar}
 \alias{.assertlink}
 \title{Internal functions to check assertions about a \code{brmsfit} model object}
 \usage{
@@ -14,10 +15,17 @@
 
 .assertfamily(object)
 
-.assertlink(object)
+.assertdpar(object, dpar)
+
+.assertlink(object, dpar)
 }
 \arguments{
 \item{object}{A \code{brmsfit} model object to be evaluated.}
+
+\item{dpar}{Required for \code{.assertdpar} which checks this is valid.
+Optional for \code{.assertlink} which will use \code{NULL} if not
+specified. If specified, this should be \code{NULL} or
+a character string.}
 }
 \value{
 An invisible, logical \code{TRUE} if the assertion is met.

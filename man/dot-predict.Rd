@@ -12,7 +12,7 @@
   index,
   dpar = NULL,
   resample = 0L,
-  seed = FALSE,
+  resampleseed = FALSE,
   effects = c("fixedonly", "includeRE", "integrateoutRE"),
   backtrans = c("response", "linear", "identity", "invlogit", "exp", "square"),
   k = 100L,
@@ -47,7 +47,7 @@ bootstrap resamples of the posterior predictions to
 use when calculating summaries. Defaults to \code{0L}.
 See documentation from \code{\link[=.averagePosterior]{.averagePosterior()}} for more details.}
 
-\item{seed}{A seed for random number generation. Defaults to \code{FALSE},
+\item{resampleseed}{A seed for random number generation. Defaults to \code{FALSE},
 which means no seed is set.
 Only used if \code{resample} is a positive, non-zero integer.
 See documentation from \code{\link[=.averagePosterior]{.averagePosterior()}} for more details.}

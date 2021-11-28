@@ -12,15 +12,15 @@
 \usage{
 .namesL(block, number)
 
-.buildL(data, block, number)
+.buildL(data, block, number, dpar)
 
-.namesSD(ranef, block)
+.namesSD(ranef, block, dpar)
 
-.buildSD(data, ranef, block)
+.buildSD(data, ranef, block, dpar)
 
-.namesZ(block, number)
+.namesZ(block, number, dpar)
 
-.buildZ(data, block, number)
+.buildZ(data, block, number, dpar)
 }
 \arguments{
 \item{block}{Which random effect block to use. An integer.}
@@ -31,6 +31,8 @@
 for \code{\link[=.buildZ]{.buildZ()}}, which is a list,
 or a dataset of the posterior draws such as from \code{\link[=as_draws_df]{as_draws_df()}}
 for \code{\link[=.buildL]{.buildL()}} and \code{\link[=.buildSD]{.buildSD()}}.}
+
+\item{dpar}{Which dpar to use. Does not apply to the L matrix.}
 
 \item{ranef}{A data set with information about the model object random effects.
 Only used for \code{.namesSD} and \code{.buildSD}.}
@@ -56,6 +58,6 @@ They are not intended for general use.
 \examples{
 brmsmargins:::.namesL(1, 3)
 tab2matR(matrix(brmsmargins:::.namesL(1, 3), 1))
-brmsmargins:::.namesZ(1, 3)
+brmsmargins:::.namesZ(1, 3, NULL)
 }
 \keyword{internal}
