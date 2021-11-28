@@ -18,6 +18,10 @@
 #' }
 #'
 #' @param object A \code{brmsfit} model object to be evaluated.
+#' @param dpar Required for \code{.assertdpar} which checks this is valid.
+#'   Optional for \code{.assertlink} which will use \code{NULL} if not
+#'   specified. If specified, this should be \code{NULL} or
+#'   a character string.
 #'
 #' @return An invisible, logical \code{TRUE} if the assertion is met.
 #'   An (informative) error message if the assertion is not met.
@@ -45,7 +49,7 @@ NULL
   if (isTRUE(is.random(object))) {
     if (isFALSE(all(object$ranef$dist == "gaussian"))) {
       err <- sprintf(paste0("Currently only gaussian random effects are supported, ",
-                            "but the following distribution(s) were found %s."),
+                            "but the following distribution(s) were found '%s'."),
                      paste(unique(object$ranef$dist), collapse = "; "))
       stop(err)
     } else {
@@ -69,14 +73,14 @@ NULL
 
   validclass <- is.character(family)
   if (isFALSE(validclass)) {
-    stop(sprintf("The 'family' must be a character string, but a %s class was found.",
+    stop(sprintf("The 'family' must be a character string, but a '%s' class was found.",
                  paste(class(family), collapse = "; ")))
   }
 
   fams <- c("gaussian", "bernoulli", "poisson", "negbinomial")
   validtype <- family %in% fams
   if (isFALSE(validtype)) {
-    stop(sprintf("The 'family' must be one of (%s), but found %s.",
+    stop(sprintf("The 'family' must be one of (%s), but found '%s'.",
                  paste(fams, collapse = ", "),
                  family))
   }
@@ -84,9 +88,49 @@ NULL
 }
 
 #' @rdname assertall
-.assertlink <- function(object) {
+.assertdpar <- function(object, dpar) {
   .assertbrmsfit(object)
-  link <- object$family$link
+  out <- FALSE
+  if (isTRUE(is.null(dpar))) {
+    out <- TRUE
+  }
+  if (isFALSE(is.null(dpar))) {
+    if (isFALSE(identical(length(dpar), 1L))) {
+      stop(sprintf(paste0(
+        "The 'dpar' argument must be NULL or a character string (length 1 vector)\n",
+        "but found a '%s' object of length %d"),
+        paste(class(dpar), collapse = "; "),
+        length(dpar)))
+    }
+
+    if (isFALSE(is.character(dpar))) {
+      stop(sprintf("'dpar' must be class character, but '%s' class was found.",
+                   paste(class(dpar), collapse = "; ")))
+    }
+
+    validdpars <- names(brmsterms(object$formula)$dpars)
+    if (isFALSE(dpar %in% validdpars)) {
+      stop(sprintf(paste0(
+        "dpar was specified as '%s' but this was not found in the model.\n",
+        "A valid dpar for this model must be in: [%s]."),
+        dpar, paste(validdpars, collapse = "; ")))
+    }
+    out <- TRUE
+  }
+
+  invisible(out)
+}
+
+#' @rdname assertall
+.assertlink <- function(object, dpar) {
+  .assertbrmsfit(object)
+
+  if (isTRUE(missingArg(dpar))) {
+    dpar <- NULL
+  }
+
+  link <- .extractlink(object, dpar)
+
   validlength <- identical(length(link), 1L)
   if (isFALSE(validlength)) {
     stop(sprintf("The 'link' must be a character string of length 1, but found length %d.",
@@ -95,14 +139,14 @@ NULL
 
   validclass <- is.character(link)
   if (isFALSE(validclass)) {
-    stop(sprintf("The 'link' must be a character string, but a %s class was found.",
+    stop(sprintf("The 'link' must be a character string, but a '%s' class was found.",
                  paste(class(link), collapse = "; ")))
   }
 
   linkfun <- c("identity", "logit", "log")
   validtype <- link %in% linkfun
   if (isFALSE(validtype)) {
-    stop(sprintf("The 'link' must be one of (%s), but found %s.",
+    stop(sprintf("The 'link' must be one of (%s), but found '%s'.",
                  paste(linkfun, collapse = ", "),
                  link))
   }

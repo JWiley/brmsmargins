@@ -40,6 +40,9 @@
 #' @param subset A character string that is a valid \code{R} expression
 #'   used to subset the dataset passed in \code{newdata},
 #'   prior to analysis. Defaults to \code{NULL}.
+#' @param dpar Parameter passed on the \code{dpar}
+#'   argument of \code{fitted()} in brms. Defaults to \code{NULL}
+#'   indicating the mean or location parameter typically.
 #' @param seed Argument that controls whether (and if so what) random seed
 #'   to use. This does not matter when using fixed effects only. However,
 #'   when using Monte Carlo integration to integrate out random effects from
@@ -157,7 +160,8 @@
 #' }
 brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(object),
                         CI = .99, CIType = "HDI", contrasts = NULL,
-                        ROPE = NULL, MID = NULL, subset = NULL, seed, ...) {
+                        ROPE = NULL, MID = NULL,
+                        subset = NULL, dpar = NULL, seed, ...) {
   .assertbrmsfit(object)
   chknewdata <- .checktab(newdata)
   if (isTRUE(nzchar(chknewdata))) {
@@ -235,7 +239,7 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
       out[[i]] <- .predict(
         object, data = newdata,
         ROPE = ROPE, MID = MID, posterior = TRUE,
-        CI = CI, CIType = CIType, ...)
+        CI = CI, CIType = CIType, dpar = dpar, ...)
     }
 
     post <- do.call(cbind, lapply(out, `[[`, "Posterior"))
@@ -263,7 +267,7 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
       out[[i]] <- .predict(
         object, data = tmp,
         ROPE = ROPE, MID = MID, posterior = TRUE,
-        CI = CI, CIType = CIType, ...)
+        CI = CI, CIType = CIType, dpar = dpar, ...)
     }
 
     post <- do.call(cbind, lapply(out, `[[`, "Posterior"))

@@ -23,7 +23,7 @@
 #'   bootstrap resamples of the posterior predictions to
 #'   use when calculating summaries. Defaults to \code{0L}.
 #'   See documentation from [.averagePosterior()] for more details.
-#' @param seed A seed for random number generation. Defaults to \code{FALSE},
+#' @param resampleseed A seed for random number generation. Defaults to \code{FALSE},
 #'   which means no seed is set.
 #'   Only used if \code{resample} is a positive, non-zero integer.
 #'   See documentation from [.averagePosterior()] for more details.
@@ -69,12 +69,13 @@
 ## system.time(test1re <- .predict(object = object, data = data[2, ], posterior = TRUE,
 ##                              effects = "includeRE", k = 1000L, index = 1:4000))
 .predict <- function(object, data, summarize = TRUE, posterior = FALSE,
-                     index, dpar = NULL, resample = 0L, seed = FALSE,
+                     index, dpar = NULL, resample = 0L, resampleseed = FALSE,
                      effects = c("fixedonly", "includeRE", "integrateoutRE"),
                      backtrans = c("response", "linear", "identity", "invlogit", "exp", "square"),
                      k = 100L, ...) {
   ## checks and assertions
   .assertbrmsfit(object)
+  .assertdpar(object, dpar = dpar)
 
   if (isFALSE(is.random(object))) {
     if (isFALSE(effects == "fixedonly")) {
@@ -89,7 +90,7 @@
     ## assert the assumed family / distribution is a supported one
     .assertfamily(object)
     ## assert the link function used is a supported one
-    .assertlink(object)
+    .assertlink(object, dpar = dpar)
     ## assert that all random effects in the model are Gaussian
     .assertgaussian(object)
   }
@@ -98,7 +99,8 @@
     index <- seq_len(ndraws(object))
   }
 
-  links <- .links(link = object$family$link,
+  links <- .links(
+    link = .extractlink(object, dpar),
     effects = effects, backtrans = backtrans)
 
   ## set whether fitted() should include RE (NULL) or not (NA)
@@ -128,6 +130,8 @@
 
       if (is.null(dpar)) {
         usedpar <- ""
+      } else {
+        usedpar <- dpar
       }
 
       re <- re[dpar == usedpar]
@@ -141,8 +145,8 @@
         useblock <- blocks[i]
         usere <- re[id == useblock]
         num <- max(usere$cn)
-        d2[[i]] <- .buildZ(data = dtmp, block = useblock, number = num)
-        sd[[i]] <- .buildSD(data = post, ranef = usere, block = useblock)
+        d2[[i]] <- .buildZ(data = dtmp, block = useblock, number = num, dpar = dpar)
+        sd[[i]] <- .buildSD(data = post, ranef = usere, block = useblock, dpar = dpar)
         L[[i]] <- .buildL(data = post, block = useblock, number = num)
         names(d2)[i] <- names(sd)[i] <- names(L)[i] <- sprintf("Block%d", useblock)
       }
@@ -154,7 +158,7 @@
 
   ## average across rows
   ## either using row wise means, or row wise bootstrapped means
-  yhat <- .averagePosterior(yhat, resample = resample, seed = seed)
+  yhat <- .averagePosterior(yhat, resample = resample, seed = resampleseed)
 
   out <- list(
     Summary = NULL,

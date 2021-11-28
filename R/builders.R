@@ -22,6 +22,7 @@
 #'   Only used for \code{.namesSD} and \code{.buildSD}.
 #' @param block Which random effect block to use. An integer.
 #' @param number The number of elements in that random effect block. An integer.
+#' @param dpar Which dpar to use. Does not apply to the L matrix.
 #' @return A character vector for all \code{.names} functions or a matrix
 #'   for all \code{.build} functions.
 #' @keywords internal
@@ -43,38 +44,47 @@ NULL
 }
 
 #' @rdname builders
-.buildL <- function(data, block, number) {
+.buildL <- function(data, block, number, dpar) {
   stopifnot(is.data.table(data))
   n <- .namesL(block, number)
   as.matrix(data[, ..n])
 }
 
 #' @rdname builders
-.namesSD <- function(ranef, block) {
+.namesSD <- function(ranef, block, dpar) {
   stopifnot(is.data.table(ranef))
   n <- ranef[id == block]
-  n[, sprintf("sd_%s__%s", group, coef)]
+  if (isTRUE(is.null(dpar)) || isFALSE(nzchar(dpar))) {
+    n[, sprintf("sd_%s__%s", group, coef)]
+  } else if (isTRUE(nzchar(dpar))) {
+    n[, sprintf("sd_%s__%s_%s", group, dpar, coef)]
+  }
 }
 
 #' @rdname builders
-.buildSD <- function(data, ranef, block) {
+.buildSD <- function(data, ranef, block, dpar) {
   stopifnot(is.data.table(data))
-  n <- .namesSD(ranef, block)
+  n <- .namesSD(ranef, block, dpar)
   as.matrix(data[, ..n])
 }
 
 #' @rdname builders
 #' @examples
-#' brmsmargins:::.namesZ(1, 3)
-.namesZ <- function(block, number) {
+#' brmsmargins:::.namesZ(1, 3, NULL)
+.namesZ <- function(block, number, dpar) {
   n <- expand.grid(Block = block,
                    Number = seq_len(number))
   n <- as.data.table(n)
-  n[, sprintf("Z_%d_%d", Block, Number)]
+
+  if (isTRUE(is.null(dpar)) || isFALSE(nzchar(dpar))) {
+    n[, sprintf("Z_%d_%d", Block, Number)]
+  } else if (isTRUE(nzchar(dpar))) {
+    n[, sprintf("Z_%d_%s_%d", Block, dpar, Number)]
+  }
 }
 
 #' @rdname builders
-.buildZ <- function(data, block, number) {
-  n <- .namesZ(block, number)
+.buildZ <- function(data, block, number, dpar) {
+  n <- .namesZ(block, number, dpar)
   as.matrix(do.call(cbind, data[n]))
 }

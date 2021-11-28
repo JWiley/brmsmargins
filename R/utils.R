@@ -180,6 +180,30 @@ is.random <- function(object) {
   isTRUE(nrow(object$ranef) >= 1L)
 }
 
+#'Internal function to extract the link from a brms model
+#'
+#' Internal utility function to take a \code{brmsfit} object
+#' and extract the link for a specific \code{dpar}.
+#'
+#' @param object A \code{brmsfit} class model object.
+#' @param dpar The dpar for which the link should be extracted.
+#' @return A character string, the link.
+#' @keywords internal
+.extractlink <- function(object, dpar) {
+  .assertbrmsfit(object)
+  .assertdpar(object, dpar)
+
+  if (isTRUE(is.null(dpar))) {
+    link <- object$family$link
+  } else if (isFALSE(is.null(dpar))) {
+    tmp <- brmsterms(object$formula)$dpars
+    tmp <- vapply(tmp, function(x) x$family$link,
+                  FUN.VALUE = character(1))
+    link <- tmp[[dpar]]
+  }
+
+  return(link)
+}
 
 #' Internal function to build out scale, inverselink and function
 #'
