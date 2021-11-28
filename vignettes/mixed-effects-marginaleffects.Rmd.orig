@@ -8,7 +8,7 @@ output:
       smooth_scroll: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Marginal Effects for Fixed Effects Models}
+  %\VignetteIndexEntry{Marginal Effects for Mixed Effects Models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -1,0 +1,284 @@
+---
+title: "Marginal Effects for Location Scale Models"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Marginal Effects for Location Scale Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(knitr)
+library(data.table)
+library(brms)
+library(brmsmargins)
+```
+
+This vignette provides a brief overview of how to calculate 
+marginal effects for Bayesian location scale regression models,
+involving fixed effects only or mixed effects 
+(i.e., fixed and random) and fit using the `brms` package.
+
+A simpler introduction and very brief overview and motivation
+for marginal effects is available in the vignette for fixed 
+effects only.
+
+This vignette will focus on Gaussian location scale models fit 
+with `brms`. Gaussian location scale models in `brms` have two 
+distributional parameters (dpar):
+
+- the mean or location (often labeled mu) of the distribution,
+  which is the default parameter and has been examined in the 
+  other vignettes.
+- the variability or scale (often labeled sigma) of the distribution,
+  which is not modeled as an outcome by default, but can be.
+  
+Location scale models allow things like assumptions of homogeneity of 
+variance to be relaxed. In repeated measures data, random effects 
+for the scale allow calculating and predicting
+intraindividual variability (IIV).
+
+## AMEs for Fixed Effects Location Scale Models
+
+To start with, we will look at a fixed effects only location scale model.
+We will simulate a dataset.
+
+```{r, results = 'hide'}
+d <- withr::with_seed(
+  seed = 12345, code = {
+    nObs <- 1000L
+    d <- data.table(
+      grp = rep(0:1, each = nObs / 2L),
+      x = rnorm(nObs, mean = 0, sd = 0.25))
+    d[, y := rnorm(nObs,
+                   mean = x + grp,
+                   sd = exp(1 + x + grp))]
+    copy(d)
+  })
+
+ls.fe <- brm(bf(
+  y ~ 1 + x + grp,
+  sigma ~ 1 + x + grp),
+  family = "gaussian",
+  data = d, seed = 1234,
+  silent = 2, refresh = 0,
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+```
+
+
+```{r}
+summary(ls.fe)
+```
+
+Now we can use `brmsmargins()`. By default, it will 
+be for the location parameter, the mean. As this is 
+a Gaussian linear model with no transformations and 
+not interactions, the AMEs are the same as the 
+regression coefficients.
+
+Here is an example continuous AME.
+
+```{r, results = 'asis'}
+h <- .001
+ame1 <- brmsmargins(
+  ls.fe,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  CI = 0.95, CIType = "ETI",
+  effects = "fixedonly")
+
+knitr::kable(ame1$ContrastSummary, digits = 3)
+```
+
+Here is an AME for discrete / categorical predictors.
+
+```{r, results = 'asis'}
+ame2 <- brmsmargins(
+  ls.fe,
+  at = data.frame(grp = c(0, 1)),
+  contrasts = cbind("AME grp" = c(-1, 1)),
+  CI = 0.95, CIType = "ETI",
+  effects = "fixedonly")
+
+knitr::kable(ame2$ContrastSummary, digits = 3)
+```
+
+In `brms` the scale parameter for Gaussian models,
+`sigma` uses a log link function. Therefore when back
+transformed to the original scale, the AMEs will not 
+be the same as the regression coefficients which are on
+the link scale (log transformed).
+
+We specify that we want AMEs for `sigma` by setting:
+`dpar = "sigma"`. Here is a continuous example.
+
+```{r, results = 'asis'}
+h <- .001
+ame3 <- brmsmargins(
+  ls.fe,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  CI = 0.95, CIType = "ETI", dpar = "sigma",
+  effects = "fixedonly")
+
+knitr::kable(ame3$ContrastSummary, digits = 3)
+```
+
+Here is a discrete / categorical example.
+
+```{r, results = 'asis'}
+ame4 <- brmsmargins(
+  ls.fe,
+  at = data.frame(grp = c(0, 1)),
+  contrasts = cbind("AME grp" = c(-1, 1)),
+  CI = 0.95, CIType = "ETI", dpar = "sigma",
+  effects = "fixedonly")
+
+knitr::kable(ame4$ContrastSummary, digits = 3)
+```
+
+These results are comparable to the mean difference in standard 
+deviation by `grp`. Note that in general, these may not closely 
+align. However, in this instance as `x` and `grp` were simulated 
+to be uncorrelated, the simple unadjusted results match the 
+regression results closely.
+
+```{r, results = 'asis'}
+d[, .(SD = sd(y)), by = grp][, diff(SD)]
+```
+
+## AMEs for Mixed Effects Location Scale Models
+
+We will simulate some multilevel location scale data for model
+and fit the mixed effects location scale model.
+
+```{r, results = 'hide'}
+dmixed <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + 1
+    dmixed <- data.table(
+      x = rep(rep(0:1, each = nObs / 2), times = nGroups))
+    dmixed[, ID := rep(seq_len(nGroups), each = nObs)]
+
+    for (i in seq_len(nGroups)) {
+      dmixed[ID == i, y := rnorm(
+        n = nObs,
+        mean = theta.location[i, 1] + theta.location[i, 2] * x,
+        sd = exp(1 + theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(dmixed)
+  })
+
+ls.me <- brm(bf(
+  y ~ 1 + x + (1 + x | ID),
+  sigma ~ 1 + x + (1 + x | ID)),
+  family = "gaussian",
+  data = dmixed, seed = 1234,
+  silent = 2, refresh = 0,
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+```
+
+Note that this model has not achieved good convergence, but 
+as it already took about 6 minutes to run,
+for the sake of demonstration we continue. In practice, 
+one would want to make adjustments to ensure good convergence 
+and an adequate effective sample size.
+
+```{r}
+summary(ls.me)
+```
+
+We use `brmsmargins()` similar as for other mixed effects models.
+For more details see the vignette on marginal effects for 
+mixed effects models.
+
+Here is an example treating `x` as continuous using only the 
+fixed effects for the AME for the scale parameter, `sigma`.
+
+```{r, results = 'asis'}
+h <- .001
+ame1a.lsme <- brmsmargins(
+  ls.me,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  dpar = "sigma",
+  effects = "fixedonly")
+
+knitr::kable(ame1a.lsme$ContrastSummary, digits = 3)
+```
+
+Here is the example again, this time integrating out the random effects,
+which results in a considerable difference in the estimate of the AME.
+
+```{r, results = 'asis'}
+h <- .001
+ame1b.lsme <- brmsmargins(
+  ls.me,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  dpar = "sigma",
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1b.lsme$ContrastSummary, digits = 3)
+```
+
+Here is an example treating `x` as discrete, using only 
+the fixed effects.
+
+
+```{r, results = 'asis'}
+ame2a.lsme <- brmsmargins(
+  ls.me,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  dpar = "sigma",
+  effects = "fixedonly")
+
+knitr::kable(ame2a.lsme$ContrastSummary)
+```
+
+Here is the example again, this time integrating out the random effects,
+likely the more appropriate estimate for most use cases.
+
+```{r, results = 'asis'}
+ame2b.lsme <- brmsmargins(
+  ls.me,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  dpar = "sigma",
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame2b.lsme$ContrastSummary)
+```
+
+This also is relatively close calculating all the 
+individual standard deviations and taking their differences,
+then averaging.
+
+```{r}
+dmixed[, .(SD = sd(y)), by = .(ID, x)
+       ][, .(SDdiff = diff(SD)), by = ID][, mean(SDdiff)]
+```

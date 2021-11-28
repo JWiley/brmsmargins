@@ -40,12 +40,12 @@ res.integrate <- withr::with_seed(
   seed = 1234, {
     test0 <- .predict(object = mlog, data = preddat[1, ], posterior = TRUE,
                       effects = "integrateoutRE", backtrans = "exp",
-                      k = 100L, CI = 0.95, type = "ETI")
+                      k = 100L, CI = 0.95, CIType = "ETI")
     test1 <- .predict(object = mlog, data = preddat[2, ], posterior = TRUE,
                       effects = "integrateoutRE", backtrans = "exp",
-                      k = 100L, CI = 0.95, type = "ETI")
+                      k = 100L, CI = 0.95, CIType = "ETI")
     ame <- list(Summary = NULL, Posterior = test1$Posterior - test0$Posterior)
-    ame$Summary <- bsummary(ame$Posterior, CI = 0.95, type = "ETI")
+    ame$Summary <- bsummary(ame$Posterior, CI = 0.95, CIType = "ETI")
 
     list(
       Summary = rbind(
@@ -58,12 +58,12 @@ res.fixedonly <- withr::with_seed(
   seed = 1234, {
     test0 <- .predict(object = mlog, data = preddat[1, ], posterior = TRUE,
                       effects = "fixedonly", backtrans = "exp",
-                      CI = 0.95, type = "ETI")
+                      CI = 0.95, CIType = "ETI")
     test1 <- .predict(object = mlog, data = preddat[2, ], posterior = TRUE,
                       effects = "fixedonly", backtrans = "exp",
-                      CI = 0.95, type = "ETI")
+                      CI = 0.95, CIType = "ETI")
     ame <- list(Summary = NULL, Posterior = test1$Posterior - test0$Posterior)
-    ame$Summary <- bsummary(ame$Posterior, CI = 0.95, type = "ETI")
+    ame$Summary <- bsummary(ame$Posterior, CI = 0.95, CIType = "ETI")
 
     list(
       Summary = rbind(

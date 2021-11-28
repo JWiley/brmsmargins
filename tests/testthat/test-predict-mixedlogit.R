@@ -39,11 +39,11 @@ preddat <- data.frame(y = c(0, 0), x = c(0, 1), ID = 999)
 res.integrate <- withr::with_seed(
   seed = 1234, {
     test0 <- .predict(object = mlogit, data = preddat[1, ], posterior = TRUE,
-                      effects = "integrateoutRE", k = 100L, CI = 0.95, type = "ETI")
+                      effects = "integrateoutRE", k = 100L, CI = 0.95, CIType = "ETI")
     test1 <- .predict(object = mlogit, data = preddat[2, ], posterior = TRUE,
-                      effects = "integrateoutRE", k = 100L, CI = 0.95, type = "ETI")
+                      effects = "integrateoutRE", k = 100L, CI = 0.95, CIType = "ETI")
     ame <- list(Summary = NULL, Posterior = test1$Posterior - test0$Posterior)
-    ame$Summary <- bsummary(ame$Posterior, CI = 0.95, type = "ETI")
+    ame$Summary <- bsummary(ame$Posterior, CI = 0.95, CIType = "ETI")
 
     list(
       Summary = rbind(
@@ -55,11 +55,11 @@ res.integrate <- withr::with_seed(
 res.fixedonly <- withr::with_seed(
   seed = 1234, {
     test0 <- .predict(object = mlogit, data = preddat[1, ], posterior = TRUE,
-                      effects = "fixedonly", CI = 0.95, type = "ETI")
+                      effects = "fixedonly", CI = 0.95, CIType = "ETI")
     test1 <- .predict(object = mlogit, data = preddat[2, ], posterior = TRUE,
-                      effects = "fixedonly", CI = 0.95, type = "ETI")
+                      effects = "fixedonly", CI = 0.95, CIType = "ETI")
     ame <- list(Summary = NULL, Posterior = test1$Posterior - test0$Posterior)
-    ame$Summary <- bsummary(ame$Posterior, CI = 0.95, type = "ETI")
+    ame$Summary <- bsummary(ame$Posterior, CI = 0.95, CIType = "ETI")
 
     list(
       Summary = rbind(

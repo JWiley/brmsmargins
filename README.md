@@ -21,7 +21,6 @@ more details, motivation, and runnable examples.
 Here is simple example of how it may be run:
 
 ```
-
 ames <- brmsmargins(
   object = mlogit,
   at = data.table::data.table(x = 0:1),
@@ -30,7 +29,6 @@ ames <- brmsmargins(
 
 ames$Summary
 ames$ContrastSummary
-
 ```
 
 Perhaps even more important than the work for single level models,
@@ -49,13 +47,48 @@ including code that can be run.
 Here is an example of how it may be run:
 
 ```
-
 ames <- brmsmargins(
   object = mlogit,
   at = data.table::data.table(x = 0:1),
   contrasts = matrix(c(-1, 1), nrow = 2),
   effects = "integrateoutRE", k = 100L)
-
+  
+ames$Summary
+ames$ContrastSummary  
 ```
 
+Finally, there is some support for location scale models,
+allowing AMEs to be calculated for distributional parameters 
+other than the location. These use the `add` argument for 
+continuous predictors instead of the `at` argument used for 
+discrete predictors, but both are supported.
 
+Here is an example of how it may be run for fixed effects 
+only models:
+
+```
+h <- .001
+ames <- brmsmargins(
+  object = fixedlocationscale,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  CI = 0.95, CIType = "ETI",
+  effects = "fixedonly")
+  
+ames$ContrastSummary
+```
+
+Here is an example of how it may be run for mixed effects 
+location scale models:
+
+```
+h <- .001
+ames <- brmsmargins(
+  object = mixedlocationscale,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  dpar = "sigma",
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+  
+ames$ContrastSummary
+```
