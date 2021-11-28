@@ -3,6 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   fixed-effects-marginaleffects: fixed-effects-marginaleffects.html
+  location-scale-marginaleffects: location-scale-marginaleffects.html
   mixed-effects-marginaleffects: mixed-effects-marginaleffects.html
-last_built: 2021-11-26T20:25Z
+last_built: 2021-11-28T07:28Z
 

@@ -131,6 +131,9 @@ TODO add more documentation and technical definitions." />
       <a href="../articles/fixed-effects-marginaleffects.html">Marginal Effects for Fixed Effects Models</a>
     </li>
     <li>
+      <a href="../articles/location-scale-marginaleffects.html">Marginal Effects for Location Scale Models</a>
+    </li>
+    <li>
       <a href="../articles/mixed-effects-marginaleffects.html">Marginal Effects for Mixed Effects Models</a>
     </li>
   </ul>
@@ -188,6 +191,7 @@ TODO add more documentation and technical definitions.</p>
   ROPE <span class='op'>=</span> <span class='cn'>NULL</span>,
   MID <span class='op'>=</span> <span class='cn'>NULL</span>,
   subset <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dpar <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>seed</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -258,6 +262,12 @@ the bounds specified.</p></td>
       <td><p>A character string that is a valid <code>R</code> expression
 used to subset the dataset passed in <code>newdata</code>,
 prior to analysis. Defaults to <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>dpar</th>
+      <td><p>Parameter passed on the <code>dpar</code>
+argument of <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted()</a></code> in brms. Defaults to <code>NULL</code>
+indicating the mean or location parameter typically.</p></td>
     </tr>
     <tr>
       <th>seed</th>

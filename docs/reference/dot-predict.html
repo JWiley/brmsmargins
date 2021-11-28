@@ -128,6 +128,9 @@ fitted()." />
       <a href="../articles/fixed-effects-marginaleffects.html">Marginal Effects for Fixed Effects Models</a>
     </li>
     <li>
+      <a href="../articles/location-scale-marginaleffects.html">Marginal Effects for Location Scale Models</a>
+    </li>
+    <li>
       <a href="../articles/mixed-effects-marginaleffects.html">Marginal Effects for Mixed Effects Models</a>
     </li>
   </ul>
@@ -179,7 +182,7 @@ fitted()." />
   <span class='va'>index</span>,
   dpar <span class='op'>=</span> <span class='cn'>NULL</span>,
   resample <span class='op'>=</span> <span class='fl'>0L</span>,
-  seed <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  resampleseed <span class='op'>=</span> <span class='cn'>FALSE</span>,
   effects <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fixedonly"</span>, <span class='st'>"includeRE"</span>, <span class='st'>"integrateoutRE"</span><span class='op'>)</span>,
   backtrans <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"response"</span>, <span class='st'>"linear"</span>, <span class='st'>"identity"</span>, <span class='st'>"invlogit"</span>, <span class='st'>"exp"</span>, <span class='st'>"square"</span><span class='op'>)</span>,
   k <span class='op'>=</span> <span class='fl'>100L</span>,
@@ -231,7 +234,7 @@ use when calculating summaries. Defaults to <code>0L</code>.
 See documentation from <code><a href='.averagePosterior.html'>.averagePosterior()</a></code> for more details.</p></td>
     </tr>
     <tr>
-      <th>seed</th>
+      <th>resampleseed</th>
       <td><p>A seed for random number generation. Defaults to <code>FALSE</code>,
 which means no seed is set.
 Only used if <code>resample</code> is a positive, non-zero integer.

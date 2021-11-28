@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Internal function to average over posterior predictions — .averagePosterior • brmsmargins</title>
+<title>Internal function to extract the link from a brms model — .extractlink • brmsmargins</title>
 
 
 <!-- jquery -->
@@ -65,8 +65,9 @@
 
 
 
-<meta property="og:title" content="Internal function to average over posterior predictions — .averagePosterior" />
-<meta property="og:description" content="TODO" />
+<meta property="og:title" content="Internal function to extract the link from a brms model — .extractlink" />
+<meta property="og:description" content="Internal utility function to take a brmsfit object
+and extract the link for a specific dpar." />
 
 
 
@@ -163,45 +164,34 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function to average over posterior predictions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JWiley/brmsmargins/blob/master/R/averageposterior.R'><code>R/averageposterior.R</code></a></small>
-    <div class="hidden name"><code>dot-averagePosterior.Rd</code></div>
+    <h1>Internal function to extract the link from a brms model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/JWiley/brmsmargins/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>dot-extractlink.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>TODO</p>
+    <p>Internal utility function to take a <code>brmsfit</code> object
+and extract the link for a specific <code>dpar</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>.averagePosterior</span><span class='op'>(</span><span class='va'>posterior</span>, resample <span class='op'>=</span> <span class='fl'>0L</span>, seed <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>.extractlink</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>dpar</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>posterior</th>
-      <td><p>A posterior matrix type object. It is assumed that different
-predictions to be averaged over are on different columns. Different posterior
-draws are on different rows.</p></td>
+      <th>object</th>
+      <td><p>A <code>brmsfit</code> class model object.</p></td>
     </tr>
     <tr>
-      <th>resample</th>
-      <td><p>An integer indicating the number of
-bootstrap resamples of the posterior predictions to
-use when calculating summaries. Defaults to <code>0L</code>.
-See the details section for more informations as its implementation
-is experimental and it may not operate as one would expect.</p></td>
-    </tr>
-    <tr>
-      <th>seed</th>
-      <td><p>A seed for random number generation. Defaults to <code>FALSE</code>,
-which means no seed is set.
-Only used if <code>resample</code> is a positive, non-zero integer.</p></td>
+      <th>dpar</th>
+      <td><p>The dpar for which the link should be extracted.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of the averaged posterior.</p>
+    <p>A character string, the link.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

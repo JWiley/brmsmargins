@@ -133,6 +133,9 @@ All of them result in a stop() error if the assertion is not met." />
       <a href="../articles/fixed-effects-marginaleffects.html">Marginal Effects for Fixed Effects Models</a>
     </li>
     <li>
+      <a href="../articles/location-scale-marginaleffects.html">Marginal Effects for Location Scale Models</a>
+    </li>
+    <li>
       <a href="../articles/mixed-effects-marginaleffects.html">Marginal Effects for Mixed Effects Models</a>
     </li>
   </ul>
@@ -187,7 +190,9 @@ All of them result in a <code><a href='https://rdrr.io/r/base/stop.html'>stop()<
 
 <span class='fu'>.assertfamily</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
 
-<span class='fu'>.assertlink</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span></pre>
+<span class='fu'>.assertdpar</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>dpar</span><span class='op'>)</span>
+
+<span class='fu'>.assertlink</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>dpar</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -195,6 +200,13 @@ All of them result in a <code><a href='https://rdrr.io/r/base/stop.html'>stop()<
     <tr>
       <th>object</th>
       <td><p>A <code>brmsfit</code> model object to be evaluated.</p></td>
+    </tr>
+    <tr>
+      <th>dpar</th>
+      <td><p>Required for <code>.assertdpar</code> which checks this is valid.
+Optional for <code>.assertlink</code> which will use <code>NULL</code> if not
+specified. If specified, this should be <code>NULL</code> or
+a character string.</p></td>
     </tr>
     </table>
 
