@@ -76,10 +76,10 @@
       <a href="articles/fixed-effects-marginaleffects.html">Marginal Effects for Fixed Effects Models</a>
     </li>
     <li>
-      <a href="articles/location-scale-marginaleffects.html">Marginal Effects for Location Scale Models</a>
+      <a href="articles/mixed-effects-marginaleffects.html">Marginal Effects for Mixed Effects Models</a>
     </li>
     <li>
-      <a href="articles/mixed-effects-marginaleffects.html">Marginal Effects for Mixed Effects Models</a>
+      <a href="articles/location-scale-marginaleffects.html">Marginal Effects for Location Scale Models</a>
     </li>
   </ul>
 </li>
@@ -112,51 +112,184 @@
   <div class="contents col-md-9">
 
 
-<p>This package has functions to calculate Average Marginal Effects (AMEs) from <code>brms</code> models ( <a href="http://paul-buerkner.github.io/brms/" class="uri">http://paul-buerkner.github.io/brms/</a> ).</p>
-<p>The package is not yet on CRAN, so to install, you must use the development version. To install, run:</p>
-<pre><code>
-devtools::install_github("JWiley/brmsmargins")
-</code></pre>
-<p>The main function is <code><a href="reference/brmsmargins.html">brmsmargins()</a></code>. There is good support for single level models and a vignette for fixed effects only models including more details, motivation, and runnable examples. Here is simple example of how it may be run:</p>
+<div id="overview" class="section level2">
+<h2 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h2>
+<p>This package has functions to calculate marginal effects from <code>brms</code> models ( <a href="http://paul-buerkner.github.io/brms/" class="uri">http://paul-buerkner.github.io/brms/</a> ). A central motivator is to calculate average marginal effects (AMEs) for continuous and discrete predictors in fixed effects only and mixed effects regression models including location scale models.</p>
+<p>This table shows an overview of currently supported models / features where “X” indicates a specific model / feature is currently supported. The column ‘Fixed’ means fixed effects only models. The column ‘Mixed’ means mixed effects models.</p>
+<table class="table">
+<thead><tr class="header">
+<th>Distribution / Feature</th>
+<th>Fixed</th>
+<th>Mixed</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Gaussian / Normal</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="even">
+<td>Bernoulli (logistic)</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="odd">
+<td>Poisson</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="even">
+<td>Negative Binomial</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="odd">
+<td>Gamma</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+</tr>
+<tr class="even">
+<td>Beta</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+</tr>
+<tr class="odd">
+<td>Multinomial logistic</td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+</tr>
+<tr class="even">
+<td>Multivariate models</td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+</tr>
+<tr class="odd">
+<td>Gaussian location scale models</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="even">
+<td>Natural log / square root transformed outcomes</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="odd">
+<td>Monotonic predictors</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="even">
+<td>Custom outcome transformations</td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+</tr>
+</tbody>
+</table>
+<p>In general, any distribution supported by <code>brms</code> that generates one and only one predicted value (e.g., not multinomial logistic regression models) should be supported for fixed effects only models. Also note that currently, only Gaussian random effects are supported. This is not too limiting as even for Bernoulli, Poisson, etc. outcomes, the random effects are commonly assumed to have a Gaussian distribution.</p>
+<p>Here is a quick syntax overview of how to use the main function, <code><a href="reference/brmsmargins.html">brmsmargins()</a></code>.</p>
+<div id="fixed-effects-continuous-predictor" class="section level4">
+<h4 class="hasAnchor">
+<a href="#fixed-effects-continuous-predictor" class="anchor"></a>Fixed effects, continuous predictor.</h4>
+<pre><code>h &lt;- .001
+ames &lt;- brmsmargins(
+  object = model,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "fixedonly")
+  
+ames$ContrastSummary</code></pre>
+</div>
+<div id="fixed-effects-discrete-predictor" class="section level4">
+<h4 class="hasAnchor">
+<a href="#fixed-effects-discrete-predictor" class="anchor"></a>Fixed effects, discrete predictor.</h4>
 <pre><code>ames &lt;- brmsmargins(
-  object = mlogit,
-  at = data.table::data.table(x = 0:1),
-  contrasts = matrix(c(-1, 1), nrow = 2),
+  object = model,
+  add = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
   effects = "fixedonly")
 
 ames$Summary
 ames$ContrastSummary</code></pre>
-<p>Perhaps even more important than the work for single level models, <code><a href="reference/brmsmargins.html">brmsmargins()</a></code> has some support for AMEs with mixed effects / multilevel models. Specifically, for models with random effects that are (multivariate) normal, mixed effects logistic, poisson, and negative binomial models should be supported. Gaussian models with transformed outcomes (log, square root) are supported. For these models, <code><a href="reference/brmsmargins.html">brmsmargins()</a></code> should correctly integrate out the random effects, to give accurate point estimates and credible intervals.</p>
-<p>This is very much in development. Small scale simulations have been run showing accuracy of the results under select conditions, and some basic code tests are implemented. However, consider this alpha/beta features for now. There also is a vignette for mixed effects models with more examples and details, including code that can be run. Here is an example of how it may be run:</p>
-<pre><code>ames &lt;- brmsmargins(
-  object = mlogit,
-  at = data.table::data.table(x = 0:1),
-  contrasts = matrix(c(-1, 1), nrow = 2),
-  effects = "integrateoutRE", k = 100L)
-  
-ames$Summary
-ames$ContrastSummary  </code></pre>
-<p>Finally, there is some support for location scale models, allowing AMEs to be calculated for distributional parameters other than the location. These use the <code>add</code> argument for continuous predictors instead of the <code>at</code> argument used for discrete predictors, but both are supported.</p>
-<p>Here is an example of how it may be run for fixed effects only models:</p>
+</div>
+<div id="mixed-effects-continuous-predictor" class="section level4">
+<h4 class="hasAnchor">
+<a href="#mixed-effects-continuous-predictor" class="anchor"></a>Mixed effects, continuous predictor.</h4>
 <pre><code>h &lt;- .001
 ames &lt;- brmsmargins(
-  object = fixedlocationscale,
+  object = model,
   add = data.frame(x = c(0, h)),
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
-  CI = 0.95, CIType = "ETI",
-  effects = "fixedonly")
+  effects = "integrateoutRE")
   
 ames$ContrastSummary</code></pre>
-<p>Here is an example of how it may be run for mixed effects location scale models:</p>
+</div>
+<div id="mixed-effects-discrete-predictor" class="section level4">
+<h4 class="hasAnchor">
+<a href="#mixed-effects-discrete-predictor" class="anchor"></a>Mixed effects, discrete predictor.</h4>
+<pre><code>ames &lt;- brmsmargins(
+  object = model,
+  add = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "integrateoutRE")
+
+ames$Summary
+ames$ContrastSummary</code></pre>
+</div>
+<div id="mixed-effects-location-scale-continuous-predictor" class="section level4">
+<h4 class="hasAnchor">
+<a href="#mixed-effects-location-scale-continuous-predictor" class="anchor"></a>Mixed Effects Location Scale, continuous predictor</h4>
 <pre><code>h &lt;- .001
 ames &lt;- brmsmargins(
-  object = mixedlocationscale,
+  object = model,
   add = data.frame(x = c(0, h)),
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
   dpar = "sigma",
-  effects = "integrateoutRE", k = 100L, seed = 1234)
+  effects = "integrateoutRE")
   
 ames$ContrastSummary</code></pre>
+</div>
+<div id="mixed-effects-location-scale-discrete-predictor" class="section level4">
+<h4 class="hasAnchor">
+<a href="#mixed-effects-location-scale-discrete-predictor" class="anchor"></a>Mixed Effects Location Scale, discrete predictor</h4>
+<pre><code>ames &lt;- brmsmargins(
+  object = model,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  dpar = "sigma",
+  effects = "integrateoutRE")
+
+ames$Summary
+ames$ContrastSummary</code></pre>
+<p>Note that even on mixed effects models, it is possible to generate predictions and marginal effects from the fixed effects only, just by specifying <code>effects = "fixedonly"</code> but this is probably not a good idea generally so not shown by default.</p>
+<p>Also note that for all of these examples <code>ames$Summary</code> would have a summary of the averaged predicted values. These often are useful for discrete predictors. For continuous predictors, if the focus is on marginal effects, they often are not interesting. However, the <code>at</code> argument can be used with continuous predictors to generate interesting averaged predicted values. For example, this would get predicted values integrating out random effects for a range of ages averaging (marginalizing) all other predictors / covariates.</p>
+<pre><code>ames &lt;- brmsmargins(
+  object = model,
+  at = data.frame(age = c(20, 30, 40, 50, 60)),
+  effects = "integrateoutRE")
+
+ames$Summary</code></pre>
+</div>
+</div>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>The package is not yet on CRAN, so to install, you must use the development version. To install, run:</p>
+<pre><code>devtools::install_github("JWiley/brmsmargins")</code></pre>
+</div>
+<div id="learn-more" class="section level2">
+<h2 class="hasAnchor">
+<a href="#learn-more" class="anchor"></a>Learn More</h2>
+<p>There are three vignettes that introduce how to use the package for several scenarios.</p>
+<ul>
+<li>
+<a href="https://joshuawiley.com/brmsmargins/articles/fixed-effects-marginaleffects.html">Fixed effects only models</a> (also called single level models). This also is the best place to start learning about how to use the package. It includes a brief amount of motivation for why we would want to calculate marginal effects at all.</li>
+<li>
+<a href="https://joshuawiley.com/brmsmargins/articles/mixed-effects-marginaleffects.html">Mixed effects models</a> (also called multilevel models). This shows how to calculate marginal effects for mixed effects / multilevel models. There are runnable examples, but not much background.</li>
+<li>
+<a href="https://joshuawiley.com/brmsmargins/articles/location-scale-marginaleffects.html">Location scale models</a>. Location scale models are models where both the location (e.g., mean) and scale (e.g., variance / residual standard deviation) are explicitly modeled as outcomes. These require use of distributional parameters <code>dpar</code> in <code>brms</code>. This vignette shows how to calculate marginal effects from location scale models for the scale part.</li>
+</ul>
+</div>
 
   </div>
 

@@ -25,7 +25,8 @@ Imports:
     stats,
     brms,
     bayestestR,
-    Rcpp
+    Rcpp,
+    posterior
 Suggests: 
     testthat (>= 3.0.0),
     covr,

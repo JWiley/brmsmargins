@@ -1,3 +1,10 @@
 destination: docs
 template:
   package: preferably
+articles:
+- title: Vignettes
+  navbar: ~
+  contents:
+  - fixed-effects-marginaleffects
+  - mixed-effects-marginaleffects
+  - location-scale-marginaleffects
