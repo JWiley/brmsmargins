@@ -122,12 +122,69 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span>
+<span class="co">#&gt; data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms">brms</a></span><span class="op">)</span>
+<span class="co">#&gt; Loading required package: Rcpp</span>
+<span class="co">#&gt; Loading 'brms' package (version 2.16.3). Useful instructions</span>
+<span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span>
+<span class="co">#&gt; to the package is available through vignette('brms_overview').</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Attaching package: 'brms'</span>
+<span class="co">#&gt; The following object is masked from 'package:stats':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     ar</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://joshuawiley.com/brmsmargins">brmsmargins</a></span><span class="op">)</span></code></pre></div>
 <p>This vignette provides a brief overview of how to calculate marginal effects for Bayesian regression models involving only mixed effects (i.e., fixed and random) and fit using the <code>brms</code> package.</p>
+<div id="integrating-out-random-effects" class="section level2">
+<h2 class="hasAnchor">
+<a href="#integrating-out-random-effects" class="anchor"></a>Integrating out Random Effects</h2>
+<p>A random intercept logistic regression model where a binary (0/1) outcome, <span class="math inline">\(Y\)</span> is observed at the <span class="math inline">\(i^{th}\)</span> assessment for the <span class="math inline">\(j^{th}\)</span> person and there are <span class="math inline">\(p\)</span> variables included in the regression model can be written as:</p>
+<p><span class="math display">\[
+\hat{\pi}_{ij} = g \left(P \left( Y_{ij} = 1 \Big| X_{ij} = x_{ij}, u_j \right) \right) = \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + u_j 
+\]</span></p>
+<p>where <span class="math inline">\(g(\dot)\)</span> indicates the link function, here the logit</p>
+<p><span class="math display">\[
+\mu = g(\pi) = ln\left(\frac{\pi}{1 - \pi}\right)
+\]</span></p>
+<p>and <span class="math inline">\(g^{-1}(\dot)\)</span> is the inverse link function:</p>
+<p><span class="math display">\[
+\pi = g^{-1}(\mu) = \frac{1}{1 + exp(-\mu)}
+\]</span></p>
+<p>A conditional predicted probability, conditional on the random effect can be calculated as:</p>
+<p><span class="math display">\[
+\hat{\pi}_{ij}(u_j = 0) = 
+  P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij}, u_j = 0 \right) = 
+  g^{-1} \left( \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + 0 \right)
+\]</span></p>
+<p>However, to correctly calculate a prediction that is marginal to the random effects, the random effects must be integrated out. Not set at a specific value or set at their mean (0).</p>
+<p><span class="math display">\[
+\hat{\pi}_{ij} = 
+  P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij} \right) = 
+  \int_{-\infty}^{\infty} g^{-1} \left( \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + u \right)f(u)du
+\]</span></p>
+<p>Integrating out the random effects analytically can quickly become complex. For example, it rapidly becomes more complex when there are multiple random effects, such as if there is more than one grouping or clustering variable. It also can become more complex when different distributions are used / assumed.</p>
+<p>Monte Carlo integration is a convenient, numerical approach that uses random samples to approximate the integral. Continuing the simple example of a logistic regression model where the only random effect is a random intercept, <span class="math inline">\(u_j\)</span> and where we assume that <span class="math inline">\(u_j \sim \mathcal{N}(0, \sigma^{2}_u)\)</span>, we could draw <span class="math inline">\(Q\)</span> random samples, say 100, from <span class="math inline">\(\mathcal{N}(0, \sigma^{2}_u)\)</span>, call these <span class="math inline">\(RE_a\)</span>, then Monte Carlo integration would be:</p>
+<p><span class="math display">\[
+\hat{\pi}_{ij} = 
+  P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij} \right) = 
+  \frac{\displaystyle \sum_{a = 1}^{Q} g^{-1} \left( \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + RE_a \right)}{Q}
+\]</span></p>
+<p>This approach works for most generalized linear mixed models, although the outcome would not be a probability, necessarily, but whatever the result of the inverse link function is.</p>
+<p>In a Bayesian framework, this approach would be repeated for each posterior draw as both the regression coefficients and <span class="math inline">\(RE_a\)</span> differs. Because this is repeated across each posterior draw, a very large number of random draws, <span class="math inline">\(Q\)</span>, for the Monte Carlo integration is probably not needed. Although a modest number, say <span class="math inline">\(Q = 100\)</span>, would have a relatively large amount of simulation error, it is random error and when repeated across typically thousands of posterior draws, the impact is likely diminished.</p>
+<p>Once we have these marginal predictions, we can calculate marginal effects using numerical derivatives as:</p>
+<p><span class="math display">\[
+\frac{P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij} + h \right) - P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij} \right)}{h}
+\]</span></p>
+<p>which for a continuous variable provides an approximation of the derivative, often quite good as long as <span class="math inline">\(h\)</span> is sufficiently small.</p>
+</div>
+<div id="using-brmsmargins" class="section level2">
+<h2 class="hasAnchor">
+<a href="#using-brmsmargins" class="anchor"></a>Using <code>brmsmargins()</code>
+</h2>
 <p>A simpler introduction and very brief overview and motivation is available in the vignette for fixed effects only. When there are fixed and random effects, calculating average marginal effects (AMEs) is more complicated. Generally, predictions are <strong>conditional</strong> on the random effects. To deal with this, we need to integrate out the random effects for every prediction. Please note that this is quite computationally demanding, at least as currently implemented. For every predicted value and each posterior draw, random samples from the model estimated random effects distribution are drawn, added, back transformed, and averaged.</p>
 <p>Thus, if you wanted AMEs across a dataset of 1,000 people, with 2,000 posterior draws, and you wanted to use 100 points for the numerical integration, a total of 200 million (1,000 x 2,000 x 100) values are calculated. The monte carlo integration is implemented in C++ code to try to help speed up the process, but it is not “quick” and also may be memory intensive.</p>
 <p>Because of the complexity involved, only limited types of mixed effects models are supported.</p>
+</div>
 <div id="ames-for-mixed-effects-logistic-regression" class="section level2">
 <h2 class="hasAnchor">
 <a href="#ames-for-mixed-effects-logistic-regression" class="anchor"></a>AMEs for Mixed Effects Logistic Regression</h2>
