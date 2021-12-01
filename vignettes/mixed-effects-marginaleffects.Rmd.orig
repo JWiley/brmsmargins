@@ -43,13 +43,13 @@ $$
 \hat{\pi}_{ij} = g \left(P \left( Y_{ij} = 1 \Big| X_{ij} = x_{ij}, u_j \right) \right) = \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + u_j 
 $$
 
-where $g(\dot)$ indicates the link function, here the logit
+where $g(\cdot)$ indicates the link function, here the logit
 
 $$
 \mu = g(\pi) = ln\left(\frac{\pi}{1 - \pi}\right)
 $$
 
-and $g^{-1}(\dot)$ is the inverse link function:
+and $g^{-1}(\cdot)$ is the inverse link function:
 
 $$
 \pi = g^{-1}(\mu) = \frac{1}{1 + exp(-\mu)}
