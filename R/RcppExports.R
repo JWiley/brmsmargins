@@ -3,7 +3,11 @@
 
 #' Integrate over multivariate normal random effects
 #'
-#' TODO: write description.
+#' Used in the process of Monte Carlo integration
+#' over multivariate normal random effects. This generates the
+#' random draws from the multivariate normal distribution
+#' and multiplies these by the data.
+#' Not intended to be called directly by most users.
 #'
 #' @param X A numeric matrix of the data to be multiplied by the random effects
 #' @param k An integer, the number of random samples to be used for numerical integration
@@ -13,8 +17,12 @@
 #' @return A numeric matrix with random values
 #' @export
 #' @examples
-#'
-#' integratemvn(matrix(1, 1, 2), 100L, c(10, 5), chol(matrix(c(1, .5, .5, 1), 2)))
+#' integratemvn(
+#'   X = matrix(1, 1, 2),
+#'   k = 100L,
+#'   sd = c(10, 5),
+#'   chol = chol(matrix(c(1, .5, .5, 1), 2)))
+#' 
 #' integratemvn(matrix(1, 1, 1), 100L, c(5), matrix(1))
 integratemvn <- function(X, k, sd, chol) {
     .Call(`_brmsmargins_integratemvn`, X, k, sd, chol)
@@ -22,21 +30,31 @@ integratemvn <- function(X, k, sd, chol) {
 
 #' Integrate over Random Effects
 #'
-#' TODO: write description.
+#' Used to conduct Monte Carlo integration over Gaussian random effects.
+#' Not intended to be called directly by most users.
 #'
-#' @param d A list
-#' @param sd A list
-#' @param L A list
-#' @param k An integer, the number of samples
+#' @param d A list with model matrices for each random effect block.
+#' @param sd A list with standard deviation matrices for each random effect block
+#'   where rows are different posterior draws.
+#' @param L A list with matrices for each random effect block containing the parts of
+#'   the L matrix, the Cholesky decomposition of the random effect correlation matrix.
+#' @param k An integer, the number of samples for Monte Carlo integration.
 #' @param yhat A matrix of the fixed effects predictions
 #' @param backtrans An integer, indicating the type of back transformation.
 #'   0 indicates inverse logit (e.g., for logistic regression).
 #'   1 indicates exponential (e.g., for poisson or negative binomial regression or if outcome was natural log transformed).
 #'   2 indicates square (e.g., if outcome was square root transformed).
-#' @return A numeric matrix with random values
+#'   Any other integer may be used for no transformation.
+#' @return A numeric matrix with the Monte Carlo integral calculated.
 #' @export
 #' @examples
-#'
+#' integratere(
+#'   d = list(matrix(1, 1, 1)),
+#'   sd = list(matrix(1, 2, 1)),
+#'   L = list(matrix(1, 2, 1)),
+#'   k = 10L,
+#'   yhat = matrix(0, 2, 1),
+#'   backtrans = 0L)
 integratere <- function(d, sd, L, k, yhat, backtrans) {
     .Call(`_brmsmargins_integratere`, d, sd, L, k, yhat, backtrans)
 }
@@ -65,13 +83,17 @@ rowBootMeans <- function(x) {
 
 #' Convert a row of a table to a matrix
 #'
-#' TODO: write description.
+#' Utility function to convert a row matrix to a square matrix.
+#' Used as the \code{brms} package returns things like the Cholesky
+#' decomposition matrix as separate columns where rows are posterior draws.
+#' Not intended to be called directly by most users.
 #'
 #' @param X a matrix
 #' @return A numeric matrix with one row.
 #' @export
 #' @examples
-#'
+#' tab2mat(matrix(1:4, 1))
+#' tab2mat(matrix(1:9, 1))
 tab2mat <- function(X) {
     .Call(`_brmsmargins_tab2mat`, X)
 }

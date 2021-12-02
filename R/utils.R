@@ -49,7 +49,7 @@
 
 #' A Personal Preference Based Bayesian Summary Function
 #'
-#' This function returns a summary of a posterior distribution for a single
+#' Returns a summary of a posterior distribution for a single
 #' parameter / value. It is based on personal preference. Notably, it does not
 #' only use \code{bayestestR::describe_posterior}, an excellent function,
 #' because of the desire to also describe the percentage of the full posterior
@@ -98,9 +98,9 @@
 #' @importFrom stats median
 #' @examples
 #'
-#' bsummary(rnorm(10000))
+#' bsummary(rnorm(1000))
 #'
-#' bsummary(rnorm(10000), ROPE = c(-.5, .5), MID = c(-1, 1))
+#' bsummary(rnorm(1000), ROPE = c(-.5, .5), MID = c(-1, 1))
 bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
   ropes <- .percent(x, window = ROPE, within = TRUE)
   mids <- .percent(x, window = MID, within = FALSE)
@@ -123,10 +123,10 @@ bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
   return(out)
 }
 
-#' Function to check that something is a valid data object
+#' Check that object is a tbl, data.frame, or data.table
 #'
-#' Internal utility function to check requirements for
-#'   \code{\link{brmsmargins}}.
+#' Internal utility function confirm that an object
+#'   has the attributes needed to be used as data.
 #'
 #' @param x An object to be evaluated.
 #' @param requireNames A logical, whether names are
@@ -165,10 +165,10 @@ bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
   return(out)
 }
 
-#' Function to check whether a brmsfit has random effects
+#' Check whether a \code{brmsfit} class object has random effects
 #'
 #' Internal utility function to check whether a \code{brmsfit}
-#' object has any random effects, or not.
+#' object has any random effects or not.
 #'
 #' @param object An object to be evaluated.
 #' @return \code{TRUE} if any random effects present.
@@ -180,7 +180,7 @@ is.random <- function(object) {
   isTRUE(nrow(object$ranef) >= 1L)
 }
 
-#'Internal function to extract the link from a brms model
+#' Extract the link from a \code{brms} model
 #'
 #' Internal utility function to take a \code{brmsfit} object
 #' and extract the link for a specific \code{dpar}.
@@ -189,6 +189,7 @@ is.random <- function(object) {
 #' @param dpar The dpar for which the link should be extracted.
 #' @return A character string, the link.
 #' @keywords internal
+#' @importFrom brms brmsterms
 .extractlink <- function(object, dpar) {
   .assertbrmsfit(object)
   .assertdpar(object, dpar)
@@ -205,14 +206,25 @@ is.random <- function(object) {
   return(link)
 }
 
-#' Internal function to build out scale, inverselink and function
+#' Convert a link function name to a list
 #'
-#' Internal utility function used in \code{.predict()}
+#' Internal utility function used in [.predict()].
+#' Takes a link function name as a character string,
+#' the type of effect to be used, and the desired back transformation
+#' and returns a list with all the options needed to execute the desired
+#' options in [.predict()].
 #'
 #' @param link The link named in a \code{brmsfit} object
 #' @param effects A character string, the type of effect desired
 #' @param backtrans A character string, the type of back transformation
-#' @return A list. TODO.
+#' @return A list with four elements.
+#' \describe{
+#'   \item{scale}{A character string giving the argument to be passed to [fitted()].}
+#'   \item{ilink}{A character string giving the name of the inverse link function.}
+#'   \item{ifun}{Inverse link function as an \code{R} function.}
+#'   \item{ilinknum}{An integer giving the inverse link / transformation to be applied in [integratere()], needed as this is a C++ function and cannot use the \code{R} based inverse link function.}
+#' }
+#' @importFrom stats plogis
 #' @keywords internal
 .links <- function(link,
                    effects = c("fixedonly", "includeRE", "integrateoutRE"),

@@ -29,11 +29,14 @@
 #' @name builders
 NULL
 
+## make Rcmd check happy
+utils::globalVariables(c("Block", "Row", "Col"))
+
 #' @rdname builders
 #' @importFrom data.table as.data.table
 #' @examples
 #' brmsmargins:::.namesL(1, 3)
-#' tab2matR(matrix(brmsmargins:::.namesL(1, 3), 1))
+#' brmsmargins:::tab2matR(matrix(brmsmargins:::.namesL(1, 3), 1))
 .namesL <- function(block, number) {
   n <- expand.grid(Block = block,
                    Row = seq_len(number),
@@ -43,12 +46,18 @@ NULL
               Block, Row, Col)]
 }
 
+## make Rcmd check happy
+utils::globalVariables(c("..n"))
+
 #' @rdname builders
 .buildL <- function(data, block, number, dpar) {
   stopifnot(is.data.table(data))
   n <- .namesL(block, number)
   as.matrix(data[, ..n])
 }
+
+## make Rcmd check happy
+utils::globalVariables(c("group", "coef", "id"))
 
 #' @rdname builders
 .namesSD <- function(ranef, block, dpar) {
@@ -67,6 +76,9 @@ NULL
   n <- .namesSD(ranef, block, dpar)
   as.matrix(data[, ..n])
 }
+
+## make Rcmd check happy
+utils::globalVariables(c("Number"))
 
 #' @rdname builders
 #' @examples

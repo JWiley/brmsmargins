@@ -1,7 +1,9 @@
-#' Function to generate posterior predictions and summaries from a brms model
+#' Generate marginal, posterior predictions and summaries from a \code{brms} model
 #'
-#' This is an internal function that is essentially a fancy wrapper for
-#' \code{fitted()}.
+#' Calculate marginal predictions from a \code{brms} model.
+#' Marginal predictions average over the input data for each posterior draw.
+#' Marginal predictions for models with random effects will integrate
+#' over random effects.
 #'
 #' @param object A fitted brms model object. Required.
 #' @param data A data frame or data table passed to \code{fitted()}
@@ -48,26 +50,20 @@
 #' @param ... Additional arguments passed to \code{fitted()}
 #' @return A list with \code{Summary} and \code{Posterior}.
 #'   Some of these may be \code{NULL} depending on the arguments used.
+#' @references
+#' Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
+#' \doi{10.1186/s12874-015-0046-6}
+#' "A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes"
+#' and
+#' Skrondal, A., & Rabe‐Hesketh, S. (2009)
+#' \doi{10.1111/j.1467-985X.2009.00587.x}
+#' "Prediction in multilevel generalized linear models"
 #' @keywords internal
 #' @importFrom data.table as.data.table
 #' @importFrom stats fitted formula
 #' @importFrom posterior as_draws_df ndraws
 #' @importFrom brms make_standata
-## object <- JWileymisc::readRDSfst("../mixedlogit.RDS")
-## data <- model.frame(object)[1:2, ]
-## data$x <- c(0, 1)
-## system.time(test0 <- .predict(object = object, data = data[1, ], posterior = TRUE,
-##                              effects = "integrateoutRE", k = 1000L, index = 1:4000))
-## system.time(test1 <- .predict(object = object, data = data[2, ], posterior = TRUE,
-##                              effects = "integrateoutRE", k = 1000L, index = 1:4000))
-## system.time(test0f <- .predict(object = object, data = data[1, ], posterior = TRUE,
-##                              effects = "fixedonly", k = 1000L, index = 1:4000))
-## system.time(test1f <- .predict(object = object, data = data[2, ], posterior = TRUE,
-##                              effects = "fixedonly", k = 1000L, index = 1:4000))
-## system.time(test0re <- .predict(object = object, data = data[1, ], posterior = TRUE,
-##                              effects = "includeRE", k = 1000L, index = 1:4000))
-## system.time(test1re <- .predict(object = object, data = data[2, ], posterior = TRUE,
-##                              effects = "includeRE", k = 1000L, index = 1:4000))
+#' @importFrom methods missingArg
 .predict <- function(object, data, summarize = TRUE, posterior = FALSE,
                      index, dpar = NULL, resample = 0L, resampleseed = FALSE,
                      effects = c("fixedonly", "includeRE", "integrateoutRE"),
@@ -170,5 +166,6 @@
   if (isTRUE(posterior)) {
     out$Posterior <- yhat
   }
+
   return(out)
 }

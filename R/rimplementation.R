@@ -1,4 +1,5 @@
 #' @describeIn integratemvn Pure \code{R} implementation of \code{integratemvn}
+#' @importFrom stats rnorm
 integratemvnR <- function(X, k, sd, chol) {
   n <- length(sd)
   Z <- matrix(rnorm(k * n, mean = 0, sd = 1), nrow = k, ncol = n)

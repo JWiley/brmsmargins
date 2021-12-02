@@ -1,3 +1,6 @@
+## make Rcmd check happy
+utils::globalVariables(c("Label"))
+
 #' Calculate Average Marginal Effects (AMEs) from brms models
 #'
 #' This function is designed to help calculate average marginal
@@ -66,10 +69,23 @@
 #'   or if you know what you are doing and intend that behavior when
 #'   integrating out random effects.
 #' @param ... Additional arguments passed on to \code{\link{.predict}}.
-#' @importFrom stats model.frame
+#' @importFrom stats model.frame runif
 #' @importFrom data.table as.data.table copy :=
+#' @importFrom methods missingArg
 #' @return A list. TODO describe more.
 #' @export
+#' @references
+#' Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
+#' \doi{10.1186/s12874-015-0046-6}
+#' "A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes"
+#' 
+#' Skrondal, A., & Rabe‐Hesketh, S. (2009)
+#' \doi{10.1111/j.1467-985X.2009.00587.x}
+#' "Prediction in multilevel generalized linear models"
+#' 
+#' Norton EC, Dowd BE, Maciejewski ML. (2019)
+#' \doi{10.1001/jama.2019.1954}
+#' "Marginal Effects—Quantifying the Effect of Changes in Risk Factors in Logistic Regression Models"
 #' @examples
 #' \dontrun{
 #' #### Testing ####

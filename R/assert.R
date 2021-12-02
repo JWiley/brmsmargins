@@ -122,6 +122,7 @@ NULL
 }
 
 #' @rdname assertall
+#' @importFrom methods missingArg
 .assertlink <- function(object, dpar) {
   .assertbrmsfit(object)
 
