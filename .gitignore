@@ -9,3 +9,4 @@ R/.Rhistory
 *.tar.gz
 Rplots.pdf
 inst/doc
+docs

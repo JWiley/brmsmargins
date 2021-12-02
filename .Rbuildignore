@@ -5,7 +5,6 @@
 LICENSE
 ^codecov\.yml$
 ^_pkgdown\.yml$
-^docs$
 ^pkgdown$
 ^appveyor\.yml$
 ^\.travis\.yml$
@@ -13,3 +12,5 @@ LICENSE
 ^vignettes/.\.Rmd\.orig$
 \.Rhistory
 \.gitignore
+^\.github$
+^docs$

@@ -1,6 +1,9 @@
-#'  Internal function to average over posterior predictions
+#' Average over posterior predictions
 #'
-#' TODO
+#' Internal function that averages over posterior predictions
+#' using either [rowMeans()] or [rowBootMeans()], the latter
+#' being useful to incorporate uncertainty from the
+#' inputs being used to generate predictions.
 #'
 #' @param posterior A posterior matrix type object. It is assumed that different
 #'   predictions to be averaged over are on different columns. Different posterior

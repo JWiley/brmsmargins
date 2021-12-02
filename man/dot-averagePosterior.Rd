@@ -2,7 +2,7 @@
 % Please edit documentation in R/averageposterior.R
 \name{.averagePosterior}
 \alias{.averagePosterior}
-\title{Internal function to average over posterior predictions}
+\title{Average over posterior predictions}
 \usage{
 .averagePosterior(posterior, resample = 0L, seed = FALSE)
 }
@@ -25,6 +25,9 @@ Only used if \code{resample} is a positive, non-zero integer.}
 A vector of the averaged posterior.
 }
 \description{
-TODO
+Internal function that averages over posterior predictions
+using either \code{\link[=rowMeans]{rowMeans()}} or \code{\link[=rowBootMeans]{rowBootMeans()}}, the latter
+being useful to incorporate uncertainty from the
+inputs being used to generate predictions.
 }
 \keyword{internal}

@@ -77,15 +77,15 @@ utils::globalVariables(c("Label"))
 #' @references
 #' Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
 #' \doi{10.1186/s12874-015-0046-6}
-#' "A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes"
-#' 
-#' Skrondal, A., & Rabe‐Hesketh, S. (2009)
+#' \dQuote{A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes}
+#' and
+#' Skrondal, A., & Rabe-Hesketh, S. (2009)
 #' \doi{10.1111/j.1467-985X.2009.00587.x}
-#' "Prediction in multilevel generalized linear models"
-#' 
+#' \dQuote{Prediction in multilevel generalized linear models}
+#' and
 #' Norton EC, Dowd BE, Maciejewski ML. (2019)
 #' \doi{10.1001/jama.2019.1954}
-#' "Marginal Effects—Quantifying the Effect of Changes in Risk Factors in Logistic Regression Models"
+#' \dQuote{Marginal Effects—Quantifying the Effect of Changes in Risk Factors in Logistic Regression Models}
 #' @examples
 #' \dontrun{
 #' #### Testing ####
@@ -99,24 +99,6 @@ utils::globalVariables(c("Label"))
 #' mbin <- brms::brm(ybin ~ Tx + x, data = logitd, family = brms::bernoulli())
 #'
 #' summary(mbin)
-#'
-#' ## predictions + summary
-#' test1 <- brmsmargins:::.predict(mbin,
-#'          model.frame(mbin),
-#'          summarize = TRUE, posterior = FALSE, dpar = NULL,
-#'          resample = 0L)
-#' test1
-#'
-#' ## check that bootstrapping the sample / population assumed as part of the
-#' ## AME indeed increases the uncertainty interval
-#' ## TODO: point estimates (M, Mdn) should be based on the actual data
-#' ## not the bootstrapped
-#' test2 <- brmsmargins:::.predict(mbin,
-#'          model.frame(mbin),
-#'          summarize = TRUE, posterior = FALSE, dpar = NULL,
-#'          resample = 100L, seed = 1234)
-#' test2
-#'
 #'
 #' ## now check AME for Tx
 #' tmp <- brmsmargins(

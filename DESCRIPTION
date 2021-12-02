@@ -1,15 +1,17 @@
 Package: brmsmargins
 Title: Bayesian Marginal Effects for 'brms' Models
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: 
     person(given = "Joshua F.",
            family = "Wiley",
            role = c("aut", "cre"),
            email = "jwiley.psych@gmail.com",
            comment = c(ORCID = "0000-0002-0271-6702"))
-URL: https://joshuawiley.com/brmsmargins, https://github.com/JWiley/brmsmargins
+URL: https://joshuawiley.com/brmsmargins/,
+    https://github.com/JWiley/brmsmargins,
+    https://joshuawiley.com/brmsmargins
 BugReports: https://github.com/JWiley/brmsmargins/issues
-Description: Calculate bayesian marginal effects and average marginal effects (AMEs) for models fit using the 'brms' package. These are based on marginal predictions (see for example <doi:10.1186/s12874-015-0046-6>). The package supplements existing packages, such as emmeans calculate marginal effects at the means (MEMs) and not AMEs.
+Description: Calculate Bayesian marginal effects and average marginal effects for models fit using the 'brms' package including fixed effects, mixed effects, and location scale models. These are based on marginal predictions that integrate out random effects if necessary (see for example <doi:10.1186/s12874-015-0046-6>).
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

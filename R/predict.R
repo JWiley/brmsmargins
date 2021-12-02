@@ -53,11 +53,11 @@
 #' @references
 #' Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
 #' \doi{10.1186/s12874-015-0046-6}
-#' "A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes"
+#' \dQuote{A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes}
 #' and
-#' Skrondal, A., & Rabe‐Hesketh, S. (2009)
+#' Skrondal, A., & Rabe-Hesketh, S. (2009)
 #' \doi{10.1111/j.1467-985X.2009.00587.x}
-#' "Prediction in multilevel generalized linear models"
+#' \dQuote{Prediction in multilevel generalized linear models}
 #' @keywords internal
 #' @importFrom data.table as.data.table
 #' @importFrom stats fitted formula
