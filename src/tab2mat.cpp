@@ -5,13 +5,17 @@ using namespace Rcpp;
 
 //' Convert a row of a table to a matrix
 //'
-//' TODO: write description.
+//' Utility function to convert a row matrix to a square matrix.
+//' Used as the \code{brms} package returns things like the Cholesky
+//' decomposition matrix as separate columns where rows are posterior draws.
+//' Not intended to be called directly by most users.
 //'
 //' @param X a matrix
 //' @return A numeric matrix with one row.
 //' @export
 //' @examples
-//'
+//' tab2mat(matrix(1:4, 1))
+//' tab2mat(matrix(1:9, 1))
 // [[Rcpp::export]]
 arma::mat tab2mat(const arma::mat& X) {
   int ncol = X.n_cols;

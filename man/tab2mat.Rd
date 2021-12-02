@@ -16,7 +16,10 @@ tab2matR(X)
 A numeric matrix with one row.
 }
 \description{
-TODO: write description.
+Utility function to convert a row matrix to a square matrix.
+Used as the \code{brms} package returns things like the Cholesky
+decomposition matrix as separate columns where rows are posterior draws.
+Not intended to be called directly by most users.
 }
 \section{Functions}{
 \itemize{
@@ -24,5 +27,6 @@ TODO: write description.
 }}
 
 \examples{
-
+tab2mat(matrix(1:4, 1))
+tab2mat(matrix(1:9, 1))
 }

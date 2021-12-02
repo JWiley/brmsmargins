@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.links}
 \alias{.links}
-\title{Internal function to build out scale, inverselink and function}
+\title{Convert a link function name to a list}
 \usage{
 .links(
   link,
@@ -18,9 +18,19 @@
 \item{backtrans}{A character string, the type of back transformation}
 }
 \value{
-A list. TODO.
+A list with four elements.
+\describe{
+\item{scale}{A character string giving the argument to be passed to \code{\link[=fitted]{fitted()}}.}
+\item{ilink}{A character string giving the name of the inverse link function.}
+\item{ifun}{Inverse link function as an \code{R} function.}
+\item{ilinknum}{An integer giving the inverse link / transformation to be applied in \code{\link[=integratere]{integratere()}}, needed as this is a C++ function and cannot use the \code{R} based inverse link function.}
+}
 }
 \description{
-Internal utility function used in \code{.predict()}
+Internal utility function used in \code{\link[=.predict]{.predict()}}.
+Takes a link function name as a character string,
+the type of effect to be used, and the desired back transformation
+and returns a list with all the options needed to execute the desired
+options in \code{\link[=.predict]{.predict()}}.
 }
 \keyword{internal}

@@ -57,7 +57,7 @@ They are not intended for general use.
 }
 \examples{
 brmsmargins:::.namesL(1, 3)
-tab2matR(matrix(brmsmargins:::.namesL(1, 3), 1))
+brmsmargins:::tab2matR(matrix(brmsmargins:::.namesL(1, 3), 1))
 brmsmargins:::.namesZ(1, 3, NULL)
 }
 \keyword{internal}

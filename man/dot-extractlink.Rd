@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.extractlink}
 \alias{.extractlink}
-\title{Internal function to extract the link from a brms model}
+\title{Extract the link from a \code{brms} model}
 \usage{
 .extractlink(object, dpar)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{is.random}
 \alias{is.random}
-\title{Function to check whether a brmsfit has random effects}
+\title{Check whether a \code{brmsfit} class object has random effects}
 \usage{
 is.random(object)
 }
@@ -15,6 +15,6 @@ is.random(object)
 }
 \description{
 Internal utility function to check whether a \code{brmsfit}
-object has any random effects, or not.
+object has any random effects or not.
 }
 \keyword{internal}

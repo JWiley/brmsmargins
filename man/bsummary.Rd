@@ -48,7 +48,7 @@ A \code{data.table} with the mean, \code{M}
 }
 }
 \description{
-This function returns a summary of a posterior distribution for a single
+Returns a summary of a posterior distribution for a single
 parameter / value. It is based on personal preference. Notably, it does not
 only use \code{bayestestR::describe_posterior}, an excellent function,
 because of the desire to also describe the percentage of the full posterior
@@ -60,7 +60,7 @@ uncertainty.
 }
 \examples{
 
-bsummary(rnorm(10000))
+bsummary(rnorm(1000))
 
-bsummary(rnorm(10000), ROPE = c(-.5, .5), MID = c(-1, 1))
+bsummary(rnorm(1000), ROPE = c(-.5, .5), MID = c(-1, 1))
 }

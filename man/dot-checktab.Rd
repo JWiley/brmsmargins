@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.checktab}
 \alias{.checktab}
-\title{Function to check that something is a valid data object}
+\title{Check that object is a tbl, data.frame, or data.table}
 \usage{
 .checktab(x, requireNames = TRUE)
 }
@@ -17,7 +17,7 @@ An empty string if no issues. Otherwise, a non zero
 string with warning/error messages.
 }
 \description{
-Internal utility function to check requirements for
-\code{\link{brmsmargins}}.
+Internal utility function confirm that an object
+has the attributes needed to be used as data.
 }
 \keyword{internal}

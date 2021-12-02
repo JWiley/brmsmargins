@@ -23,7 +23,11 @@ correlation matrix of the multivariate normal distribution.}
 A numeric matrix with random values
 }
 \description{
-TODO: write description.
+Used in the process of Monte Carlo integration
+over multivariate normal random effects. This generates the
+random draws from the multivariate normal distribution
+and multiplies these by the data.
+Not intended to be called directly by most users.
 }
 \section{Functions}{
 \itemize{
@@ -31,7 +35,11 @@ TODO: write description.
 }}
 
 \examples{
+integratemvn(
+  X = matrix(1, 1, 2),
+  k = 100L,
+  sd = c(10, 5),
+  chol = chol(matrix(c(1, .5, .5, 1), 2)))
 
-integratemvn(matrix(1, 1, 2), 100L, c(10, 5), chol(matrix(c(1, .5, .5, 1), 2)))
 integratemvn(matrix(1, 1, 1), 100L, c(5), matrix(1))
 }

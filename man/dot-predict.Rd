@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{.predict}
 \alias{.predict}
-\title{Function to generate posterior predictions and summaries from a brms model}
+\title{Generate marginal, posterior predictions and summaries from a \code{brms} model}
 \usage{
 .predict(
   object,
@@ -80,7 +80,18 @@ A list with \code{Summary} and \code{Posterior}.
 Some of these may be \code{NULL} depending on the arguments used.
 }
 \description{
-This is an internal function that is essentially a fancy wrapper for
-\code{fitted()}.
+Calculate marginal predictions from a \code{brms} model.
+Marginal predictions average over the input data for each posterior draw.
+Marginal predictions for models with random effects will integrate
+over random effects.
+}
+\references{
+Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
+\doi{10.1186/s12874-015-0046-6}
+"A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes"
+and
+Skrondal, A., & Rabe‐Hesketh, S. (2009)
+\doi{10.1111/j.1467-985X.2009.00587.x}
+"Prediction in multilevel generalized linear models"
 }
 \keyword{internal}

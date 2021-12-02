@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^.~
 ^LICENSE\.md$
+LICENSE
 ^codecov\.yml$
 ^_pkgdown\.yml$
 ^docs$

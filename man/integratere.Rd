@@ -10,26 +10,30 @@ integratere(d, sd, L, k, yhat, backtrans)
 integratereR(d, sd, L, k, yhat, backtrans)
 }
 \arguments{
-\item{d}{A list}
+\item{d}{A list with model matrices for each random effect block.}
 
-\item{sd}{A list}
+\item{sd}{A list with standard deviation matrices for each random effect block
+where rows are different posterior draws.}
 
-\item{L}{A list}
+\item{L}{A list with matrices for each random effect block containing the parts of
+the L matrix, the Cholesky decomposition of the random effect correlation matrix.}
 
-\item{k}{An integer, the number of samples}
+\item{k}{An integer, the number of samples for Monte Carlo integration.}
 
 \item{yhat}{A matrix of the fixed effects predictions}
 
 \item{backtrans}{An integer, indicating the type of back transformation.
 0 indicates inverse logit (e.g., for logistic regression).
 1 indicates exponential (e.g., for poisson or negative binomial regression or if outcome was natural log transformed).
-2 indicates square (e.g., if outcome was square root transformed).}
+2 indicates square (e.g., if outcome was square root transformed).
+Any other integer may be used for no transformation.}
 }
 \value{
-A numeric matrix with random values
+A numeric matrix with the Monte Carlo integral calculated.
 }
 \description{
-TODO: write description.
+Used to conduct Monte Carlo integration over Gaussian random effects.
+Not intended to be called directly by most users.
 }
 \section{Functions}{
 \itemize{
@@ -37,5 +41,11 @@ TODO: write description.
 }}
 
 \examples{
-
+integratere(
+  d = list(matrix(1, 1, 1)),
+  sd = list(matrix(1, 2, 1)),
+  L = list(matrix(1, 2, 1)),
+  k = 10L,
+  yhat = matrix(0, 2, 1),
+  backtrans = 0L)
 }
