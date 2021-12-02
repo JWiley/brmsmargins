@@ -25,6 +25,7 @@ footer:
 
 template:
   package: preferably
+  bootstrap: 5
 
   opengraph:
     twitter:

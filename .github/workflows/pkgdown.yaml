@@ -9,6 +9,7 @@ name: pkgdown
 
 jobs:
   pkgdown:
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -23,10 +24,13 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
-          extra-packages: >
-	    pkgdown
-	    preferably
+          extra-packages: pkgdown
           needs: website
+
+      - name: Install dependencies
+        run: |
+	  remotes::install_github("amirmasoudabdol/preferably", type = "source")
+        shell: Rscript {0}
 
       - name: Deploy package
         run: |
