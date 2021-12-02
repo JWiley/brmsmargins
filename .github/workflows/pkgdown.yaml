@@ -29,6 +29,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          install.packages("remotes")
           remotes::install_github("amirmasoudabdol/preferably", type = "source")
         shell: Rscript {0}
 
