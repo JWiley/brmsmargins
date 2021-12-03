@@ -1,4 +1,7 @@
 desktop.ini
+.DS_Store
+.httr-oauth
+.Rproj.user
 .Rhistory
 R/.Rhistory
 .RData

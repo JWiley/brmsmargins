@@ -1,5 +1,5 @@
 <!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/JWiley/brmsmargins/branch/main/graph/badge.svg)](https://codecov.io/gh/JWiley/brmsmargins?branch=main)
+[![codecov](https://codecov.io/gh/JWiley/brmsmargins/branch/main/graph/badge.svg?token=VXf0Qo0PRY)](https://codecov.io/gh/JWiley/brmsmargins)
 <!-- badges: end -->
 
 ## Overview
