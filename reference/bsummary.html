@@ -169,14 +169,14 @@ the bounds specified.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             M        Mdn       LL       UL PercentROPE PercentMID   CI CIType</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.03915611 0.02930139 -2.23563 2.538952          NA         NA 0.99    HDI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              M         Mdn       LL       UL PercentROPE PercentMID   CI CIType</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.001238231 -0.02552506 -2.42445 2.630884          NA         NA 0.99    HDI</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ROPE  MID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;NA&gt; &lt;NA&gt;</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>, ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              M         Mdn        LL      UL PercentROPE PercentMID   CI CIType</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.01341692 0.002213268 -2.513656 2.79288        38.6       34.3 0.99    HDI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             M         Mdn        LL       UL PercentROPE PercentMID   CI CIType</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.0281642 -0.02940813 -2.478266 2.468304        38.7       30.6 0.99    HDI</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           ROPE                   MID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: [-0.5, 0.5] [-Inf, -1] | [1, Inf]</span>
 </code></pre></div>
