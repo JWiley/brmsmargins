@@ -28,11 +28,13 @@ d <- withr::with_seed(
 
 res.samp <- d[, .(M = mean(log(y))), by = .(ID, x)][, .(M = mean(exp(M))), by = x]
 
-mlog <- brms::brm(
-  log(y) ~ 1 + x + (1 + x | ID), family = "gaussian",
-  data = d, iter = 1000, warmup = 500, seed = 1234,
-  chains = 2, #backend = "cmdstanr",
-  silent = 2, refresh = 0)
+suppressWarnings(
+  mlog <- brms::brm(
+    log(y) ~ 1 + x + (1 + x | ID), family = "gaussian",
+    data = d, iter = 1000, warmup = 500, seed = 1234,
+    chains = 2, backend = "rstan", save_pars = save_pars(all = TRUE),
+    silent = 2, refresh = 0, open_progress = FALSE)
+)
 
 preddat <- data.frame(y = c(0, 0), x = c(0, 1), ID = 999)
 
