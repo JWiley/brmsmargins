@@ -102,3 +102,35 @@ test_that(".predict works with fixed effects only in multilevel logistic models"
   expect_true(res.fixedonly$Summary$M[1] < res.integrate$Summary$M[1])
   expect_true(res.fixedonly$Summary$M[2] < res.integrate$Summary$M[2])
 })
+
+suppressWarnings(
+  mlogit.intonly <- brms::brm(
+  y ~ 1 + x + (1 | ID), family = "bernoulli",
+  data = d, seed = 1234,
+  chains = 2, backend = "rstan", save_pars = save_pars(all = TRUE),
+  silent = 2, refresh = 0, open_progress = FALSE)
+)
+
+h <- .001
+ames <- brmsmargins(
+  object = mlogit.intonly,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME time" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE",
+  k = 100L,
+  seed = 1234
+)
+
+test_that("brmsmargins works with intercept only models", {
+  expect_type(ames, "list")
+  expect_equal(
+    ndraws(mlogit.intonly),
+    nrows(ames$Posterior))
+  expect_true(all(
+    ames$Posterior[, 1:2] >= 0 &
+      ames$Posterior[, 1:2] <= 1))
+  expect_true(all(
+    ames$ContrastSummary$M >= 0 &
+      ames$ContrastSummary$M <= 1))
+  expect_true(abs(ames$ContrastSummary$M - 0.11) < .02)
+})

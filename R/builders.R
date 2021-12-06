@@ -53,7 +53,13 @@ utils::globalVariables(c("..n"))
 .buildL <- function(data, block, number, dpar) {
   stopifnot(is.data.table(data))
   n <- .namesL(block, number)
-  as.matrix(data[, ..n])
+  if (isTRUE(number == 1)) {
+    out <- matrix(1, nrow = nrow(data), ncol = 1)
+    colnames(out) <- n
+  } else {
+    out <- as.matrix(data[, ..n])
+  }
+  return(out)
 }
 
 ## make Rcmd check happy
