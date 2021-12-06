@@ -1,5 +1,8 @@
 <!-- badges: start -->
-[![codecov](https://codecov.io/gh/JWiley/brmsmargins/branch/main/graph/badge.svg?token=VXf0Qo0PRY)](https://codecov.io/gh/JWiley/brmsmargins)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/brmsmargins)](https://cran.r-project.org/package=brmsmargins)
+[![R-CMD-check](https://github.com/JWiley/brmsmargins/workflows/R-CMD-check/badge.svg)](https://github.com/JWiley/brmsmargins/actions)
+[![codecov](https://codecov.io/gh/JWiley/brmsmargins/branch/main/graph/badge.svg?token=VXf0Qo0PRY)](https://app.codecov.io/gh/JWiley/brmsmargins)
 <!-- badges: end -->
 
 ## Overview
