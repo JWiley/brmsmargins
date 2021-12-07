@@ -1,6 +1,14 @@
 skip_on_cran()
 
-d <- withr::with_seed(
+if (!requireNamespace("cmdstanr", quietly = TRUE)) {
+  backend <- "rstan"
+} else {
+  if (isFALSE(is.null(cmdstanr::cmdstan_version(error_on_NA = FALSE)))) {
+    backend <- "cmdstanr"
+  }
+}
+
+dlogit <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
     nObs <- 20
@@ -26,14 +34,14 @@ d <- withr::with_seed(
     copy(d)
   })
 
-res.samp <- d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x]
+res.samp <- dlogit[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x]
 
 suppressWarnings(
   mlogit <- brms::brm(
     y ~ 1 + x + (1 + x | ID), family = "bernoulli",
-    data = d, iter = 1000, warmup = 500, seed = 1234,
-    chains = 2, backend = "rstan", save_pars = save_pars(all = TRUE),
-    silent = 2, refresh = 0, open_progress = FALSE)
+    data = dlogit, iter = 1000, warmup = 500, seed = 1234,
+    chains = 2, backend = backend, save_pars = save_pars(all = TRUE),
+    silent = 2, refresh = 0)
 )
 
 preddat <- data.frame(y = c(0, 0), x = c(0, 1), ID = 999)
@@ -103,12 +111,36 @@ test_that(".predict works with fixed effects only in multilevel logistic models"
   expect_true(res.fixedonly$Summary$M[2] < res.integrate$Summary$M[2])
 })
 
+h <- .001
+ames <- brmsmargins(
+  object = mlogit,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME time" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE",
+  k = 100L,
+  seed = 1234
+)
+
+test_that("brmsmargins works with random slope logit models", {
+  expect_type(ames, "list")
+  expect_equal(
+    ndraws(mlogit),
+    nrow(ames$Posterior))
+  expect_true(all(
+    ames$Posterior[, 1:2] >= 0 &
+      ames$Posterior[, 1:2] <= 1))
+  expect_true(all(
+    ames$ContrastSummary$M >= 0 &
+      ames$ContrastSummary$M <= 1))
+  expect_true(abs(ames$ContrastSummary$M - 0.11) < .02)
+})
+
 suppressWarnings(
   mlogit.intonly <- brms::brm(
   y ~ 1 + x + (1 | ID), family = "bernoulli",
-  data = d, seed = 1234,
-  chains = 2, backend = "rstan", save_pars = save_pars(all = TRUE),
-  silent = 2, refresh = 0, open_progress = FALSE)
+  data = dlogit, seed = 1234,
+  chains = 2, backend = backend, save_pars = save_pars(all = TRUE),
+  silent = 2, refresh = 0)
 )
 
 h <- .001
@@ -121,11 +153,11 @@ ames <- brmsmargins(
   seed = 1234
 )
 
-test_that("brmsmargins works with intercept only models", {
+test_that("brmsmargins works with intercept only logit models", {
   expect_type(ames, "list")
   expect_equal(
     ndraws(mlogit.intonly),
-    nrows(ames$Posterior))
+    nrow(ames$Posterior))
   expect_true(all(
     ames$Posterior[, 1:2] >= 0 &
       ames$Posterior[, 1:2] <= 1))

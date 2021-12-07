@@ -1,6 +1,14 @@
 skip_on_cran()
 
-d <- withr::with_seed(
+if (!requireNamespace("cmdstanr", quietly = TRUE)) {
+  backend <- "rstan"
+} else {
+  if (isFALSE(is.null(cmdstanr::cmdstan_version(error_on_NA = FALSE)))) {
+    backend <- "cmdstanr"
+  }
+}
+
+dlog <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
     nObs <- 20
@@ -26,14 +34,14 @@ d <- withr::with_seed(
     copy(d)
   })
 
-res.samp <- d[, .(M = mean(log(y))), by = .(ID, x)][, .(M = mean(exp(M))), by = x]
+res.samp <- dlog[, .(M = mean(log(y))), by = .(ID, x)][, .(M = mean(exp(M))), by = x]
 
 suppressWarnings(
   mlog <- brms::brm(
     log(y) ~ 1 + x + (1 + x | ID), family = "gaussian",
-    data = d, iter = 1000, warmup = 500, seed = 1234,
-    chains = 2, backend = "rstan", save_pars = save_pars(all = TRUE),
-    silent = 2, refresh = 0, open_progress = FALSE)
+    data = dlog, iter = 1000, warmup = 500, seed = 1234,
+    chains = 2, backend = backend, save_pars = save_pars(all = TRUE),
+    silent = 2, refresh = 0)
 )
 
 preddat <- data.frame(y = c(0, 0), x = c(0, 1), ID = 999)
