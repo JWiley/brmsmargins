@@ -44,5 +44,6 @@ jobs:
           extra-packages: >
             rcmdcheck
             BH
+            RcppEigen
 
       - uses: r-lib/actions/check-r-package@v1
