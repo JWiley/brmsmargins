@@ -58,9 +58,6 @@
     <loc>https://joshuawiley.com/brmsmargins/reference/dot-percent.html</loc>
   </url>
   <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/dot-predict.html</loc>
-  </url>
-  <url>
     <loc>https://joshuawiley.com/brmsmargins/reference/index.html</loc>
   </url>
   <url>
@@ -71,6 +68,9 @@
   </url>
   <url>
     <loc>https://joshuawiley.com/brmsmargins/reference/is.random.html</loc>
+  </url>
+  <url>
+    <loc>https://joshuawiley.com/brmsmargins/reference/prediction.html</loc>
   </url>
   <url>
     <loc>https://joshuawiley.com/brmsmargins/reference/rowBootMeans.html</loc>
