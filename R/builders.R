@@ -1,4 +1,4 @@
-#' @title Internal functions build the variable names or data objects for estimation
+#' @title Build the Variable Names or Data Objects for Estimation
 #'
 #' @description
 #' These are a set of internal utility functions.

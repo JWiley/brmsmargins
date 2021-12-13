@@ -3,7 +3,7 @@
 \name{tab2mat}
 \alias{tab2mat}
 \alias{tab2matR}
-\title{Convert a row of a table to a matrix}
+\title{Convert a Row of a Table to a Square Matrix}
 \usage{
 tab2mat(X)
 

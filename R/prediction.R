@@ -1,4 +1,4 @@
-#' Generate marginal, posterior predictions and summaries from a \code{brms} model
+#' Marginal Posterior Predictions from a 'brms' Model
 #'
 #' Calculate marginal predictions from a \code{brms} model.
 #' Marginal predictions average over the input data for each posterior draw.
@@ -58,13 +58,13 @@
 #' Skrondal, A., & Rabe-Hesketh, S. (2009)
 #' \doi{10.1111/j.1467-985X.2009.00587.x}
 #' \dQuote{Prediction in multilevel generalized linear models}
-#' @keywords internal
 #' @importFrom data.table as.data.table
 #' @importFrom stats fitted formula
 #' @importFrom posterior as_draws_df ndraws
 #' @importFrom brms make_standata
 #' @importFrom methods missingArg
-.predict <- function(object, data, summarize = TRUE, posterior = FALSE,
+#' @export
+prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
                      index, dpar = NULL, resample = 0L, resampleseed = FALSE,
                      effects = c("fixedonly", "includeRE", "integrateoutRE"),
                      backtrans = c("response", "linear", "identity", "invlogit", "exp", "square"),

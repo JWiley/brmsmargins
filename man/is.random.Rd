@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{is.random}
 \alias{is.random}
-\title{Check whether a \code{brmsfit} class object has random effects}
+\title{Check a \code{brmsfit} Object has Random Effects}
 \usage{
 is.random(object)
 }

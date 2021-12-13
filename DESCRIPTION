@@ -33,7 +33,8 @@ Suggests:
     withr,
     knitr,
     rmarkdown,
-    margins
+    margins,
+    betareg
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 LinkingTo: 

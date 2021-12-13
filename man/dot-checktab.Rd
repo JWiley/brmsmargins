@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.checktab}
 \alias{.checktab}
-\title{Check that object is a tbl, data.frame, or data.table}
+\title{Check Object Class is a Table}
 \usage{
 .checktab(x, requireNames = TRUE)
 }
@@ -19,5 +19,7 @@ string with warning/error messages.
 \description{
 Internal utility function confirm that an object
 has the attributes needed to be used as data.
+Currently it should be a \code{tbl},
+\code{data.frame}, or \code{data.table}.
 }
 \keyword{internal}

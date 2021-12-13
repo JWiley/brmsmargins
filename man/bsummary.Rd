@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{bsummary}
 \alias{bsummary}
-\title{A Personal Preference Based Bayesian Summary Function}
+\title{Personal Preference Based Bayesian Summary}
 \usage{
 bsummary(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL)
 }
@@ -63,4 +63,9 @@ uncertainty.
 bsummary(rnorm(1000))
 
 bsummary(rnorm(1000), ROPE = c(-.5, .5), MID = c(-1, 1))
+}
+\references{
+Kruschke, J. K. (2018).
+\doi{10.1177/2F2515245918771304}
+\dQuote{Rejecting or accepting parameter values in Bayesian estimation}
 }

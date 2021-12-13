@@ -1,4 +1,4 @@
-#' Calculate the percent of observations within or without a window
+#' Calculate Percent of Observations Within or Without a Window
 #'
 #' This is an internal helper function to calculate and label
 #' the percentage of a posterior distribution that falls within
@@ -47,7 +47,7 @@
     Label = lab)
 }
 
-#' A Personal Preference Based Bayesian Summary Function
+#' Personal Preference Based Bayesian Summary
 #'
 #' Returns a summary of a posterior distribution for a single
 #' parameter / value. It is based on personal preference. Notably, it does not
@@ -96,6 +96,10 @@
 #' @importFrom bayestestR ci
 #' @importFrom data.table data.table
 #' @importFrom stats median
+#' @references
+#' Kruschke, J. K. (2018).
+#' \doi{10.1177/2F2515245918771304}
+#' \dQuote{Rejecting or accepting parameter values in Bayesian estimation}
 #' @examples
 #'
 #' bsummary(rnorm(1000))
@@ -123,10 +127,12 @@ bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
   return(out)
 }
 
-#' Check that object is a tbl, data.frame, or data.table
+#' Check Object Class is a Table
 #'
 #' Internal utility function confirm that an object
 #'   has the attributes needed to be used as data.
+#' Currently it should be a \code{tbl},
+#'   \code{data.frame}, or \code{data.table}.
 #'
 #' @param x An object to be evaluated.
 #' @param requireNames A logical, whether names are
@@ -165,7 +171,7 @@ bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
   return(out)
 }
 
-#' Check whether a \code{brmsfit} class object has random effects
+#' Check a \code{brmsfit} Object has Random Effects
 #'
 #' Internal utility function to check whether a \code{brmsfit}
 #' object has any random effects or not.
@@ -180,7 +186,7 @@ is.random <- function(object) {
   isTRUE(nrow(object$ranef) >= 1L)
 }
 
-#' Extract the link from a \code{brms} model
+#' Extract the Link from a \code{brms} Model
 #'
 #' Internal utility function to take a \code{brmsfit} object
 #' and extract the link for a specific \code{dpar}.
@@ -206,13 +212,13 @@ is.random <- function(object) {
   return(link)
 }
 
-#' Convert a link function name to a list
+#' Convert a Link Function Name to a List
 #'
-#' Internal utility function used in [.predict()].
+#' Internal utility function used in [prediction()].
 #' Takes a link function name as a character string,
 #' the type of effect to be used, and the desired back transformation
 #' and returns a list with all the options needed to execute the desired
-#' options in [.predict()].
+#' options in [prediction()].
 #'
 #' @param link The link named in a \code{brmsfit} object
 #' @param effects A character string, the type of effect desired

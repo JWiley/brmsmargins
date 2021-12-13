@@ -3,7 +3,7 @@
 \name{integratemvn}
 \alias{integratemvn}
 \alias{integratemvnR}
-\title{Integrate over multivariate normal random effects}
+\title{Integrate over Multivariate Normal Random Effects}
 \usage{
 integratemvn(X, k, sd, chol)
 

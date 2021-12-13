@@ -1,4 +1,4 @@
-#' @title Internal functions to check assertions about a \code{brmsfit} model object
+#' @title Check Assertions about a \code{brmsfit} Model Object
 #'
 #' @description
 #' These are a set of internal utility functions.
@@ -77,7 +77,10 @@ NULL
                  paste(class(family), collapse = "; ")))
   }
 
-  fams <- c("gaussian", "bernoulli", "poisson", "negbinomial")
+  fams <- c("gaussian",
+            "bernoulli", "beta",
+            "gamma",
+            "poisson", "negbinomial")
   validtype <- family %in% fams
   if (isFALSE(validtype)) {
     stop(sprintf("The 'family' must be one of (%s), but found '%s'.",

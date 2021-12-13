@@ -7,7 +7,7 @@
 \alias{.assertfamily}
 \alias{.assertdpar}
 \alias{.assertlink}
-\title{Internal functions to check assertions about a \code{brmsfit} model object}
+\title{Check Assertions about a \code{brmsfit} Model Object}
 \usage{
 .assertbrmsfit(object)
 

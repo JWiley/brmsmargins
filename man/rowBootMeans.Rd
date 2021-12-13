@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{rowBootMeans}
 \alias{rowBootMeans}
-\title{Bootstrap row means}
+\title{Bootstrap Row Means}
 \usage{
 rowBootMeans(x)
 }

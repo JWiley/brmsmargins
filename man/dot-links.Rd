@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.links}
 \alias{.links}
-\title{Convert a link function name to a list}
+\title{Convert a Link Function Name to a List}
 \usage{
 .links(
   link,
@@ -27,10 +27,10 @@ A list with four elements.
 }
 }
 \description{
-Internal utility function used in \code{\link[=.predict]{.predict()}}.
+Internal utility function used in \code{\link[=prediction]{prediction()}}.
 Takes a link function name as a character string,
 the type of effect to be used, and the desired back transformation
 and returns a list with all the options needed to execute the desired
-options in \code{\link[=.predict]{.predict()}}.
+options in \code{\link[=prediction]{prediction()}}.
 }
 \keyword{internal}

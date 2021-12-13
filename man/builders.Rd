@@ -8,7 +8,7 @@
 \alias{.buildSD}
 \alias{.namesZ}
 \alias{.buildZ}
-\title{Internal functions build the variable names or data objects for estimation}
+\title{Build the Variable Names or Data Objects for Estimation}
 \usage{
 .namesL(block, number)
 

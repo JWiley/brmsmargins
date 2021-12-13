@@ -24,8 +24,8 @@ The column 'Mixed' means mixed effects models.
 | Bernoulli (logistic)                           | :heavy_check_mark: | :heavy_check_mark: |
 | Poisson                                        | :heavy_check_mark: | :heavy_check_mark: |
 | Negative Binomial                              | :heavy_check_mark: | :heavy_check_mark: |
-| Gamma                                          | :heavy_check_mark: | :x:                |
-| Beta                                           | :heavy_check_mark: | :x:                |
+| Gamma                                          | :heavy_check_mark: | :heavy_check_mark: |
+| Beta                                           | :heavy_check_mark: | :heavy_check_mark: |
 | Multinomial logistic                           | :x:                | :x:                |
 | Multivariate models                            | :x:                | :x:                |
 | Gaussian location scale models                 | :heavy_check_mark: | :heavy_check_mark: |
@@ -153,7 +153,7 @@ The package is not yet on CRAN, so to install, you must use the
 development version. To install, run:
 
 ```
-devtools::install_github("JWiley/brmsmargins")
+remotes::install_github("JWiley/brmsmargins")
 ```
 
 ## Learn More

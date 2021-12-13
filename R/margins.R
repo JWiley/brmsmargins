@@ -1,21 +1,74 @@
 ## make Rcmd check happy
 utils::globalVariables(c("Label"))
 
-#' Calculate Average Marginal Effects (AMEs) from brms models
+#' Calculate Marginal Effects from 'brms' Models
 #'
-#' This function is designed to help calculate average marginal
-#' effects (AMEs) from brms models.
-#' Currently, only one of \code{at} or \code{add} can be specified.
-#' It is hoped to relax this in the future.
-#' TODO add more documentation and technical definitions.
+#' This function is designed to help calculate marginal effects
+#' including average marginal effects (AMEs) from \code{brms} models.
 #'
-#' @param object A fitted brms model object. Required.
+#' The main parts required for the function are a fitted model object,
+#' (via the \code{object} argument) a dataset to be used for prediction,
+#' (via the \code{newdata} argument which defaults to the model frame),
+#' and a dataset passed to either \code{at} or \code{add}.
+#' The steps are as follows:
+#' \enumerate{
+#'   \item Check that the function inputs (model object, data, etc.) are valid.
+#'   \item Take the dataset from the \code{newdata} argument and either
+#'     add the values from the first row of \code{add} or replace the values
+#'     using the first row of \code{at}. Only variables specified in
+#'     \code{at} or \code{add} are modified. Other variables are left as is.
+#'   \item Use the \code{fitted()} function to generate predictions based on
+#'     this modified dataset. If \code{effects} is set to \dQuote{fixedonly}
+#'     (meaning only generate predictions using fixed effects)
+#'     or to \dQuote{includeRE}
+#'     (meaning generate predictions using fixed and random effects),
+#'     then predictions are generated entirely using the \code{fitted()}
+#'     function and are, typically back transformed to the response scale.
+#'     For mixed effects models with fixed and random effects where
+#'     \code{effects} is set to \dQuote{integrateoutRE}, then \code{fitted()}
+#'     is only used to generate predictions using the fixed effects on the linear
+#'     scale. For each prediction generated, the random effects are integrated out
+#'     by drawing \code{k} random samples from the model assumed random effect(s)
+#'     distribution. These are added to the fixed effects predictions,
+#'     back transformed, and then averaged over all \code{k} random samples to
+#'     perform numerical Monte Carlo integration.
+#'   \item All the predictions for each posterior draw, after any back transformation
+#'     has been applied, are averaged, resulting in one, marginal value for each
+#'     posterior draw. These are marginal predictions. They are average marginal
+#'     predictions if averaging over the sample dataset, or may be marginal predictions
+#'     at the means, if the initial input dataset used mean values, etc.
+#'   \item Steps two to four are repeated for each row of \code{at} or \code{add}.
+#'     Results are combined into a matrix where the columns are different
+#'     rows from \code{at} or \code{add} and the rows are different posterior
+#'     draws.
+#'   \item If contrasts were specified, using a contrast matrix, the
+#'     marginal prediction matrix is post multiplied by the contrast matrix.
+#'     Depending on the choice(s) of \code{add} or \code{at} and the
+#'     values in the contrast matrix, these can then be
+#'     average marginal effects (AMEs) by using numerical integration
+#'     (\code{add} with 0 and a very close to 0 value) or
+#'     discrete difference (\code{at} with say 0 and 1 as values)
+#'     for a given predictor(s).
+#'   \item The marginal predictions and the contrasts, if specified are
+#'     summarized.
+#' }
+#'
+#' Although \code{brmsmargins()} is focused on helping to calculate
+#' marginal effects, it can also be used to generate marginal predictions,
+#' and indeed these marginal predictions are the foundation of any
+#' marginal effect estimates. Through manipulating the input data,
+#' \code{at} or \code{add} and the contrast matrix, other types of estimates
+#' averaged or weighting results in specific ways are also possible.
+#'
+#' @param object A fitted \code{brms} model object. Required.
 #' @param at An optional object inheriting from data frame indicating
 #'   the values to hold specific variables at when calculating average
 #'   predictions. This is intended for AMEs from categorical variables.
+#'   Currently only one of \code{at} or \code{add} can be specified.
 #' @param add An optional object inheriting from data frame indicating
 #'   the values to add to specific variables at when calculating average
 #'   predictions. This is intended for AMEs for continuous variables.
+#'   Currently only one of \code{at} or \code{add} can be specified.
 #' @param newdata An object inheriting from data frame indicating
 #'   the baseline values to use for predictions and AMEs.
 #'   Defaults to be the model frame.
@@ -68,11 +121,21 @@ utils::globalVariables(c("Label"))
 #'   This would be fine, for instance, when only using fixed effects,
 #'   or if you know what you are doing and intend that behavior when
 #'   integrating out random effects.
-#' @param ... Additional arguments passed on to \code{\link{.predict}}.
+#' @param ... Additional arguments passed on to \code{\link{prediction}}.
+#'   In particular, the \code{effects} argument of [prediction()] is
+#'   important for mixed effects models to control how random effects
+#'   are treated in the predictions, which subsequently changes the
+#'   marginal effect estimates.
 #' @importFrom stats model.frame runif
 #' @importFrom data.table as.data.table copy :=
 #' @importFrom methods missingArg
-#' @return A list. TODO describe more.
+#' @return A list with four elements.
+#' \itemize{
+#'   \item{\code{Posterior}}{Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to [prediction()] they can include random effects or be predictions integrating out random effects.}
+#'   \item{\code{Summary}}{A summary of the predictions.}
+#'   \item{\code{Contrasts}}{Posterior distribution of all contrasts, if a contrast matrix was specified.}
+#'   \item{\code{ContrastSummary}}{A summary of the posterior distribution of all contrasts, if specified}
+#' }
 #' @export
 #' @references
 #' Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
@@ -234,7 +297,7 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
           set.seed(seed)
         }
       }
-      out[[i]] <- .predict(
+      out[[i]] <- prediction(
         object, data = newdata,
         ROPE = ROPE, MID = MID, posterior = TRUE,
         CI = CI, CIType = CIType, dpar = dpar, ...)
@@ -262,7 +325,7 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
           set.seed(seed)
         }
       }
-      out[[i]] <- .predict(
+      out[[i]] <- prediction(
         object, data = tmp,
         ROPE = ROPE, MID = MID, posterior = TRUE,
         CI = CI, CIType = CIType, dpar = dpar, ...)

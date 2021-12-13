@@ -3,7 +3,7 @@
 
 using namespace Rcpp;
 
-//' Integrate over multivariate normal random effects
+//' Integrate over Multivariate Normal Random Effects
 //'
 //' Used in the process of Monte Carlo integration
 //' over multivariate normal random effects. This generates the

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.percent}
 \alias{.percent}
-\title{Calculate the percent of observations within or without a window}
+\title{Calculate Percent of Observations Within or Without a Window}
 \usage{
 .percent(x, window = NULL, within = TRUE)
 }

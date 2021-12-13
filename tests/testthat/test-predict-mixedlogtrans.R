@@ -2,6 +2,9 @@ skip_on_cran()
 
 if (!requireNamespace("cmdstanr", quietly = TRUE)) {
   backend <- "rstan"
+  ## if using rstan backend, models can crash on Windows
+  ## so skip if on windows and cannot use cmdstanr
+  skip_on_os("windows")
 } else {
   if (isFALSE(is.null(cmdstanr::cmdstan_version(error_on_NA = FALSE)))) {
     backend <- "cmdstanr"
@@ -48,10 +51,10 @@ preddat <- data.frame(y = c(0, 0), x = c(0, 1), ID = 999)
 
 res.integrate <- withr::with_seed(
   seed = 1234, {
-    test0 <- .predict(object = mlog, data = preddat[1, ], posterior = TRUE,
+    test0 <- prediction(object = mlog, data = preddat[1, ], posterior = TRUE,
                       effects = "integrateoutRE", backtrans = "exp",
                       k = 100L, CI = 0.95, CIType = "ETI")
-    test1 <- .predict(object = mlog, data = preddat[2, ], posterior = TRUE,
+    test1 <- prediction(object = mlog, data = preddat[2, ], posterior = TRUE,
                       effects = "integrateoutRE", backtrans = "exp",
                       k = 100L, CI = 0.95, CIType = "ETI")
     ame <- list(Summary = NULL, Posterior = test1$Posterior - test0$Posterior)
@@ -66,10 +69,10 @@ res.integrate <- withr::with_seed(
 
 res.fixedonly <- withr::with_seed(
   seed = 1234, {
-    test0 <- .predict(object = mlog, data = preddat[1, ], posterior = TRUE,
+    test0 <- prediction(object = mlog, data = preddat[1, ], posterior = TRUE,
                       effects = "fixedonly", backtrans = "exp",
                       CI = 0.95, CIType = "ETI")
-    test1 <- .predict(object = mlog, data = preddat[2, ], posterior = TRUE,
+    test1 <- prediction(object = mlog, data = preddat[2, ], posterior = TRUE,
                       effects = "fixedonly", backtrans = "exp",
                       CI = 0.95, CIType = "ETI")
     ame <- list(Summary = NULL, Posterior = test1$Posterior - test0$Posterior)

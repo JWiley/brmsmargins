@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-//' Bootstrap row means
+//' Bootstrap Row Means
 //'
 //' This takes a numeric matrix, bootstrap resamples each row, and then
 //' calculates the mean. The intended use case is for Bayesian posterior

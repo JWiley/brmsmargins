@@ -3,7 +3,7 @@
 
 using namespace Rcpp;
 
-//' Convert a row of a table to a matrix
+//' Convert a Row of a Table to a Square Matrix
 //'
 //' Utility function to convert a row matrix to a square matrix.
 //' Used as the \code{brms} package returns things like the Cholesky

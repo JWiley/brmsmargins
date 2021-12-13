@@ -1,4 +1,4 @@
-#' Average over posterior predictions
+#' Average Over Posterior Predictions
 #'
 #' Internal function that averages over posterior predictions
 #' using either [rowMeans()] or [rowBootMeans()], the latter

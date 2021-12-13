@@ -2,7 +2,7 @@
 % Please edit documentation in R/averageposterior.R
 \name{.averagePosterior}
 \alias{.averagePosterior}
-\title{Average over posterior predictions}
+\title{Average Over Posterior Predictions}
 \usage{
 .averagePosterior(posterior, resample = 0L, seed = FALSE)
 }
