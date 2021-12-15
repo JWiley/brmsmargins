@@ -30,9 +30,4 @@ It is designed to fail gracefully if no window given, and to
 give some useful labels about the windows / range used.
 Intended for use internally as part of \code{\link{brmsmargins}}.
 }
-\examples{
-brmsmargins:::.percent(1:10, window = NULL)
-brmsmargins:::.percent(1:10, window = c(3, 5))
-brmsmargins:::.percent(1:10, window = c(2, 6), within = FALSE)
-}
 \keyword{internal}

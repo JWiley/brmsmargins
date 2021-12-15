@@ -19,17 +19,19 @@
 #'   exact window used in human readable format.
 #' @keywords internal
 #' @importFrom extraoperators %e%
-#' @examples
-#' brmsmargins:::.percent(1:10, window = NULL)
-#' brmsmargins:::.percent(1:10, window = c(3, 5))
-#' brmsmargins:::.percent(1:10, window = c(2, 6), within = FALSE)
 .percent <- function(x, window = NULL, within = TRUE) {
   if (isTRUE(is.null(window))) {
     window <- NA_real_
     pi <- NA_real_
     lab <- NA_character_
   } else {
-    stopifnot(isTRUE(is.numeric(window)) && identical(length(window), 2L))
+    if (isFALSE(isTRUE(is.numeric(window)) &&
+                  isTRUE(identical(length(window), 2L)))) {
+      stop(sprintf("window must be a numeric vector with length 2, but found a %s vector of length %d",
+                   paste(class(window), collapse = "; "), length(window)))
+    }
+
+    window <- as.numeric(window)
     if (isTRUE(within)) {
       lab <- sprintf("[%s, %s]",
                      as.character(min(window)),
@@ -98,7 +100,7 @@
 #' @importFrom stats median
 #' @references
 #' Kruschke, J. K. (2018).
-#' \doi{10.1177/2F2515245918771304}
+#' \doi{10.1177/2515245918771304}
 #' \dQuote{Rejecting or accepting parameter values in Bayesian estimation}
 #' @examples
 #'
@@ -106,6 +108,10 @@
 #'
 #' bsummary(rnorm(1000), ROPE = c(-.5, .5), MID = c(-1, 1))
 bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
+  if (isFALSE(is.numeric(x))) {
+    stop(sprintf("to be summarized x must be numeric, but %s class was found",
+         paste(class(x), collapse = "; ")))
+  }
   ropes <- .percent(x, window = ROPE, within = TRUE)
   mids <- .percent(x, window = MID, within = FALSE)
 
@@ -113,13 +119,13 @@ bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
   mdn <- median(x, na.rm = TRUE)
   cis <- bayestestR::ci(x, ci = CI, method = CIType)
   out <- data.table(
-    M = m,
-    Mdn = mdn,
-    LL = cis$CI_low,
-    UL = cis$CI_high,
-    PercentROPE = ropes$Percent,
-    PercentMID = mids$Percent,
-    CI = CI,
+    M = as.numeric(m),
+    Mdn = as.numeric(mdn),
+    LL = as.numeric(cis$CI_low),
+    UL = as.numeric(cis$CI_high),
+    PercentROPE = as.numeric(ropes$Percent),
+    PercentMID = as.numeric(mids$Percent),
+    CI = as.numeric(CI),
     CIType = CIType,
     ROPE = ropes$Label,
     MID = mids$Label)

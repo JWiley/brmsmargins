@@ -34,9 +34,6 @@ utils::globalVariables(c("Block", "Row", "Col"))
 
 #' @rdname builders
 #' @importFrom data.table as.data.table
-#' @examples
-#' brmsmargins:::.namesL(1, 3)
-#' brmsmargins:::tab2matR(matrix(brmsmargins:::.namesL(1, 3), 1))
 .namesL <- function(block, number) {
   n <- expand.grid(Block = block,
                    Row = seq_len(number),
@@ -87,8 +84,6 @@ utils::globalVariables(c("group", "coef", "id"))
 utils::globalVariables(c("Number"))
 
 #' @rdname builders
-#' @examples
-#' brmsmargins:::.namesZ(1, 3, NULL)
 .namesZ <- function(block, number, dpar) {
   n <- expand.grid(Block = block,
                    Number = seq_len(number))

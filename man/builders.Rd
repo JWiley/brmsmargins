@@ -55,9 +55,4 @@ They are not intended for general use.
 \item{\code{.buildZ}}{Return matrix of data for random effect predictions.}
 }
 }
-\examples{
-brmsmargins:::.namesL(1, 3)
-brmsmargins:::tab2matR(matrix(brmsmargins:::.namesL(1, 3), 1))
-brmsmargins:::.namesZ(1, 3, NULL)
-}
 \keyword{internal}
