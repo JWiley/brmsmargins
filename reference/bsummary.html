@@ -38,7 +38,7 @@ uncertainty."><meta name="twitter:card" content="summary"><meta name="twitter:cr
     
     <a class="navbar-brand me-2" href="../index.html">brmsmargins</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -167,7 +167,7 @@ the bounds specified.</p></dd>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Kruschke, J. K. (2018).
-doi: <a href="https://doi.org/10.1177/2F2515245918771304" class="external-link">10.1177/2F2515245918771304</a>
+doi: <a href="https://doi.org/10.1177/2515245918771304" class="external-link">10.1177/2515245918771304</a>
 
 “Rejecting or accepting parameter values in Bayesian estimation”</p>
     </div>
@@ -176,16 +176,16 @@ doi: <a href="https://doi.org/10.1177/2F2515245918771304" class="external-link">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              M         Mdn        LL       UL PercentROPE PercentMID   CI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.03321198 -0.02462609 -3.216401 2.202091          NA         NA 0.99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    CIType ROPE  MID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    HDI &lt;NA&gt; &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              M        Mdn        LL       UL PercentROPE PercentMID   CI CIType</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.01946283 0.02197378 -2.419293 2.371059          NA         NA 0.99    HDI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    ROPE  MID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;NA&gt; &lt;NA&gt;</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>, ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             M        Mdn       LL       UL PercentROPE PercentMID   CI CIType</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.04105121 0.03353712 -2.38271 2.515366        35.2       33.3 0.99    HDI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           ROPE                   MID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: [-0.5, 0.5] [-Inf, -1] | [1, Inf]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              M           Mdn        LL       UL PercentROPE PercentMID   CI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.005478196 -0.0009052917 -2.237556 2.847827        35.5         33 0.99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    CIType        ROPE                   MID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    HDI [-0.5, 0.5] [-Inf, -1] | [1, Inf]</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
