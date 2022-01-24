@@ -14,3 +14,4 @@ LICENSE
 \.gitignore
 ^\.github$
 ^docs$
+internal.md
