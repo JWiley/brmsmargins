@@ -81,7 +81,7 @@ res.fixedonly <- withr::with_seed(
         test0$Posterior, test1$Posterior, ame$Posterior))
   })
 
-test_that(".predict works to integrate out random effects in multilevel poisson models", {
+test_that("prediction works to integrate out random effects in multilevel poisson models", {
   expect_type(res.integrate, "list")
   expect_equal(
     c(ndraws(mpois), 3L),
@@ -97,7 +97,7 @@ test_that(".predict works to integrate out random effects in multilevel poisson 
                     (res.samp$M[2] - res.samp$M[1])) < .15)
 })
 
-test_that(".predict works with fixed effects only in multilevel poisson models", {
+test_that("prediction works with fixed effects only in multilevel poisson models", {
   expect_type(res.fixedonly, "list")
   expect_equal(
     c(ndraws(mpois), 3L),

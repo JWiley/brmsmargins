@@ -85,7 +85,7 @@ res.fixedonly <- withr::with_seed(
         test0$Posterior, test1$Posterior, ame$Posterior))
   })
 
-test_that(".predict works to integrate out random effects in multilevel log transformed models", {
+test_that("prediction works to integrate out random effects in multilevel log transformed models", {
   expect_type(res.integrate, "list")
   expect_equal(
     c(ndraws(mlog), 3L),
@@ -101,7 +101,7 @@ test_that(".predict works to integrate out random effects in multilevel log tran
                     (res.samp$M[2] - res.samp$M[1])) < .05)
 })
 
-test_that(".predict works with fixed effects only in multilevel log transformed models", {
+test_that("prediction works with fixed effects only in multilevel log transformed models", {
   expect_type(res.fixedonly, "list")
   expect_equal(
     c(ndraws(mlog), 3L),

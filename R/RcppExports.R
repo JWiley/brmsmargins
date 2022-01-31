@@ -44,7 +44,9 @@ integratemvn <- function(X, k, sd, chol) {
 #'   0 indicates inverse logit (e.g., for logistic regression).
 #'   1 indicates exponential (e.g., for poisson or negative binomial regression or if outcome was natural log transformed).
 #'   2 indicates square (e.g., if outcome was square root transformed).
-#'   Any other integer may be used for no transformation.
+#'   3 indicates inverse (e.g., if outcome was inverse transformed such as Gamma regression)
+#'   Any other integer results in no transformation. -9 is recommended as the option for no
+#'   transformation as any future transformations supported will be other, positive integers.
 #' @return A numeric matrix with the Monte Carlo integral calculated.
 #' @export
 #' @examples
@@ -57,6 +59,22 @@ integratemvn <- function(X, k, sd, chol) {
 #'   backtrans = 0L)
 integratere <- function(d, sd, L, k, yhat, backtrans) {
     .Call(`_brmsmargins_integratere`, d, sd, L, k, yhat, backtrans)
+}
+
+#' Fast Linear Regression
+#'
+#' Used to get marginal coefficients off of a generalized linear mixed model.
+#'
+#' @param X A numeric model matrix. If intercept is desired, it must already have been added as a column.
+#' @param y A numeric matrix. A single column if one response variable or multiple columns
+#'   where each column is a different response, such as a for marginal coefficients where
+#'   each column is a different MCMC sample.
+#' @return A numeric matrix with the coefficient.
+#' @export
+#' @examples
+#' lmcpp(cbind(1, mtcars$hp, mtcars$am), as.matrix(mtcars[, c("mpg", "qsec")]))
+lmcpp <- function(X, y) {
+    .Call(`_brmsmargins_lmcpp`, X, y)
 }
 
 #' Bootstrap Row Means

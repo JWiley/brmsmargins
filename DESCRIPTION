@@ -2,15 +2,20 @@ Package: brmsmargins
 Title: Bayesian Marginal Effects for 'brms' Models
 Version: 0.1.1
 Authors@R: 
-    person(given = "Joshua F.",
-           family = "Wiley",
-           role = c("aut", "cre"),
-           email = "jwiley.psych@gmail.com",
-           comment = c(ORCID = "0000-0002-0271-6702"))
+    c(person(given = "Joshua F.",
+             family = "Wiley",
+             role = c("aut", "cre"),
+             email = "jwiley.psych@gmail.com",
+             comment = c(ORCID = "0000-0002-0271-6702")),
+      person(given = "Donald",
+             family = "Hedeker",
+             role = c("aut"),
+             email = "hedeker@uchicago.edu",
+             comment = c(ORCID = "0000-0001-8134-6094")))
 URL: https://joshuawiley.com/brmsmargins/,
     https://github.com/JWiley/brmsmargins
 BugReports: https://github.com/JWiley/brmsmargins/issues
-Description: Calculate Bayesian marginal effects and average marginal effects for models fit using the 'brms' package including fixed effects, mixed effects, and location scale models. These are based on marginal predictions that integrate out random effects if necessary (see for example <doi:10.1186/s12874-015-0046-6>).
+Description: Calculate Bayesian marginal effects, average marginal effects, and marginal coefficients (also called population averaged coefficients) for models fit using the 'brms' package including fixed effects, mixed effects, and location scale models. These are based on marginal predictions that integrate out random effects if necessary (see for example <doi:10.1186/s12874-015-0046-6> and <doi:10.1111/biom.12707>).
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

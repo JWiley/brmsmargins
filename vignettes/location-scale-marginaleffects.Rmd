@@ -19,7 +19,17 @@ vignette: >
 ```r
 library(knitr)
 library(data.table)
+#> data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
+#> Loading required package: Rcpp
+#> Loading 'brms' package (version 2.16.3). Useful instructions
+#> can be found by typing help('brms'). A more detailed introduction
+#> to the package is available through vignette('brms_overview').
+#> 
+#> Attaching package: 'brms'
+#> The following object is masked from 'package:stats':
+#> 
+#>     ar
 library(brmsmargins)
 ```
 

@@ -41,12 +41,18 @@
 #'   \dQuote{response} meaning to use the response scale,
 #'   \dQuote{linear} or \dQuote{identity} meaning to use the linear predictor scale,
 #'   or a specific back transformation desired, from a possible list of
-#'   \dQuote{invlogit}, \dQuote{exp}, or \dQuote{square}.
+#'   \dQuote{invlogit}, \dQuote{exp}, \dQuote{square}, or \dQuote{inverse}.
 #'   Custom back transformations should only be needed if, for example,
 #'   the outcome variable was transformed prior to fitting the model.
 #' @param k An integer providing the number of random draws to use for
 #'   integrating out the random effects. Only relevant when \code{effects}
 #'   is \dQuote{integrateoutRE}.
+#' @param raw A logical value indicating whether to return the raw output or
+#'   to average over the Monte Carlo samples. Defaults to \code{FALSE}.
+#'   Setting it to \code{TRUE} can be useful if you want not only the
+#'   full posterior distribution but also the \code{k} Monte Carlo samples
+#'   used for the numerical integration. This cannot be used with
+#'   \code{summarize = TRUE}.
 #' @param ... Additional arguments passed to \code{fitted()}
 #' @return A list with \code{Summary} and \code{Posterior}.
 #'   Some of these may be \code{NULL} depending on the arguments used.
@@ -65,10 +71,11 @@
 #' @importFrom methods missingArg
 #' @export
 prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
-                     index, dpar = NULL, resample = 0L, resampleseed = FALSE,
-                     effects = c("fixedonly", "includeRE", "integrateoutRE"),
-                     backtrans = c("response", "linear", "identity", "invlogit", "exp", "square"),
-                     k = 100L, ...) {
+                       index, dpar = NULL, resample = 0L, resampleseed = FALSE,
+                       effects = c("fixedonly", "includeRE", "integrateoutRE"),
+                       backtrans = c("response", "linear", "identity",
+                                     "invlogit", "exp", "square", "inverse"),
+                       k = 100L, raw = FALSE, ...) {
   ## checks and assertions
   .assertbrmsfit(object)
   .assertdpar(object, dpar = dpar)
@@ -114,7 +121,7 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
     re_formula = useRE,
     scale = links$scale, dpar = dpar,
     draw_ids = index, summary = FALSE)
-  yhat <- links$ifun(yhat)
+  yhat <- links$useifun(yhat)
 
   if (isTRUE(effects == "integrateoutRE")) {
     if (isTRUE(links$ilink != "identity")) {
@@ -148,13 +155,24 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
       }
 
       yhat <- integratere(d = d2, sd = sd, L = L, k = k,
-                               yhat = yhat, backtrans = links$ilinknum)
+                          yhat = yhat, backtrans = links$useilinknum)
     }
   }
 
-  ## average across rows
-  ## either using row wise means, or row wise bootstrapped means
-  yhat <- .averagePosterior(yhat, resample = resample, seed = resampleseed)
+  if (isTRUE(raw)) {
+    if (isTRUE(summarize)) {
+      message("summarize cannot be TRUE when raw = TRUE, setting to FALSE")
+      summarize <- FALSE
+    }
+    if (isFALSE(posterior)) {
+      message("posterior cannot be FALSE when raw = TRUE, setting to TRUE")
+      posterior <- TRUE
+    }
+  } else {
+    ## average across rows
+    ## either using row wise means, or row wise bootstrapped means
+    yhat <- .averagePosterior(yhat, resample = resample, seed = resampleseed)
+  }
 
   out <- list(
     Summary = NULL,

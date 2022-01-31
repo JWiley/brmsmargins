@@ -19,7 +19,17 @@ vignette: >
 ```r
 library(knitr)
 library(data.table)
+#> data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
+#> Loading required package: Rcpp
+#> Loading 'brms' package (version 2.16.3). Useful instructions
+#> can be found by typing help('brms'). A more detailed introduction
+#> to the package is available through vignette('brms_overview').
+#> 
+#> Attaching package: 'brms'
+#> The following object is masked from 'package:stats':
+#> 
+#>     ar
 library(brmsmargins)
 ```
 
@@ -134,7 +144,7 @@ Because of the complexity involved, only limited types of mixed effects
 models are supported.
 
 
-## AMEs for Mixed Effects Logistic Regression
+## Mixed Effects Logistic Regression
 
 We will simulate some multilevel binary data for our 
 mixed effects logistic regression model with individual differences
@@ -204,6 +214,7 @@ summary(mlogit)
 #> scale reduction factor on split chains (at convergence, Rhat = 1).
 ```
 
+### AMEs
 
 Now we can use `brmsmargins()`. By default, it will 
 only use the fixed effects. To integrate out random effects,
@@ -340,7 +351,48 @@ knitr::kable(ame.noerror$ContrastSummary, digits = 3)
 |--:|---:|--:|--:|-----------:|----------:|----:|:------|:----|:---|:-----|
 |  0|   0|  0|  0|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
-## AMEs for Mixed Effects Poisson Regression
+### Marginal Coefficients
+
+The fixed effects coefficients are conditional on the random effects.
+To aide interpretation, we also can calculate marginal coefficients or 
+population averaged coefficients. The function to do this is 
+`marginalcoef()` which uses the method described by Hedeker and colleagues
+(2018). Here is an example and comparison to results using a single level 
+logistic regression that ignores the clustering in the data.
+
+
+```r
+## calculate marginal coefficients
+mc.logit <- marginalcoef(mlogit, CI = 0.95)
+
+## calculate single level logistic regression
+glm.logit <- glm(y ~ 1 + x, family = "binomial", data = d)
+glm.logit <- as.data.table(cbind(Est = coef(glm.logit), confint(glm.logit)))
+#> Waiting for profiling to be done...
+```
+
+Now we can view and compare the results.
+
+
+```r
+
+knitr::kable(cbind(
+  mc.logit$Summary[, .(
+    MargCoef = sprintf("%0.3f", round(M, 3)),
+    MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))],
+  glm.logit[, .(
+    GLMCoef = sprintf("%0.3f", round(Est, 3)),
+    GLMCI = sprintf("[%0.3f, %0.3f]", round(`2.5 %`, 3), round(`97.5 %`, 3)))]))
+```
+
+
+
+|MargCoef |MargCoefCI       |GLMCoef |GLMCI            |
+|:--------|:----------------|:-------|:----------------|
+|-2.013   |[-2.367, -1.658] |-2.021  |[-2.219, -1.833] |
+|0.796    |[0.516, 1.080]   |0.802   |[0.561, 1.047]   |
+
+## Mixed Effects Poisson Regression
 
 We will simulate some multilevel poisson data for our 
 mixed effects poisson regression model with individual differences
@@ -377,23 +429,13 @@ mpois <- brms::brm(
   y ~ 1 + x + (1 + x | ID), family = "poisson",
   data = dpoisson, seed = 1234,
   chains = 4L, cores = 4L, backend = "cmdstanr",
-  silent = 2, refresh = 0)
+  silent = 2, refresh = 0, adapt_delta = 0.99)
 #> Compiling Stan program...
-#> 
-#> Warning: 9 of 4000 (0.0%) transitions ended with a divergence.
-#> This may indicate insufficient exploration of the posterior distribution.
-#> Possible remedies include: 
-#>   * Increasing adapt_delta closer to 1 (default is 0.8) 
-#>   * Reparameterizing the model (e.g. using a non-centered parameterization)
-#>   * Using informative or weakly informative prior distributions
 ```
 
 
 ```r
 summary(mpois)
-#> Warning: There were 9 divergent transitions after warmup. Increasing adapt_delta
-#> above may help. See http://mc-stan.org/misc/warnings.html#divergent-transitions-
-#> after-warmup
 #>  Family: poisson 
 #>   Links: mu = log 
 #> Formula: y ~ 1 + x + (1 + x | ID) 
@@ -404,19 +446,21 @@ summary(mpois)
 #> Group-Level Effects: 
 #> ~ID (Number of levels: 100) 
 #>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)        1.18      0.15     0.91     1.50 1.00     1064     1495
-#> sd(x)                0.36      0.19     0.02     0.75 1.02      250      711
-#> cor(Intercept,x)    -0.04      0.41    -0.73     0.85 1.01     1426     1516
+#> sd(Intercept)        1.18      0.15     0.91     1.50 1.00     1362     2382
+#> sd(x)                0.38      0.20     0.03     0.77 1.01      313      798
+#> cor(Intercept,x)    -0.08      0.39    -0.74     0.79 1.00     1449     1348
 #> 
 #> Population-Level Effects: 
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept    -2.46      0.18    -2.82    -2.13 1.00     1338     1819
-#> x             0.97      0.15     0.67     1.27 1.00     2419     2022
+#> Intercept    -2.47      0.18    -2.84    -2.13 1.00     1373     2132
+#> x             0.97      0.15     0.68     1.28 1.00     3100     2584
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
 #> scale reduction factor on split chains (at convergence, Rhat = 1).
 ```
+
+### AMEs
 
 We use `brmsmargins()` in the same way as for the mixed effects logistic regression.
 Here is an example with a numeric derivative treating `x` as continuous.
@@ -437,7 +481,7 @@ knitr::kable(ame1.pois$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.333| 0.311| 0.134| 0.729|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+| 0.335| 0.314| 0.141| 0.749|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 Here is an example treating `x` as discrete.
 
@@ -454,12 +498,54 @@ knitr::kable(ame2.pois$ContrastSummary)
 
 
 
-|         M|       Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|---------:|---------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.2954291| 0.2792047| 0.1133311| 0.6067961|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|         M|      Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|---------:|--------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.2965975| 0.279079| 0.1152076| 0.6196911|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 
-## AMEs for Mixed Effects Negative Binomial Regression
+### Marginal Coefficients
+
+Just as for mixed effects logistic regression, 
+we can calculate marginal or population averaged coefficients for 
+mixed effects poisson regression using the same process as described 
+by Hedeker and colleagues (2018).
+Here is an example and comparison to results using a single level 
+poisson regression that ignores the clustering in the data.
+
+
+```r
+## calculate marginal coefficients
+mc.pois <- marginalcoef(mpois, CI = 0.95)
+
+## calculate single level logistic regression
+glm.pois <- glm(y ~ 1 + x, family = "poisson", data = d)
+glm.pois <- as.data.table(cbind(Est = coef(glm.pois), confint(glm.pois)))
+#> Waiting for profiling to be done...
+```
+
+Now we can view and compare the results.
+
+
+```r
+
+knitr::kable(cbind(
+  mc.pois$Summary[, .(
+    MargCoef = sprintf("%0.3f", round(M, 3)),
+    MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))],
+  glm.pois[, .(
+    GLMCoef = sprintf("%0.3f", round(Est, 3)),
+    GLMCI = sprintf("[%0.3f, %0.3f]", round(`2.5 %`, 3), round(`97.5 %`, 3)))]))
+```
+
+
+
+|MargCoef |MargCoefCI       |GLMCoef |GLMCI            |
+|:--------|:----------------|:-------|:----------------|
+|-1.766   |[-2.236, -1.240] |-1.858  |[-2.019, -1.705] |
+|0.991    |[0.703, 1.301]   |0.983   |[0.802, 1.170]   |
+
+
+## Mixed Effects Negative Binomial Regression
 
 Negative binomial models work the same way as for poisson models.
 We use the same dataset, just for demonstration.
@@ -470,23 +556,13 @@ mnb <- brms::brm(
   y ~ 1 + x + (1 + x | ID), family = "negbinomial",
   data = dpoisson, seed = 1234,
   chains = 4L, cores = 4L, backend = "cmdstanr",
-  silent = 2, refresh = 0)
+  silent = 2, refresh = 0, adapt_delta = 0.99)
 #> Compiling Stan program...
-#> 
-#> Warning: 36 of 4000 (1.0%) transitions ended with a divergence.
-#> This may indicate insufficient exploration of the posterior distribution.
-#> Possible remedies include: 
-#>   * Increasing adapt_delta closer to 1 (default is 0.8) 
-#>   * Reparameterizing the model (e.g. using a non-centered parameterization)
-#>   * Using informative or weakly informative prior distributions
 ```
 
 
 ```r
 summary(mnb)
-#> Warning: There were 36 divergent transitions after warmup. Increasing
-#> adapt_delta above may help. See http://mc-stan.org/misc/warnings.html#divergent-
-#> transitions-after-warmup
 #>  Family: negbinomial 
 #>   Links: mu = log; shape = identity 
 #> Formula: y ~ 1 + x + (1 + x | ID) 
@@ -497,23 +573,25 @@ summary(mnb)
 #> Group-Level Effects: 
 #> ~ID (Number of levels: 100) 
 #>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)        1.18      0.15     0.91     1.49 1.00      685     1459
-#> sd(x)                0.36      0.20     0.02     0.75 1.03      258      552
-#> cor(Intercept,x)    -0.06      0.42    -0.76     0.85 1.01     1323     1070
+#> sd(Intercept)        1.18      0.15     0.91     1.52 1.00      959     1314
+#> sd(x)                0.36      0.20     0.03     0.75 1.02      236      607
+#> cor(Intercept,x)    -0.05      0.41    -0.76     0.84 1.00     1241     1125
 #> 
 #> Population-Level Effects: 
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept    -2.47      0.18    -2.85    -2.13 1.00      772     1423
-#> x             0.97      0.15     0.67     1.28 1.00     1850     1493
+#> Intercept    -2.48      0.18    -2.85    -2.16 1.00     1163     1711
+#> x             0.97      0.15     0.67     1.27 1.00     2704     2632
 #> 
 #> Family Specific Parameters: 
 #>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> shape    63.13     65.94     8.01   252.42 1.00     3422     2603
+#> shape    61.33     60.34     8.53   232.25 1.00     4555     3481
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
 #> scale reduction factor on split chains (at convergence, Rhat = 1).
 ```
+
+### AMEs
 
 We use `brmsmargins()` in the same way as for the mixed effects poisson regression.
 Here is an example with a numeric derivative treating `x` as continuous.
@@ -532,9 +610,9 @@ knitr::kable(ame1.nb$ContrastSummary, digits = 3)
 
 
 
-|    M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.33| 0.312| 0.137| 0.689|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.325| 0.306| 0.141| 0.716|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 Here is an example treating `x` as discrete.
 
@@ -551,6 +629,35 @@ knitr::kable(ame2.nb$ContrastSummary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.292| 0.279| 0.125| 0.59|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.288| 0.275| 0.131| 0.602|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+### Marginal Coefficients
+
+Negative binomial models cannot be fit by the `glm()` function in `R`
+so we just show the population averaged values from `brms`.
+
+
+```r
+## calculate marginal coefficients
+mc.nb <- marginalcoef(mnb, CI = 0.95)
+```
+
+View the results.
+
+
+```r
+
+knitr::kable(
+  mc.nb$Summary[, .(
+    MargCoef = sprintf("%0.3f", round(M, 3)),
+    MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))])
+```
+
+
+
+|MargCoef |MargCoefCI       |
+|:--------|:----------------|
+|-1.788   |[-2.256, -1.285] |
+|0.989    |[0.701, 1.261]   |

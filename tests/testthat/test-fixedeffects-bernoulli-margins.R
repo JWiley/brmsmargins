@@ -45,7 +45,6 @@ test_that("brmsmargins runs for a fixed effects logistic model", {
   expect_true(ame.bayes$UL >= 0 && ame.bayes$UL <= 1)
 })
 
-
 skip_if_not_installed("margins")
 
 m.freq <- glm(am ~ mpg, data = mtcars, family = binomial())

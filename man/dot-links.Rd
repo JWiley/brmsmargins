@@ -7,7 +7,8 @@
 .links(
   link,
   effects = c("fixedonly", "includeRE", "integrateoutRE"),
-  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square")
+  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square",
+    "inverse")
 )
 }
 \arguments{
@@ -18,7 +19,7 @@
 \item{backtrans}{A character string, the type of back transformation}
 }
 \value{
-A list with four elements.
+A list with eight elements.
 \describe{
 \item{scale}{A character string giving the argument to be passed to \code{\link[=fitted]{fitted()}}.}
 \item{ilink}{A character string giving the name of the inverse link function.}

@@ -138,7 +138,7 @@ Because of the complexity involved, only limited types of mixed effects
 models are supported.
 
 
-## AMEs for Mixed Effects Logistic Regression
+## Mixed Effects Logistic Regression
 
 We will simulate some multilevel binary data for our 
 mixed effects logistic regression model with individual differences
@@ -183,6 +183,7 @@ mlogit <- brms::brm(
 summary(mlogit)
 ```
 
+### AMEs
 
 Now we can use `brmsmargins()`. By default, it will 
 only use the fixed effects. To integrate out random effects,
@@ -274,7 +275,39 @@ ame.noerror <- brmsmargins(
 knitr::kable(ame.noerror$ContrastSummary, digits = 3)
 ```
 
-## AMEs for Mixed Effects Poisson Regression
+### Marginal Coefficients
+
+The fixed effects coefficients are conditional on the random effects.
+To aide interpretation, we also can calculate marginal coefficients or 
+population averaged coefficients. The function to do this is 
+`marginalcoef()` which uses the method described by Hedeker and colleagues
+(2018). Here is an example and comparison to results using a single level 
+logistic regression that ignores the clustering in the data.
+
+```{r}
+## calculate marginal coefficients
+mc.logit <- marginalcoef(mlogit, CI = 0.95)
+
+## calculate single level logistic regression
+glm.logit <- glm(y ~ 1 + x, family = "binomial", data = d)
+glm.logit <- as.data.table(cbind(Est = coef(glm.logit), confint(glm.logit)))
+```
+
+Now we can view and compare the results.
+
+```{r, results = 'asis'}
+
+knitr::kable(cbind(
+  mc.logit$Summary[, .(
+    MargCoef = sprintf("%0.3f", round(M, 3)),
+    MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))],
+  glm.logit[, .(
+    GLMCoef = sprintf("%0.3f", round(Est, 3)),
+    GLMCI = sprintf("[%0.3f, %0.3f]", round(`2.5 %`, 3), round(`97.5 %`, 3)))]))
+
+```
+
+## Mixed Effects Poisson Regression
 
 We will simulate some multilevel poisson data for our 
 mixed effects poisson regression model with individual differences
@@ -310,12 +343,14 @@ mpois <- brms::brm(
   y ~ 1 + x + (1 + x | ID), family = "poisson",
   data = dpoisson, seed = 1234,
   chains = 4L, cores = 4L, backend = "cmdstanr",
-  silent = 2, refresh = 0)
+  silent = 2, refresh = 0, adapt_delta = 0.99)
 ```
 
 ```{r}
 summary(mpois)
 ```
+
+### AMEs
 
 We use `brmsmargins()` in the same way as for the mixed effects logistic regression.
 Here is an example with a numeric derivative treating `x` as continuous.
@@ -344,7 +379,40 @@ knitr::kable(ame2.pois$ContrastSummary)
 ```
 
 
-## AMEs for Mixed Effects Negative Binomial Regression
+### Marginal Coefficients
+
+Just as for mixed effects logistic regression, 
+we can calculate marginal or population averaged coefficients for 
+mixed effects poisson regression using the same process as described 
+by Hedeker and colleagues (2018).
+Here is an example and comparison to results using a single level 
+poisson regression that ignores the clustering in the data.
+
+```{r}
+## calculate marginal coefficients
+mc.pois <- marginalcoef(mpois, CI = 0.95)
+
+## calculate single level logistic regression
+glm.pois <- glm(y ~ 1 + x, family = "poisson", data = d)
+glm.pois <- as.data.table(cbind(Est = coef(glm.pois), confint(glm.pois)))
+```
+
+Now we can view and compare the results.
+
+```{r, results = 'asis'}
+
+knitr::kable(cbind(
+  mc.pois$Summary[, .(
+    MargCoef = sprintf("%0.3f", round(M, 3)),
+    MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))],
+  glm.pois[, .(
+    GLMCoef = sprintf("%0.3f", round(Est, 3)),
+    GLMCI = sprintf("[%0.3f, %0.3f]", round(`2.5 %`, 3), round(`97.5 %`, 3)))]))
+
+```
+
+
+## Mixed Effects Negative Binomial Regression
 
 Negative binomial models work the same way as for poisson models.
 We use the same dataset, just for demonstration.
@@ -354,12 +422,14 @@ mnb <- brms::brm(
   y ~ 1 + x + (1 + x | ID), family = "negbinomial",
   data = dpoisson, seed = 1234,
   chains = 4L, cores = 4L, backend = "cmdstanr",
-  silent = 2, refresh = 0)
+  silent = 2, refresh = 0, adapt_delta = 0.99)
 ```
 
 ```{r}
 summary(mnb)
 ```
+
+### AMEs
 
 We use `brmsmargins()` in the same way as for the mixed effects poisson regression.
 Here is an example with a numeric derivative treating `x` as continuous.
@@ -385,4 +455,26 @@ ame2.nb <- brmsmargins(
   effects = "integrateoutRE", k = 100L, seed = 1234)
 
 knitr::kable(ame2.nb$ContrastSummary, digits = 3)
+```
+
+### Marginal Coefficients
+
+Negative binomial models cannot be fit by the `glm()` function in `R`
+so we just show the population averaged values from `brms`.
+
+```{r}
+## calculate marginal coefficients
+mc.nb <- marginalcoef(mnb, CI = 0.95)
+
+```
+
+View the results.
+
+```{r, results = 'asis'}
+
+knitr::kable(
+  mc.nb$Summary[, .(
+    MargCoef = sprintf("%0.3f", round(M, 3)),
+    MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))])
+
 ```

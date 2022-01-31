@@ -26,7 +26,9 @@ the L matrix, the Cholesky decomposition of the random effect correlation matrix
 0 indicates inverse logit (e.g., for logistic regression).
 1 indicates exponential (e.g., for poisson or negative binomial regression or if outcome was natural log transformed).
 2 indicates square (e.g., if outcome was square root transformed).
-Any other integer may be used for no transformation.}
+3 indicates inverse (e.g., if outcome was inverse transformed such as Gamma regression)
+Any other integer results in no transformation. -9 is recommended as the option for no
+transformation as any future transformations supported will be other, positive integers.}
 }
 \value{
 A numeric matrix with the Monte Carlo integral calculated.

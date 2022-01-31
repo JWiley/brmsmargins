@@ -229,18 +229,18 @@ is.random <- function(object) {
 #' @param link The link named in a \code{brmsfit} object
 #' @param effects A character string, the type of effect desired
 #' @param backtrans A character string, the type of back transformation
-#' @return A list with four elements.
+#' @return A list with eight elements.
 #' \describe{
 #'   \item{scale}{A character string giving the argument to be passed to [fitted()].}
 #'   \item{ilink}{A character string giving the name of the inverse link function.}
 #'   \item{ifun}{Inverse link function as an \code{R} function.}
 #'   \item{ilinknum}{An integer giving the inverse link / transformation to be applied in [integratere()], needed as this is a C++ function and cannot use the \code{R} based inverse link function.}
 #' }
-#' @importFrom stats plogis
+#' @importFrom stats plogis qlogis
 #' @keywords internal
 .links <- function(link,
                    effects = c("fixedonly", "includeRE", "integrateoutRE"),
-                   backtrans = c("response", "linear", "identity", "invlogit", "exp", "square")) {
+                   backtrans = c("response", "linear", "identity", "invlogit", "exp", "square", "inverse")) {
   effects <- match.arg(effects, several.ok = FALSE)
   backtrans <- match.arg(backtrans, several.ok = FALSE)
 
@@ -249,66 +249,86 @@ is.random <- function(object) {
     ## or identity, meaning no back transformation
     ## either way we do the same thing which is nothing
     scale <- "linear"
-    inverselink <- "identity"
-  } else if (isTRUE(backtrans %in% c("invlogit", "exp", "square"))) {
+    useinverselink <- inverselink <- "identity"
+  } else if (isTRUE(backtrans %in% c("invlogit", "exp", "square", "inverse"))) {
     ## options if back transformations were custom specified
     ## in these cases we get predictions on linear scale
     ## and then manually apply back transformation
     scale <- "linear"
-    inverselink <- backtrans
+    useinverselink <- inverselink <- backtrans
   } else if (isTRUE(backtrans %in% "response")) {
     ## options for when using the generic asking for
     ## predictions on the original response scale
     ## in this case we need to proceed differently depending on
     ## the 'effect' argument
+    if (isTRUE(link == "identity")) {
+      inverselink <- "identity"
+    } else if (isTRUE(link == "logit")) {
+      inverselink <- "invlogit"
+    } else if (isTRUE(link == "log")) {
+      inverselink <- "exp"
+    } else if (isTRUE(link == "sqrt")) {
+      inverselink <- "square"
+    } else if (isTRUE(link == "inverse")) {
+      inverselink <- "inverse"
+    } else {
+      inverselink <- "notsupported"
+    }
+
     if (isTRUE(effects %in% c("fixedonly", "includeRE"))) {
       ## for both these 'effects' we can rely on fitted()
       ## to apply the correct back transformation, so we
       ## do not need to do anything other than set scale to "response"
       scale <- "response"
-      inverselink <- "identity"
+      useinverselink <- "identity"
     } else if (isTRUE(effects == "integrateoutRE")) {
       ## when integrating out random effects
       ## we cannot rely on backtransformation being handled
       ## by fitted(), so we must do it manually
       scale <- "linear"
-      if (isTRUE(link == "identity")) {
-        inverselink <- "identity"
-      } else if (isTRUE(link == "logit")) {
-        inverselink <- "invlogit"
-      } else if (isTRUE(link == "log")) {
-        inverselink <- "exp"
-      } else if (isTRUE(link == "sqrt")) {
-        inverselink <- "square"
+      if (isFALSE(identical(inverselink, "notsupported"))) {
+        useinverselink <- inverselink
       } else {
         stop("non supported link function detected for integrating out REs")
       }
     }
   }
 
+  ## function to switch inverselink with a function and number
+  invlinkswitch <- function(x) {
+    switch(x,
+      identity = list(fun = function(x) x,      linkfun = function(x) x,     num = -9L),
+      invlogit = list(fun = plogis,             linkfun = qlogis,            num = 0L),
+      exp      = list(fun = exp,                linkfun = log,               num = 1L),
+      square   = list(fun = function(x) x^2,    linkfun = sqrt,              num = 2L),
+      inverse  = list(fun = function(x) 1 / x), linkfun = function(x) 1 / x, num = 3L)
+  }
+
+  ## link function
+  linkfun <- invlinkswitch(inverselink)$linkfun
+  uselinkfun <- invlinkswitch(useinverselink)$linkfun
+
   ## inverse link function
-  inversefun <- switch(inverselink,
-                       identity = function(x) x,
-                       invlogit = plogis,
-                       exp = exp,
-                       square = function(x) x^2)
+  inversefun <- invlinkswitch(inverselink)$fun
+  useinversefun <- invlinkswitch(useinverselink)$fun
 
   ## argument for integratere() C++ function
-  inverselinknum <- switch(inverselink,
-                           identity = -9L,
-                           invlogit = 0L,
-                           exp = 1L,
-                           square = 2L)
+  inverselinknum <- invlinkswitch(inverselink)$num
+  useinverselinknum <- invlinkswitch(useinverselink)$num
 
   ## when integrating out REs, need to use identity inversefun
   ## because the back transformation happens in C++ via inverselinknum
   if (isTRUE(effects == "integrateoutRE")) {
-    inversefun <- function(x) x
+    useinversefun <- function(x) x
   }
 
   list(
     scale = scale,
     ilink = inverselink,
     ifun = inversefun,
-    ilinknum = inverselinknum)
+    ilinknum = inverselinknum,
+    useifun = useinversefun,
+    useilinknum = useinverselinknum,
+    fun = linkfun,
+    usefun = uselinkfun)
 }

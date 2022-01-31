@@ -14,8 +14,10 @@ prediction(
   resample = 0L,
   resampleseed = FALSE,
   effects = c("fixedonly", "includeRE", "integrateoutRE"),
-  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square"),
+  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square",
+    "inverse"),
   k = 100L,
+  raw = FALSE,
   ...
 )
 }
@@ -65,13 +67,20 @@ back transformation to be applied. Can be one of
 \dQuote{response} meaning to use the response scale,
 \dQuote{linear} or \dQuote{identity} meaning to use the linear predictor scale,
 or a specific back transformation desired, from a possible list of
-\dQuote{invlogit}, \dQuote{exp}, or \dQuote{square}.
+\dQuote{invlogit}, \dQuote{exp}, \dQuote{square}, or \dQuote{inverse}.
 Custom back transformations should only be needed if, for example,
 the outcome variable was transformed prior to fitting the model.}
 
 \item{k}{An integer providing the number of random draws to use for
 integrating out the random effects. Only relevant when \code{effects}
 is \dQuote{integrateoutRE}.}
+
+\item{raw}{A logical value indicating whether to return the raw output or
+to average over the Monte Carlo samples. Defaults to \code{FALSE}.
+Setting it to \code{TRUE} can be useful if you want not only the
+full posterior distribution but also the \code{k} Monte Carlo samples
+used for the numerical integration. This cannot be used with
+\code{summarize = TRUE}.}
 
 \item{...}{Additional arguments passed to \code{fitted()}}
 }

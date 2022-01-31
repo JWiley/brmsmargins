@@ -347,12 +347,12 @@ the dataset.
 
 Here is a short example for Poisson regression used for 
 count outcomes. We use a dataset drawn from:
-https://stats.idre.ucla.edu/r/dae/poisson-regression/
+https://stats.oarc.ucla.edu/r/dae/poisson-regression/
 
 
 ```r
 
-d <- fread("https://stats.idre.ucla.edu/stat/data/poisson_sim.csv")
+d <- fread("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
 d[, prog := factor(prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))]
 
 bayes.poisson <- brm(
@@ -451,7 +451,7 @@ count outcomes. We use the same setup as for the Poisson regression example.
 
 
 ```r
-d <- read.csv("https://stats.idre.ucla.edu/stat/data/poisson_sim.csv")
+d <- read.csv("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
 d$prog <- factor(d$prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))
 
 bayes.nb <- brm(
