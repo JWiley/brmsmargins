@@ -91,6 +91,9 @@
     
   </div>
 </nav><div class="container template-article">
+
+
+
 <script src="mixed-effects-marginaleffects_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Marginal Effects for Mixed Effects Models</h1>
@@ -105,7 +108,17 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span>
+<span class="co">#&gt; data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span>
+<span class="co">#&gt; Loading required package: Rcpp</span>
+<span class="co">#&gt; Loading 'brms' package (version 2.16.3). Useful instructions</span>
+<span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span>
+<span class="co">#&gt; to the package is available through vignette('brms_overview').</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Attaching package: 'brms'</span>
+<span class="co">#&gt; The following object is masked from 'package:stats':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     ar</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://joshuawiley.com/brmsmargins/">brmsmargins</a></span><span class="op">)</span></code></pre></div>
 <p>This vignette provides a brief overview of how to calculate marginal effects for Bayesian regression models involving only mixed effects (i.e., fixed and random) and fit using the <code>brms</code> package.</p>
 <div class="section level2">
@@ -158,7 +171,7 @@
 <p>Because of the complexity involved, only limited types of mixed effects models are supported.</p>
 </div>
 <div class="section level2">
-<h2 id="ames-for-mixed-effects-logistic-regression">AMEs for Mixed Effects Logistic Regression<a class="anchor" aria-label="anchor" href="#ames-for-mixed-effects-logistic-regression"></a>
+<h2 id="mixed-effects-logistic-regression">Mixed Effects Logistic Regression<a class="anchor" aria-label="anchor" href="#mixed-effects-logistic-regression"></a>
 </h2>
 <p>We will simulate some multilevel binary data for our mixed effects logistic regression model with individual differences in both the intercept and slope.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -218,6 +231,9 @@
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
 <span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></code></pre></div>
+<div class="section level3">
+<h3 id="ames">AMEs<a class="anchor" aria-label="anchor" href="#ames"></a>
+</h3>
 <p>Now we can use <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code>. By default, it will only use the fixed effects. To integrate out random effects, we specify <code>effects = "integrateoutRE"</code>. The number of values used for numerical integration are set via the argument, <code>k</code>, here <code>k = 100L</code>, the default. More details are in: <code>?brmsmargins:::.predict</code></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">.001</span>
@@ -431,11 +447,57 @@
 </tr></tbody>
 </table>
 </div>
+<div class="section level3">
+<h3 id="marginal-coefficients">Marginal Coefficients<a class="anchor" aria-label="anchor" href="#marginal-coefficients"></a>
+</h3>
+<p>The fixed effects coefficients are conditional on the random effects. To aide interpretation, we also can calculate marginal coefficients or population averaged coefficients. The function to do this is <code><a href="../reference/marginalcoef.html">marginalcoef()</a></code> which uses the method described by Hedeker and colleagues (2018). Here is an example and comparison to results using a single level logistic regression that ignores the clustering in the data.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## calculate marginal coefficients</span>
+<span class="va">mc.logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mlogit</span>, CI <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span>
+
+<span class="co">## calculate single level logistic regression</span>
+<span class="va">glm.logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span>, family <span class="op">=</span> <span class="st">"binomial"</span>, data <span class="op">=</span> <span class="va">d</span><span class="op">)</span>
+<span class="va">glm.logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>Est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">glm.logit</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">glm.logit</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Waiting for profiling to be done...</span></code></pre></div>
+<p>Now we can view and compare the results.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>
+  <span class="va">mc.logit</span><span class="op">$</span><span class="va">Summary</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
+    MargCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">M</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+    MargCoefCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">LL</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">UL</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
+  <span class="va">glm.logit</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
+    GLMCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Est</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+    GLMCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`2.5 %`</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`97.5 %`</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">MargCoef</th>
+<th align="left">MargCoefCI</th>
+<th align="left">GLMCoef</th>
+<th align="left">GLMCI</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">-2.013</td>
+<td align="left">[-2.367, -1.658]</td>
+<td align="left">-2.021</td>
+<td align="left">[-2.219, -1.833]</td>
+</tr>
+<tr class="even">
+<td align="left">0.796</td>
+<td align="left">[0.516, 1.080]</td>
+<td align="left">0.802</td>
+<td align="left">[0.561, 1.047]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section level2">
-<h2 id="ames-for-mixed-effects-poisson-regression">AMEs for Mixed Effects Poisson Regression<a class="anchor" aria-label="anchor" href="#ames-for-mixed-effects-poisson-regression"></a>
+<h2 id="mixed-effects-poisson-regression">Mixed Effects Poisson Regression<a class="anchor" aria-label="anchor" href="#mixed-effects-poisson-regression"></a>
 </h2>
 <p>We will simulate some multilevel poisson data for our mixed effects poisson regression model with individual differences in both the intercept and slope.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dpoisson</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span>
   seed <span class="op">=</span> <span class="fl">12345</span>, code <span class="op">=</span> <span class="op">{</span>
     <span class="va">nGroups</span> <span class="op">&lt;-</span> <span class="fl">100</span>
@@ -465,20 +527,10 @@
   <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"poisson"</span>,
   data <span class="op">=</span> <span class="va">dpoisson</span>, seed <span class="op">=</span> <span class="fl">1234</span>,
   chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,
-  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
-<span class="co">#&gt; Compiling Stan program...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Warning: 9 of 4000 (0.0%) transitions ended with a divergence.</span>
-<span class="co">#&gt; This may indicate insufficient exploration of the posterior distribution.</span>
-<span class="co">#&gt; Possible remedies include: </span>
-<span class="co">#&gt;   * Increasing adapt_delta closer to 1 (default is 0.8) </span>
-<span class="co">#&gt;   * Reparameterizing the model (e.g. using a non-centered parameterization)</span>
-<span class="co">#&gt;   * Using informative or weakly informative prior distributions</span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>, adapt_delta <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span>
+<span class="co">#&gt; Compiling Stan program...</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mpois</span><span class="op">)</span>
-<span class="co">#&gt; Warning: There were 9 divergent transitions after warmup. Increasing adapt_delta</span>
-<span class="co">#&gt; above may help. See http://mc-stan.org/misc/warnings.html#divergent-transitions-</span>
-<span class="co">#&gt; after-warmup</span>
 <span class="co">#&gt;  Family: poisson </span>
 <span class="co">#&gt;   Links: mu = log </span>
 <span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span>
@@ -489,20 +541,23 @@
 <span class="co">#&gt; Group-Level Effects: </span>
 <span class="co">#&gt; ~ID (Number of levels: 100) </span>
 <span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; sd(Intercept)        1.18      0.15     0.91     1.50 1.00     1064     1495</span>
-<span class="co">#&gt; sd(x)                0.36      0.19     0.02     0.75 1.02      250      711</span>
-<span class="co">#&gt; cor(Intercept,x)    -0.04      0.41    -0.73     0.85 1.01     1426     1516</span>
+<span class="co">#&gt; sd(Intercept)        1.18      0.15     0.91     1.50 1.00     1362     2382</span>
+<span class="co">#&gt; sd(x)                0.38      0.20     0.03     0.77 1.01      313      798</span>
+<span class="co">#&gt; cor(Intercept,x)    -0.08      0.39    -0.74     0.79 1.00     1449     1348</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept    -2.46      0.18    -2.82    -2.13 1.00     1338     1819</span>
-<span class="co">#&gt; x             0.97      0.15     0.67     1.27 1.00     2419     2022</span>
+<span class="co">#&gt; Intercept    -2.47      0.18    -2.84    -2.13 1.00     1373     2132</span>
+<span class="co">#&gt; x             0.97      0.15     0.68     1.28 1.00     3100     2584</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
 <span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></code></pre></div>
+<div class="section level3">
+<h3 id="ames-1">AMEs<a class="anchor" aria-label="anchor" href="#ames-1"></a>
+</h3>
 <p>We use <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> in the same way as for the mixed effects logistic regression. Here is an example with a numeric derivative treating <code>x</code> as continuous.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">.001</span>
 <span class="va">ame1.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span>
   <span class="va">mpois</span>,
@@ -526,10 +581,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.333</td>
-<td align="right">0.311</td>
-<td align="right">0.134</td>
-<td align="right">0.729</td>
+<td align="right">0.335</td>
+<td align="right">0.314</td>
+<td align="right">0.141</td>
+<td align="right">0.749</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -540,7 +595,7 @@
 </tr></tbody>
 </table>
 <p>Here is an example treating <code>x</code> as discrete.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ame2.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span>
   <span class="va">mpois</span>,
   at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
@@ -563,10 +618,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.2954291</td>
-<td align="right">0.2792047</td>
-<td align="right">0.1133311</td>
-<td align="right">0.6067961</td>
+<td align="right">0.2965975</td>
+<td align="right">0.279079</td>
+<td align="right">0.1152076</td>
+<td align="right">0.6196911</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -577,29 +632,65 @@
 </tr></tbody>
 </table>
 </div>
+<div class="section level3">
+<h3 id="marginal-coefficients-1">Marginal Coefficients<a class="anchor" aria-label="anchor" href="#marginal-coefficients-1"></a>
+</h3>
+<p>Just as for mixed effects logistic regression, we can calculate marginal or population averaged coefficients for mixed effects poisson regression using the same process as described by Hedeker and colleagues (2018). Here is an example and comparison to results using a single level poisson regression that ignores the clustering in the data.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## calculate marginal coefficients</span>
+<span class="va">mc.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mpois</span>, CI <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span>
+
+<span class="co">## calculate single level logistic regression</span>
+<span class="va">glm.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span>, family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">d</span><span class="op">)</span>
+<span class="va">glm.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>Est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">glm.pois</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">glm.pois</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Waiting for profiling to be done...</span></code></pre></div>
+<p>Now we can view and compare the results.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>
+  <span class="va">mc.pois</span><span class="op">$</span><span class="va">Summary</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
+    MargCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">M</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+    MargCoefCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">LL</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">UL</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
+  <span class="va">glm.pois</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
+    GLMCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Est</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+    GLMCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`2.5 %`</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`97.5 %`</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">MargCoef</th>
+<th align="left">MargCoefCI</th>
+<th align="left">GLMCoef</th>
+<th align="left">GLMCI</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">-1.766</td>
+<td align="left">[-2.236, -1.240]</td>
+<td align="left">-1.858</td>
+<td align="left">[-2.019, -1.705]</td>
+</tr>
+<tr class="even">
+<td align="left">0.991</td>
+<td align="left">[0.703, 1.301]</td>
+<td align="left">0.983</td>
+<td align="left">[0.802, 1.170]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section level2">
-<h2 id="ames-for-mixed-effects-negative-binomial-regression">AMEs for Mixed Effects Negative Binomial Regression<a class="anchor" aria-label="anchor" href="#ames-for-mixed-effects-negative-binomial-regression"></a>
+<h2 id="mixed-effects-negative-binomial-regression">Mixed Effects Negative Binomial Regression<a class="anchor" aria-label="anchor" href="#mixed-effects-negative-binomial-regression"></a>
 </h2>
 <p>Negative binomial models work the same way as for poisson models. We use the same dataset, just for demonstration.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mnb</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/brms/man/brm.html" class="external-link">brm</a></span><span class="op">(</span>
   <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"negbinomial"</span>,
   data <span class="op">=</span> <span class="va">dpoisson</span>, seed <span class="op">=</span> <span class="fl">1234</span>,
   chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,
-  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
-<span class="co">#&gt; Compiling Stan program...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Warning: 36 of 4000 (1.0%) transitions ended with a divergence.</span>
-<span class="co">#&gt; This may indicate insufficient exploration of the posterior distribution.</span>
-<span class="co">#&gt; Possible remedies include: </span>
-<span class="co">#&gt;   * Increasing adapt_delta closer to 1 (default is 0.8) </span>
-<span class="co">#&gt;   * Reparameterizing the model (e.g. using a non-centered parameterization)</span>
-<span class="co">#&gt;   * Using informative or weakly informative prior distributions</span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>, adapt_delta <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span>
+<span class="co">#&gt; Compiling Stan program...</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mnb</span><span class="op">)</span>
-<span class="co">#&gt; Warning: There were 36 divergent transitions after warmup. Increasing</span>
-<span class="co">#&gt; adapt_delta above may help. See http://mc-stan.org/misc/warnings.html#divergent-</span>
-<span class="co">#&gt; transitions-after-warmup</span>
 <span class="co">#&gt;  Family: negbinomial </span>
 <span class="co">#&gt;   Links: mu = log; shape = identity </span>
 <span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span>
@@ -610,24 +701,27 @@
 <span class="co">#&gt; Group-Level Effects: </span>
 <span class="co">#&gt; ~ID (Number of levels: 100) </span>
 <span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; sd(Intercept)        1.18      0.15     0.91     1.49 1.00      685     1459</span>
-<span class="co">#&gt; sd(x)                0.36      0.20     0.02     0.75 1.03      258      552</span>
-<span class="co">#&gt; cor(Intercept,x)    -0.06      0.42    -0.76     0.85 1.01     1323     1070</span>
+<span class="co">#&gt; sd(Intercept)        1.18      0.15     0.91     1.52 1.00      959     1314</span>
+<span class="co">#&gt; sd(x)                0.36      0.20     0.03     0.75 1.02      236      607</span>
+<span class="co">#&gt; cor(Intercept,x)    -0.05      0.41    -0.76     0.84 1.00     1241     1125</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept    -2.47      0.18    -2.85    -2.13 1.00      772     1423</span>
-<span class="co">#&gt; x             0.97      0.15     0.67     1.28 1.00     1850     1493</span>
+<span class="co">#&gt; Intercept    -2.48      0.18    -2.85    -2.16 1.00     1163     1711</span>
+<span class="co">#&gt; x             0.97      0.15     0.67     1.27 1.00     2704     2632</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Family Specific Parameters: </span>
 <span class="co">#&gt;       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; shape    63.13     65.94     8.01   252.42 1.00     3422     2603</span>
+<span class="co">#&gt; shape    61.33     60.34     8.53   232.25 1.00     4555     3481</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
 <span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></code></pre></div>
+<div class="section level3">
+<h3 id="ames-2">AMEs<a class="anchor" aria-label="anchor" href="#ames-2"></a>
+</h3>
 <p>We use <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> in the same way as for the mixed effects poisson regression. Here is an example with a numeric derivative treating <code>x</code> as continuous.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">.001</span>
 <span class="va">ame1.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span>
   <span class="va">mnb</span>,
@@ -651,10 +745,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.33</td>
-<td align="right">0.312</td>
-<td align="right">0.137</td>
-<td align="right">0.689</td>
+<td align="right">0.325</td>
+<td align="right">0.306</td>
+<td align="right">0.141</td>
+<td align="right">0.716</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -665,7 +759,7 @@
 </tr></tbody>
 </table>
 <p>Here is an example treating <code>x</code> as discrete.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ame2.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span>
   <span class="va">mnb</span>,
   at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
@@ -688,10 +782,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.292</td>
-<td align="right">0.279</td>
-<td align="right">0.125</td>
-<td align="right">0.59</td>
+<td align="right">0.288</td>
+<td align="right">0.275</td>
+<td align="right">0.131</td>
+<td align="right">0.602</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -702,6 +796,38 @@
 </tr></tbody>
 </table>
 </div>
+<div class="section level3">
+<h3 id="marginal-coefficients-2">Marginal Coefficients<a class="anchor" aria-label="anchor" href="#marginal-coefficients-2"></a>
+</h3>
+<p>Negative binomial models cannot be fit by the <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm()</a></code> function in <code>R</code> so we just show the population averaged values from <code>brms</code>.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## calculate marginal coefficients</span>
+<span class="va">mc.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mnb</span>, CI <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></code></pre></div>
+<p>View the results.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>
+  <span class="va">mc.nb</span><span class="op">$</span><span class="va">Summary</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
+    MargCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">M</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+    MargCoefCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">LL</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">UL</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">MargCoef</th>
+<th align="left">MargCoefCI</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">-1.788</td>
+<td align="left">[-2.256, -1.285]</td>
+</tr>
+<tr class="even">
+<td align="left">0.989</td>
+<td align="left">[0.701, 1.261]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>
@@ -710,12 +836,12 @@
 
     <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://joshuawiley.com" class="external-link">Joshua F. Wiley</a>.</p>
+<p>Developed by <a href="https://joshuawiley.com" class="external-link">Joshua F. Wiley</a>, Donald Hedeker.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 

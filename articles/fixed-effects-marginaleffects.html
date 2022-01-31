@@ -91,6 +91,9 @@
     
   </div>
 </nav><div class="container template-article">
+
+
+
 <script src="fixed-effects-marginaleffects_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Marginal Effects for Fixed Effects Models</h1>
@@ -383,10 +386,10 @@
 <div class="section level2">
 <h2 id="ames-for-poisson-regression">AMEs for Poisson Regression<a class="anchor" aria-label="anchor" href="#ames-for-poisson-regression"></a>
 </h2>
-<p>Here is a short example for Poisson regression used for count outcomes. We use a dataset drawn from: <a href="https://stats.idre.ucla.edu/r/dae/poisson-regression/" class="external-link uri">https://stats.idre.ucla.edu/r/dae/poisson-regression/</a></p>
+<p>Here is a short example for Poisson regression used for count outcomes. We use a dataset drawn from: <a href="https://stats.oarc.ucla.edu/r/dae/poisson-regression/" class="external-link uri">https://stats.oarc.ucla.edu/r/dae/poisson-regression/</a></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://stats.idre.ucla.edu/stat/data/poisson_sim.csv"</span><span class="op">)</span>
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv"</span><span class="op">)</span>
 <span class="va">d</span><span class="op">[</span>, <span class="va">prog</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">prog</span>, levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"General"</span>, <span class="st">"Academic"</span>, <span class="st">"Vocational"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
 
 <span class="va">bayes.poisson</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/brms/man/brm.html" class="external-link">brm</a></span><span class="op">(</span>
@@ -580,7 +583,7 @@
 </h2>
 <p>Here is a short example for Negative Binomial regression used for count outcomes. We use the same setup as for the Poisson regression example.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"https://stats.idre.ucla.edu/stat/data/poisson_sim.csv"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv"</span><span class="op">)</span>
 <span class="va">d</span><span class="op">$</span><span class="va">prog</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">prog</span>, levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"General"</span>, <span class="st">"Academic"</span>, <span class="st">"Vocational"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">bayes.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/brms/man/brm.html" class="external-link">brm</a></span><span class="op">(</span>
@@ -790,12 +793,12 @@
 
     <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://joshuawiley.com" class="external-link">Joshua F. Wiley</a>.</p>
+<p>Developed by <a href="https://joshuawiley.com" class="external-link">Joshua F. Wiley</a>, Donald Hedeker.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 

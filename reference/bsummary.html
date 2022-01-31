@@ -176,16 +176,16 @@ doi: <a href="https://doi.org/10.1177/2515245918771304" class="external-link">10
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              M        Mdn        LL       UL PercentROPE PercentMID   CI CIType</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.01946283 0.02197378 -2.419293 2.371059          NA         NA 0.99    HDI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ROPE  MID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;NA&gt; &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             M          Mdn        LL       UL PercentROPE PercentMID   CI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.02234843 -0.009623526 -2.709979 2.594977          NA         NA 0.99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    CIType ROPE  MID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    HDI &lt;NA&gt; &lt;NA&gt;</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>, ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              M           Mdn        LL       UL PercentROPE PercentMID   CI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.005478196 -0.0009052917 -2.237556 2.847827        35.5         33 0.99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    CIType        ROPE                   MID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    HDI [-0.5, 0.5] [-Inf, -1] | [1, Inf]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             M        Mdn        LL       UL PercentROPE PercentMID   CI CIType</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.01205753 0.02823549 -2.435274 2.333673        37.1       34.2 0.99    HDI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           ROPE                   MID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: [-0.5, 0.5] [-Inf, -1] | [1, Inf]</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -193,11 +193,11 @@ doi: <a href="https://doi.org/10.1177/2515245918771304" class="external-link">10
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://joshuawiley.com" class="external-link">Joshua F. Wiley</a>.</p>
+  <p></p><p>Developed by <a href="https://joshuawiley.com" class="external-link">Joshua F. Wiley</a>, Donald Hedeker.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 
