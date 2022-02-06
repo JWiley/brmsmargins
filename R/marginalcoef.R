@@ -83,7 +83,7 @@ marginalcoef <- function(object, summarize = TRUE, posterior = FALSE, index,
 
   if (isTRUE(summarize)) {
     out$Summary <- as.data.table(do.call(rbind, apply(B, 1, bsummary, ...)))
-    out$Summary[, Label := rownames(fixef(object))]
+    out$Summary[, Label := colnames(X)]
   }
   if (isTRUE(posterior)) {
     out$Posterior <- B
