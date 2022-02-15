@@ -67,7 +67,7 @@
 #' @importFrom data.table as.data.table
 #' @importFrom stats fitted formula
 #' @importFrom posterior as_draws_df ndraws
-#' @importFrom brms make_standata
+#' @importFrom brms standata
 #' @importFrom methods missingArg
 #' @export
 prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
@@ -115,7 +115,7 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
   }
 
   ## generate all predictions (if fixedonly or includeRE)
-  ## or generate just the fixed effects predictions (if integrateRE)
+  ## or generate just the fixed effects predictions (if integrateoutRE)
   yhat <- fitted(
     object = object, newdata = data,
     re_formula = useRE,
@@ -127,7 +127,7 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
     if (isTRUE(links$ilink != "identity")) {
       post <- as.data.table(as_draws_df(object))[index, ]
 
-      dtmp <- make_standata(formula(object), data = data)
+      dtmp <- standata(object, newdata = data, check_response = FALSE)
 
       re <- as.data.table(object$ranef)
 

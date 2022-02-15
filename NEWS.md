@@ -1,5 +1,8 @@
 # brmsmargins devel
 
+* Fixed a bug when using `prediction()` with option `effects = "integrateoutRE"`
+  when smooth terms were present. As `prediction()` underpins other functions, 
+  such as `brmsmargins()` this issue also impacts those other functions.
 * New function: `marginalcoef()` which calculates population averaged (marginal) coefficients
   for the fixed effects coefficients from mixed effects models using a method 
   described by Donald Hedeker, who joins the author team.
