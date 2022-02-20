@@ -288,7 +288,7 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
   
   # error if missing both at and add
   if (isTRUE(is.null(at)) && isTRUE(is.null(add))) {
-    stop(paste("You must specify either 'at' or 'and'",
+    stop(paste("You must specify either 'at' or 'add'",
                "See ?brmsmargins or vignettes for help.",
                sep = "\n"))
   }
