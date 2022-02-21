@@ -26,12 +26,14 @@ brmsmargins(
 \item{at}{An optional object inheriting from data frame indicating
 the values to hold specific variables at when calculating average
 predictions. This is intended for AMEs from categorical variables.
-Currently only one of \code{at} or \code{add} can be specified.}
+Currently, you must specify either \code{at} or \code{add}, and
+cannot specify both.}
 
 \item{add}{An optional object inheriting from data frame indicating
 the values to add to specific variables at when calculating average
 predictions. This is intended for AMEs for continuous variables.
-Currently only one of \code{at} or \code{add} can be specified.}
+Currently, you must specify either \code{at} or \code{add}, and
+cannot specify both.}
 
 \item{newdata}{An object inheriting from data frame indicating
 the baseline values to use for predictions and AMEs.

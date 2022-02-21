@@ -64,11 +64,13 @@ utils::globalVariables(c("Label"))
 #' @param at An optional object inheriting from data frame indicating
 #'   the values to hold specific variables at when calculating average
 #'   predictions. This is intended for AMEs from categorical variables.
-#'   Currently only one of \code{at} or \code{add} can be specified.
+#'   Currently, you must specify either \code{at} or \code{add}, and 
+#'   cannot specify both.
 #' @param add An optional object inheriting from data frame indicating
 #'   the values to add to specific variables at when calculating average
 #'   predictions. This is intended for AMEs for continuous variables.
-#'   Currently only one of \code{at} or \code{add} can be specified.
+#'   Currently, you must specify either \code{at} or \code{add}, and 
+#'   cannot specify both.
 #' @param newdata An object inheriting from data frame indicating
 #'   the baseline values to use for predictions and AMEs.
 #'   Defaults to be the model frame.
@@ -281,6 +283,13 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
   if (isFALSE(is.null(at)) && isFALSE(is.null(add))) {
     stop(paste("Currently only 'at' or 'add' may be specified.",
                "Including both is not currently supported.",
+               sep = "\n"))
+  }
+  
+  # error if missing both at and add
+  if (isTRUE(is.null(at)) && isTRUE(is.null(add))) {
+    stop(paste("You must specify either 'at' or 'add'",
+               "See ?brmsmargins or vignettes for help.",
                sep = "\n"))
   }
 
