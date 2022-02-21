@@ -177,13 +177,13 @@ doi: <a href="https://doi.org/10.1177/2515245918771304" class="external-link">10
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             M        Mdn        LL       UL PercentROPE PercentMID   CI CIType</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.01475405 0.03650836 -2.365146 2.466908          NA         NA 0.99    HDI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.01191978 0.02275989 -2.806192 2.455824          NA         NA 0.99    HDI</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ROPE  MID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;NA&gt; &lt;NA&gt;</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>, ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              M         Mdn        LL       UL PercentROPE PercentMID   CI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.05623933 -0.07003548 -2.570604 2.387871        37.2       34.3 0.99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.04654423 -0.06482063 -2.519773 2.312234          38       30.3 0.99</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    CIType        ROPE                   MID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:    HDI [-0.5, 0.5] [-Inf, -1] | [1, Inf]</span>
 </code></pre></div>

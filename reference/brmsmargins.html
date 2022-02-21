@@ -103,12 +103,14 @@ including average marginal effects (AMEs) from <code>brms</code> models.</p>
 <dd><p>An optional object inheriting from data frame indicating
 the values to hold specific variables at when calculating average
 predictions. This is intended for AMEs from categorical variables.
-Currently only one of <code>at</code> or <code>add</code> can be specified.</p></dd>
+Currently, you must specify either <code>at</code> or <code>add</code>, and
+cannot specify both.</p></dd>
 <dt>add</dt>
 <dd><p>An optional object inheriting from data frame indicating
 the values to add to specific variables at when calculating average
 predictions. This is intended for AMEs for continuous variables.
-Currently only one of <code>at</code> or <code>add</code> can be specified.</p></dd>
+Currently, you must specify either <code>at</code> or <code>add</code>, and
+cannot specify both.</p></dd>
 <dt>newdata</dt>
 <dd><p>An object inheriting from data frame indicating
 the baseline values to use for predictions and AMEs.
