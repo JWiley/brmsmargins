@@ -68,7 +68,6 @@
 #' @importFrom stats fitted formula
 #' @importFrom posterior as_draws_df ndraws
 #' @importFrom brms standata
-#' @importFrom methods missingArg
 #' @export
 prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
                        index, dpar = NULL, resample = 0L, resampleseed = FALSE,
@@ -77,6 +76,14 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
                                      "invlogit", "exp", "square", "inverse"),
                        k = 100L, raw = FALSE, ...) {
   ## checks and assertions
+  if (isTRUE(missing(object))) {
+    stop(paste(
+      "'object' is a required argument and cannot be missing;",
+      "  it should be a saved model fit from brms. For example:",
+      "  m <- brm(y ~ x, data = yourdata)",
+      "  See ?prediction or the website articles (vignettes) for details.",
+      "  https://joshuawiley.com/brmsmargins/", sep = "\n"))
+  }
   .assertbrmsfit(object)
   .assertdpar(object, dpar = dpar)
 
@@ -98,7 +105,7 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
     .assertgaussian(object)
   }
 
-  if (isTRUE(missingArg(index))) {
+  if (isTRUE(missing(index))) {
     index <- seq_len(ndraws(object))
   }
 
@@ -127,7 +134,7 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
     if (isTRUE(links$ilink != "identity")) {
       post <- as.data.table(as_draws_df(object))[index, ]
 
-      dtmp <- standata(object, newdata = data, check_response = FALSE)
+      dtmp <- standata(object, newdata = data, check_response = FALSE, allow_new_levels = TRUE)
 
       re <- as.data.table(object$ranef)
 

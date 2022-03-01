@@ -98,6 +98,7 @@
 #' @importFrom bayestestR ci
 #' @importFrom data.table data.table
 #' @importFrom stats median
+#' @importFrom extraoperators %gele%
 #' @references
 #' Kruschke, J. K. (2018).
 #' \doi{10.1177/2515245918771304}
@@ -108,10 +109,31 @@
 #'
 #' bsummary(rnorm(1000), ROPE = c(-.5, .5), MID = c(-1, 1))
 bsummary <- function(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL) {
+  if (isTRUE(missing(x))) {
+    stop("'x' is required and cannot be missing. See ?bsummary for details")
+  }
+
   if (isFALSE(is.numeric(x))) {
     stop(sprintf("to be summarized x must be numeric, but %s class was found",
          paste(class(x), collapse = "; ")))
   }
+
+  if (isFALSE(CI %gele% c(0, 1))) {
+    stop(paste(
+      sprintf("'CI' is %s", as.character(CI)),
+      "'CI' should specify the desired credible interval as a numeric value in (0, 1)",
+      "See ?bayestestR::ci for details",
+      sep = "\n"))
+  }
+
+  if (isFALSE(CIType %in% c("HDI", "ETI", "BCI", "SI"))) {
+    stop(paste(
+      sprintf("'CIType' is %s", as.character(CIType)),
+      "'CIType' should be one of 'HDI' (default), 'ETI', 'BCI', or 'SI'",
+      "See ?bayestestR::ci for details",
+      sep = "\n"))
+  }
+
   ropes <- .percent(x, window = ROPE, within = TRUE)
   mids <- .percent(x, window = MID, within = FALSE)
 

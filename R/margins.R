@@ -123,6 +123,9 @@ utils::globalVariables(c("Label"))
 #'   This would be fine, for instance, when only using fixed effects,
 #'   or if you know what you are doing and intend that behavior when
 #'   integrating out random effects.
+#' @param verbose Logical argument whether to print more verbose messages.
+#'   Defaults to \code{FALSE} which is quieter. Set to \code{TRUE} for
+#'   more messages to be printed where relevant.
 #' @param ... Additional arguments passed on to \code{\link{prediction}}.
 #'   In particular, the \code{effects} argument of [prediction()] is
 #'   important for mixed effects models to control how random effects
@@ -130,7 +133,7 @@ utils::globalVariables(c("Label"))
 #'   marginal effect estimates.
 #' @importFrom stats model.frame runif
 #' @importFrom data.table as.data.table copy :=
-#' @importFrom methods missingArg
+#' @importFrom extraoperators %gele%
 #' @return A list with four elements.
 #' \itemize{
 #'   \item{\code{Posterior}}{Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to [prediction()] they can include random effects or be predictions integrating out random effects.}
@@ -224,22 +227,31 @@ utils::globalVariables(c("Label"))
 brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(object),
                         CI = .99, CIType = "HDI", contrasts = NULL,
                         ROPE = NULL, MID = NULL,
-                        subset = NULL, dpar = NULL, seed, ...) {
+                        subset = NULL, dpar = NULL, seed, verbose = FALSE, ...) {
+  if (isTRUE(missing(object))) {
+    stop(paste(
+      "'object' is a required argument and cannot be missing;",
+      "  it should be a saved model fit from brms. For example:",
+      "  m <- brm(y ~ x, data = yourdata)",
+      "  See ?brmsmargins or the website articles (vignettes) for details.",
+      "  https://joshuawiley.com/brmsmargins/", sep = "\n"))
+  }
   .assertbrmsfit(object)
+
   chknewdata <- .checktab(newdata)
   if (isTRUE(nzchar(chknewdata))) {
     stop(paste0("newdata: ", chknewdata))
   }
   newdata <- copy(as.data.table(newdata))
 
-  if (isFALSE(missingArg(seed))) {
+  if (isFALSE(missing(seed))) {
     if (isFALSE(is.null(seed))) {
       stopifnot(
         identical(length(seed), 1L) ||
           identical(length(seed), nrow(at)) ||
           identical(length(seed), nrow(add)))
     }
-  } else if (isTRUE(missingArg(seed))) {
+  } else if (isTRUE(missing(seed))) {
     ## create a random seed somewhere between +/- 1e7
     seed <- ceiling(runif(1, -1e7, 1e7))
   }
@@ -285,12 +297,38 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
                "Including both is not currently supported.",
                sep = "\n"))
   }
-  
+
   # error if missing both at and add
   if (isTRUE(is.null(at)) && isTRUE(is.null(add))) {
     stop(paste("You must specify either 'at' or 'add'",
                "See ?brmsmargins or vignettes for help.",
                sep = "\n"))
+  }
+
+  if (isFALSE(is.null(add)) && isTRUE(is.null(contrasts))) {
+    if (isTRUE(verbose)) {
+      message(paste(
+        "It is unusual to specify 'add' without 'contrasts'.",
+        "Without 'contrasts', only marginal predictions will be generated.",
+        "If predictions are desired, consider using prediction() directly.",
+        "To suppress this message, set 'verbose = FALSE'", sep = "\n"))
+    }
+  }
+
+  if (isFALSE(CI %gele% c(0, 1))) {
+    stop(paste(
+      sprintf("'CI' is %s", as.character(CI)),
+      "'CI' should specify the desired credible interval as a numeric value in (0, 1)",
+      "See ?bayestestR::ci for details",
+      sep = "\n"))
+  }
+
+  if (isFALSE(CIType %in% c("HDI", "ETI", "BCI", "SI"))) {
+    stop(paste(
+      sprintf("'CIType' is %s", as.character(CIType)),
+      "'CIType' should be one of 'HDI' (default), 'ETI', 'BCI', or 'SI'",
+      "See ?bayestestR::ci for details",
+      sep = "\n"))
   }
 
   if (isFALSE(is.null(at))) {

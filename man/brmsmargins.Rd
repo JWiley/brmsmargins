@@ -17,6 +17,7 @@ brmsmargins(
   subset = NULL,
   dpar = NULL,
   seed,
+  verbose = FALSE,
   ...
 )
 }
@@ -95,6 +96,10 @@ Finally, rather than being missing, you can explicitly set
 This would be fine, for instance, when only using fixed effects,
 or if you know what you are doing and intend that behavior when
 integrating out random effects.}
+
+\item{verbose}{Logical argument whether to print more verbose messages.
+Defaults to \code{FALSE} which is quieter. Set to \code{TRUE} for
+more messages to be printed where relevant.}
 
 \item{...}{Additional arguments passed on to \code{\link{prediction}}.
 In particular, the \code{effects} argument of \code{\link[=prediction]{prediction()}} is
