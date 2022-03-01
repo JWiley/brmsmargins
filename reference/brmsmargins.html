@@ -91,6 +91,7 @@ including average marginal effects (AMEs) from <code>brms</code> models.</p>
   subset <span class="op">=</span> <span class="cn">NULL</span>,
   dpar <span class="op">=</span> <span class="cn">NULL</span>,
   <span class="va">seed</span>,
+  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -172,6 +173,10 @@ Finally, rather than being missing, you can explicitly set
 This would be fine, for instance, when only using fixed effects,
 or if you know what you are doing and intend that behavior when
 integrating out random effects.</p></dd>
+<dt>verbose</dt>
+<dd><p>Logical argument whether to print more verbose messages.
+Defaults to <code>FALSE</code> which is quieter. Set to <code>TRUE</code> for
+more messages to be printed where relevant.</p></dd>
 <dt>...</dt>
 <dd><p>Additional arguments passed on to <code><a href="prediction.html">prediction</a></code>.
 In particular, the <code>effects</code> argument of <code><a href="prediction.html">prediction()</a></code> is
