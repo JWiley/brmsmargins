@@ -6,6 +6,10 @@
 * New function: `marginalcoef()` which calculates population averaged (marginal) coefficients
   for the fixed effects coefficients from mixed effects models using a method 
   described by Donald Hedeker, who joins the author team.
+* New argument, `wat`, added to `brmsmargins()` to support including
+  calculating average marginal effects for multilevel centered 
+  categorical predictors. A detailed example is added to the end of the
+  mixed effects vignette.
 * Added more unit testing and vignettes.
 
 # brmsmargins 0.1.1

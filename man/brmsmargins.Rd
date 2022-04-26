@@ -7,6 +7,7 @@
 brmsmargins(
   object,
   at = NULL,
+  wat = NULL,
   add = NULL,
   newdata = model.frame(object),
   CI = 0.99,
@@ -29,6 +30,17 @@ the values to hold specific variables at when calculating average
 predictions. This is intended for AMEs from categorical variables.
 Currently, you must specify either \code{at} or \code{add}, and
 cannot specify both.}
+
+\item{wat}{A list with named elements including one element named,
+\dQuote{ID} with a single character string, the name of the variable
+in the model frame that is the ID variable. Additionally,
+there should be one or more named elements, named after variables
+in the model (and specified in the \code{at} argument), that
+contain a \code{data.table} or \code{data.frame} with three
+variables: (1) the ID variable giving IDs, (2) the values
+specified for the variable in the \code{at} argument, and
+(3) the actual values to be substituted for each ID.
+\code{wat} cannot be non null unless \code{at} also is non null.}
 
 \item{add}{An optional object inheriting from data frame indicating
 the values to add to specific variables at when calculating average
@@ -228,7 +240,7 @@ tmp2$ContrastSummary ## x AME
 if (FALSE) {
   library(lme4)
   data(sleepstudy)
-  fit <- brms::brm(Reaction ~ 1 + Days + (1+ Days | Subject),
+  fit <- brms::brm(Reaction ~ 1 + Days + (1 + Days | Subject),
              data = sleepstudy,
              cores = 4)
 

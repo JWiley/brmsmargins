@@ -64,8 +64,18 @@ utils::globalVariables(c("Label"))
 #' @param at An optional object inheriting from data frame indicating
 #'   the values to hold specific variables at when calculating average
 #'   predictions. This is intended for AMEs from categorical variables.
-#'   Currently, you must specify either \code{at} or \code{add}, and 
+#'   Currently, you must specify either \code{at} or \code{add}, and
 #'   cannot specify both.
+#' @param wat A list with named elements including one element named,
+#'   \dQuote{ID} with a single character string, the name of the variable
+#'   in the model frame that is the ID variable. Additionally,
+#'   there should be one or more named elements, named after variables
+#'   in the model (and specified in the \code{at} argument), that
+#'   contain a \code{data.table} or \code{data.frame} with three
+#'   variables: (1) the ID variable giving IDs, (2) the values
+#'   specified for the variable in the \code{at} argument, and
+#'   (3) the actual values to be substituted for each ID.
+#'   \code{wat} cannot be non null unless \code{at} also is non null.
 #' @param add An optional object inheriting from data frame indicating
 #'   the values to add to specific variables at when calculating average
 #'   predictions. This is intended for AMEs for continuous variables.
@@ -132,8 +142,8 @@ utils::globalVariables(c("Label"))
 #'   are treated in the predictions, which subsequently changes the
 #'   marginal effect estimates.
 #' @importFrom stats model.frame runif
-#' @importFrom data.table as.data.table copy :=
-#' @importFrom extraoperators %gele%
+#' @importFrom data.table as.data.table is.data.table copy :=
+#' @importFrom extraoperators %gele% %nin%
 #' @return A list with four elements.
 #' \itemize{
 #'   \item{\code{Posterior}}{Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to [prediction()] they can include random effects or be predictions integrating out random effects.}
@@ -207,7 +217,7 @@ utils::globalVariables(c("Label"))
 #' if (FALSE) {
 #'   library(lme4)
 #'   data(sleepstudy)
-#'   fit <- brms::brm(Reaction ~ 1 + Days + (1+ Days | Subject),
+#'   fit <- brms::brm(Reaction ~ 1 + Days + (1 + Days | Subject),
 #'              data = sleepstudy,
 #'              cores = 4)
 #'
@@ -224,10 +234,11 @@ utils::globalVariables(c("Label"))
 #'   tmp$ContrastSummary
 #'   }
 #' }
-brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(object),
+brmsmargins <- function(object, at = NULL, wat = NULL, add = NULL, newdata = model.frame(object),
                         CI = .99, CIType = "HDI", contrasts = NULL,
                         ROPE = NULL, MID = NULL,
-                        subset = NULL, dpar = NULL, seed, verbose = FALSE, ...) {
+                        subset = NULL, dpar = NULL, seed, verbose = FALSE,
+                       ...) {
   if (isTRUE(missing(object))) {
     stop(paste(
       "'object' is a required argument and cannot be missing;",
@@ -331,11 +342,40 @@ brmsmargins <- function(object, at = NULL, add = NULL, newdata = model.frame(obj
       sep = "\n"))
   }
 
+  if (isFALSE(is.null(wat))) {
+    if (isTRUE(is.null(at))) {
+      stop("If 'wat' is specified, 'at' also must be specified.")
+    }
+
+    test.wat.type <- isTRUE(is.list(wat))
+    test.wat.id <- isTRUE("ID" %in% names(wat))
+
+    if (isFALSE(test.wat.type) || isFALSE(test.wat.id)) {
+      stop(paste(
+        "'wat' should be a list with named elements",
+        "including 'ID' giving the name of the ID variable and",
+        "separate elements (each a data.frame or data.table) containing the IDs,",
+        "the values specified in 'at' and the true values to use by ID.",
+        sep = "\n"))
+    }
+  }
+
   if (isFALSE(is.null(at))) {
     out <- vector("list", nrow(at))
     for (i in seq_len(nrow(at))) {
       for (v in names(at)) {
-        newdata[, (v) := at[i, get(v)]]
+        fill_in_value <- at[i, get(v)]
+        if (isTRUE(is.null(wat) || v %nin% names(wat))) {
+          newdata[, (v) := fill_in_value]
+        } else {
+          if (isFALSE(is.data.table(wat[[v]]))) {
+            wat[[v]] <- as.data.table(wat[[v]])
+          }
+          for (useid in unique(newdata[[wat$ID]])) {
+            newdata[get(wat$ID) == useid,
+            (v) := wat[[v]][variable == fill_in_value & get(wat$ID) == useid, value]]
+          }
+        }
       }
       if (isFALSE(is.null(seed))) {
         if (isTRUE(length(seed) > 1)) {

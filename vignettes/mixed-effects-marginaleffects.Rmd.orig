@@ -465,16 +465,225 @@ so we just show the population averaged values from `brms`.
 ```{r}
 ## calculate marginal coefficients
 mc.nb <- marginalcoef(mnb, CI = 0.95)
-
 ```
 
 View the results.
 
 ```{r, results = 'asis'}
-
 knitr::kable(
   mc.nb$Summary[, .(
     MargCoef = sprintf("%0.3f", round(M, 3)),
     MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))])
-
 ```
+
+## Centered Categorical Predictors
+
+In mixed effects models, it is common to center continuous predictors.
+Consider a longitudinal study where sleep was collected nightly for a week
+in multiple people. Hours of sleep duration will have variation that 
+exists between people (different people have different typical or average 
+sleep durations) and within people (the same person will sleep different 
+amounts on different nights).
+
+Entering observed hours of sleep duration as a predictor in the model will 
+conflate associations between sleep duration and the outcome that exist 
+at the between person and within person level.
+
+Here is a small example for two people with observed sleep ("Sleep"), the between
+person component, the average sleep per person ("BSleep"), and 
+the within person sleep, the person centered sleep duration ("WSleep").
+
+| ID | Sleep | BSleep | WSleep |
+|:--:|:-----:|:------:|:------:|
+| 1  | 6     | 7      | -1     |
+| 1  | 7     | 7      | 0      |
+| 1  | 8     | 7      | +1     |
+| 2  | 4     | 5      | -1     |
+| 2  | 5     | 5      | 0      |
+| 2  | 6     | 5      | +1     |
+
+These values are obtained by averaging the observed sleep values by ID.
+Then by taking the difference between the observed sleep duration values 
+and the between person mean sleep values, thus:
+
+$$
+WSleep = Sleep - BSleep
+$$
+
+Both `BSleep` and `WSleep` could be included as predictor variables in a model,
+or if the interest is solely in the within person association, `WSleep` only
+included.
+
+This type of centering is relatively common in mixed effects or multilevel models,
+at least for continuous predictors. The presence, or absence, of such centering
+for continuous variables has relatively little bearing on calculating the 
+average marginal effects (AMEs) as generally both variables remain continuous 
+and a derivative makes sense.
+
+In contrast to continuous predictors where it is common, it is relatively 
+*un*common to center categorical predictors. However, a recent paper
+(Yaremych, Preacher, & Hedeker, 2021) highlights how the same rationale 
+that apply to continuous predictors, in regards to the benefits of centering,
+equally apply to categorical predictors. They likewise show that an equivalent 
+algebraic approach to creating centered variables can be applied to categorical
+variables, after coding (e.g., using dummy coding).
+In the same study used for the continuous example, suppose that whether or not 
+people had a good night's sleep was recorded dummy coded as yes = 1 and no = 0.
+This table shows how it might be centered.
+
+| ID | GoodSleep | BSleep | WSleep |
+|:--:|:---------:|:------:|:------:|
+| 1  | 0         | 0.50   | -0.50  |
+| 1  | 0         | 0.50   | -0.50  |
+| 1  | 1         | 0.50   | +0.50  |
+| 1  | 1         | 0.50   | +0.50  |
+| 2  | 0         | 0.75   | -0.75  |
+| 2  | 1         | 0.75   | +0.25  |
+| 2  | 1         | 0.75   | +0.25  |
+| 2  | 1         | 0.75   | +0.25  |
+| 3  | 0         | 0      | 0      |
+| 3  | 0         | 0      | 0      |
+| 3  | 0         | 0      | 0      |
+| 3  | 0         | 0      | 0      |
+
+It is trivial enough to include these new variables as predictors in a model.
+However, in contrast to the continuous case where for the AMEs we tend to 
+calculate a derivative, the categorical case is more challenging.
+Typically, for categorical variables, AMEs are calculated as the 
+AME moving from one category to another category.
+This can easily be accomplished in `brmsmargins` using the `at` argument.
+However, when a categorical variable is centered by ID, the values
+for one category are not constant by ID.
+
+To address, this, `brmsmargins` implements an additional argument, `wat` 
+for within level `at`. This argument is used to give the values to be used 
+at each ID level. The `wat` argument is used in conjuction with the `at` argument.
+The `at` argument continues to be used for the general setup, with `wat` used 
+for the specific values.
+
+This is more easily shown than said. Here we simulate some multilevel data
+with a binary predictor, `x` and a binary outcome, `y`.
+
+```{r}
+d <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + 1
+
+    d <- data.table(ID = seq_len(nGroups))
+    d <- d[, .(x = rbinom(n = nObs, size = 1, prob = runif(1, 0, 1))), by = ID]
+
+    for (i in seq_len(nGroups)) {
+      d[ID == i, y := rbinom(
+        n = nObs,
+        size = 1,
+        prob = plogis(theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(d)
+  })
+```
+
+Now we can create a between and within person version of `x`,
+which we will call `xb` and `xw`. We also fit the `brms` model, using
+`xw`. In this instance we are not interested in any between person effects,
+so that variable is omitted. Any variation not explained by it will go into 
+the random intercept, anyways.
+
+```{r}
+## within person centering binary predictor
+d[, xb := mean(x), by = ID]
+d[, xw := x - xb]
+
+mlogitcent <- brms::brm(
+  y ~ 1 + xw + (1 + xw | ID), family = "bernoulli",
+  data = d, seed = 1234,
+  silent = 2, refresh = 0,
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+``` 
+
+Now comes the new part. We calculate the minimum and maximum observed, 
+non missing values by ID and (arbitrarily) label these `a` and `b`.
+We could have chosen any label, `min` and `max` or `low` and `high` or
+whatever we wanted. These get turned into a single long `data.table`,
+called `xwid`. We use this to create a list, saved as `usewat`.
+The list must have two elements at a minimum:
+
+1. A named element, named "ID" that contains a character string with
+   the name of the ID variable.
+2. An element named after the centered variable, with a `data.frame` 
+   or `data.table` containing the values to use for each ID and
+   for each label we chose, here `a` and `b`.
+   
+The table shows a few examples of what the dataset looks like.
+
+```{r, results = "asis"}
+
+xwid <- melt(
+  d[, .(a = min(xw, na.rm = TRUE),
+        b = max(xw, na.rm = TRUE)),
+    by = ID], id.vars = "ID")
+
+usewat <- list(ID = "ID", xw = xwid)
+
+knitr::kable(xwid[ID %in% c(1, 2, 100)][order(ID)], digits = 2)
+```
+
+This new dataset shows what values to use for moving from
+one category of `x` to another category of `x` looks like, 
+for each ID. Note that sometimes these are the same. In the case 
+of ID 1, all `x` values were identical and thus all `xw` values
+will be 0. This is appropriate because for that ID, there was no 
+variation on `x` and so we have no idea what the "true" change 
+for ID 1 would be if moving from one category to another.
+
+Now we can use `brmsmargins()` to calculate the AME.
+We must still specify the `at` argument. Here we use
+our arbitrary lables of `a` and `b` for the variable,
+`xw`. We also pass our list to the argument `wat`.
+Internally, `brmsmargins()` will substitute `a` for
+all the values for `a` by ID from our list, and similarly for 
+`b`. The reason for this separation is in the `at` argument,
+one might have specific values of other variables as well,
+had there been other predictors in the model.
+
+The resulting summary gives the average marginal predictions 
+for `xw = a` and `xw = b` which in our case refers to when 
+`xw` is at the minimum for that ID and when it is at the maximum 
+for that ID.
+
+```{r, results = "asis"}
+ame.cent <- brmsmargins(
+  object = mlogit,
+  at = expand.grid(xw = c("a", "b")),
+  wat = usewat,
+  contrasts = cbind("AME xw" = c(-1, 1)),
+  effects = "integrateoutRE", k = 20L)
+
+knitr::kable(ame.cent$Summary, digits = 3)
+```
+
+Just as in other examples, we can get a summary of the
+contrast of these two values, our AME.
+
+```{r, results = "asis"}
+knitr::kable(ame.cent$ContrastSummary, digits = 3)
+```
+
+## References
+
+Potentially useful references.
+
+- Norton, E. C., Dowd, B. E., & Maciejewski, M. L. (2019). Marginal effects—quantifying the effect of changes in risk factors in logistic regression models. *JAMA, 321*(13), 1304-1305.
+- Mize, T. D., Doan, L., & Long, J. S. (2019). A general framework for comparing predictions and marginal effects across models. *Sociological Methodology, 49*(1), 152-189.
+- Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015). A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes. *BMC Medical Research Methodology, 15*(1), 1-6.
+- Hedeker, D., du Toit, S. H., Demirtas, H., & Gibbons, R. D. (2018). A note on marginalization of regression parameters from mixed models of binary outcomes. *Biometrics, 74*(1), 354-361.
+- Yaremych, H. E., Preacher, K. J., & Hedeker, D. (2021). Centering categorical predictors in multilevel models: Best practices and interpretation. *Psychological Methods*. https://doi.org/10.1037/met0000434

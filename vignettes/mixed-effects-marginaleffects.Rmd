@@ -19,7 +19,17 @@ vignette: >
 ```r
 library(knitr)
 library(data.table)
+#> data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
+#> Loading required package: Rcpp
+#> Loading 'brms' package (version 2.17.0). Useful instructions
+#> can be found by typing help('brms'). A more detailed introduction
+#> to the package is available through vignette('brms_overview').
+#> 
+#> Attaching package: 'brms'
+#> The following object is masked from 'package:stats':
+#> 
+#>     ar
 library(brmsmargins)
 ```
 
@@ -174,30 +184,40 @@ mlogit <- brms::brm(
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
 #> Compiling Stan program...
+#> 
+#> Warning: 25 of 4000 (1.0%) transitions ended with a divergence.
+#> This may indicate insufficient exploration of the posterior distribution.
+#> Possible remedies include: 
+#>   * Increasing adapt_delta closer to 1 (default is 0.8) 
+#>   * Reparameterizing the model (e.g. using a non-centered parameterization)
+#>   * Using informative or weakly informative prior distributions
 ```
 
 
 
 ```r
 summary(mlogit)
+#> Warning: There were 25 divergent transitions after warmup. Increasing
+#> adapt_delta above may help. See http://mc-stan.org/misc/warnings.html#divergent-
+#> transitions-after-warmup
 #>  Family: bernoulli 
 #>   Links: mu = logit 
 #> Formula: y ~ 1 + x + (1 + x | ID) 
 #>    Data: d (Number of observations: 2000) 
-#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
 #> Group-Level Effects: 
 #> ~ID (Number of levels: 100) 
 #>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)        1.18      0.19     0.85     1.59 1.00     1371     2302
-#> sd(x)                0.53      0.28     0.04     1.07 1.01      338     1039
-#> cor(Intercept,x)    -0.18      0.42    -0.83     0.81 1.00     1444     1313
+#> sd(Intercept)        1.17      0.19     0.85     1.58 1.01     1038     1913
+#> sd(x)                0.53      0.28     0.03     1.11 1.03      223      409
+#> cor(Intercept,x)    -0.16      0.42    -0.81     0.82 1.01     1403     1047
 #> 
 #> Population-Level Effects: 
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept    -2.47      0.19    -2.87    -2.13 1.00     1678     2281
-#> x             0.95      0.19     0.60     1.33 1.00     3021     2803
+#> Intercept    -2.47      0.20    -2.89    -2.10 1.01     1116     1292
+#> x             0.95      0.18     0.59     1.34 1.00     2152     2024
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -229,7 +249,7 @@ knitr::kable(ame1$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.111| 0.111| 0.058| 0.168|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+| 0.112| 0.112| 0.063| 0.169|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 We can follow a similar process getting discrete predictions at 
 x held at 0 or 1. In this instance, the summary of 
@@ -257,8 +277,8 @@ knitr::kable(ame2$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.119| 0.118| 0.076| 0.174|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.230| 0.229| 0.163| 0.306|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.120| 0.118| 0.071| 0.174|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.231| 0.231| 0.157| 0.302|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
 ```r
@@ -267,9 +287,9 @@ knitr::kable(ame2$ContrastSummary, digits = 3)
 
 
 
-|     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.111| 0.11| 0.061| 0.172|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|     M|   Mdn|   LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.111| 0.111| 0.06| 0.169|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 
 ```r
@@ -313,9 +333,9 @@ knitr::kable(ame.error$ContrastSummary, digits = 3)
 
 
 
-|      M|    Mdn|       LL|      UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|------:|------:|--------:|-------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| -0.679| -0.951| -165.694| 169.524|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|      M|   Mdn|       LL|      UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|------:|-----:|--------:|-------:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| -0.703| -0.98| -162.906| 172.759|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 This disappears when we use the same seed for each row of the data 
 used for predictions. Here we get all zeros for the difference, as 
@@ -379,8 +399,8 @@ knitr::kable(cbind(
 
 |MargCoef |MargCoefCI       |GLMCoef |GLMCI            |
 |:--------|:----------------|:-------|:----------------|
-|-2.013   |[-2.367, -1.658] |-2.021  |[-2.219, -1.833] |
-|0.796    |[0.516, 1.080]   |0.802   |[0.561, 1.047]   |
+|-2.010   |[-2.386, -1.666] |-2.021  |[-2.219, -1.833] |
+|0.800    |[0.520, 1.083]   |0.802   |[0.561, 1.047]   |
 
 ## Mixed Effects Poisson Regression
 
@@ -430,20 +450,20 @@ summary(mpois)
 #>   Links: mu = log 
 #> Formula: y ~ 1 + x + (1 + x | ID) 
 #>    Data: dpoisson (Number of observations: 2000) 
-#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
 #> Group-Level Effects: 
 #> ~ID (Number of levels: 100) 
 #>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)        1.18      0.15     0.91     1.50 1.00     1362     2382
-#> sd(x)                0.38      0.20     0.03     0.77 1.01      313      798
-#> cor(Intercept,x)    -0.08      0.39    -0.74     0.79 1.00     1449     1348
+#> sd(Intercept)        1.18      0.15     0.91     1.52 1.00     1353     2327
+#> sd(x)                0.36      0.20     0.02     0.75 1.01      308      949
+#> cor(Intercept,x)    -0.06      0.41    -0.75     0.85 1.00     1680     1536
 #> 
 #> Population-Level Effects: 
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept    -2.47      0.18    -2.84    -2.13 1.00     1373     2132
-#> x             0.97      0.15     0.68     1.28 1.00     3100     2584
+#> Intercept    -2.47      0.17    -2.82    -2.14 1.00     1777     2484
+#> x             0.97      0.15     0.68     1.27 1.00     3307     2893
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -469,9 +489,9 @@ knitr::kable(ame1.pois$ContrastSummary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.335| 0.314| 0.141| 0.749|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|     M|   Mdn|   LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.332| 0.312| 0.14| 0.731|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 Here is an example treating `x` as discrete.
 
@@ -488,9 +508,9 @@ knitr::kable(ame2.pois$ContrastSummary)
 
 
 
-|         M|      Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|---------:|--------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.2965975| 0.279079| 0.1152076| 0.6196911|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|        M|       Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|--------:|---------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.294537| 0.2780058| 0.1076343| 0.5973478|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 
 ### Marginal Coefficients
@@ -531,8 +551,8 @@ knitr::kable(cbind(
 
 |MargCoef |MargCoefCI       |GLMCoef |GLMCI            |
 |:--------|:----------------|:-------|:----------------|
-|-1.766   |[-2.236, -1.240] |-1.858  |[-2.019, -1.705] |
-|0.991    |[0.703, 1.301]   |0.983   |[0.802, 1.170]   |
+|-1.765   |[-2.218, -1.239] |-1.858  |[-2.019, -1.705] |
+|0.987    |[0.697, 1.279]   |0.983   |[0.802, 1.170]   |
 
 
 ## Mixed Effects Negative Binomial Regression
@@ -557,24 +577,24 @@ summary(mnb)
 #>   Links: mu = log; shape = identity 
 #> Formula: y ~ 1 + x + (1 + x | ID) 
 #>    Data: dpoisson (Number of observations: 2000) 
-#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
 #> Group-Level Effects: 
 #> ~ID (Number of levels: 100) 
 #>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)        1.18      0.15     0.91     1.52 1.00      959     1314
-#> sd(x)                0.36      0.20     0.03     0.75 1.02      236      607
-#> cor(Intercept,x)    -0.05      0.41    -0.76     0.84 1.00     1241     1125
+#> sd(Intercept)        1.19      0.15     0.93     1.51 1.01      975     1816
+#> sd(x)                0.35      0.20     0.01     0.74 1.01      252      821
+#> cor(Intercept,x)    -0.07      0.41    -0.77     0.84 1.00     1432     1277
 #> 
 #> Population-Level Effects: 
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept    -2.48      0.18    -2.85    -2.16 1.00     1163     1711
-#> x             0.97      0.15     0.67     1.27 1.00     2704     2632
+#> Intercept    -2.46      0.18    -2.83    -2.14 1.00     1057     1993
+#> x             0.98      0.15     0.70     1.28 1.00     2711     2153
 #> 
 #> Family Specific Parameters: 
 #>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> shape    61.33     60.34     8.53   232.25 1.00     4555     3481
+#> shape    61.06     63.22     8.15   243.02 1.00     5885     2745
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -602,7 +622,7 @@ knitr::kable(ame1.nb$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.325| 0.306| 0.141| 0.716|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+| 0.335| 0.313| 0.141| 0.777|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 Here is an example treating `x` as discrete.
 
@@ -619,9 +639,9 @@ knitr::kable(ame2.nb$ContrastSummary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.288| 0.275| 0.131| 0.602|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.298| 0.28| 0.141| 0.662|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 ### Marginal Coefficients
 
@@ -638,7 +658,6 @@ View the results.
 
 
 ```r
-
 knitr::kable(
   mc.nb$Summary[, .(
     MargCoef = sprintf("%0.3f", round(M, 3)),
@@ -649,5 +668,257 @@ knitr::kable(
 
 |MargCoef |MargCoefCI       |
 |:--------|:----------------|
-|-1.788   |[-2.256, -1.285] |
-|0.989    |[0.701, 1.261]   |
+|-1.759   |[-2.225, -1.234] |
+|0.988    |[0.725, 1.283]   |
+
+## Centered Categorical Predictors
+
+In mixed effects models, it is common to center continuous predictors.
+Consider a longitudinal study where sleep was collected nightly for a week
+in multiple people. Hours of sleep duration will have variation that 
+exists between people (different people have different typical or average 
+sleep durations) and within people (the same person will sleep different 
+amounts on different nights).
+
+Entering observed hours of sleep duration as a predictor in the model will 
+conflate associations between sleep duration and the outcome that exist 
+at the between person and within person level.
+
+Here is a small example for two people with observed sleep ("Sleep"), the between
+person component, the average sleep per person ("BSleep"), and 
+the within person sleep, the person centered sleep duration ("WSleep").
+
+| ID | Sleep | BSleep | WSleep |
+|:--:|:-----:|:------:|:------:|
+| 1  | 6     | 7      | -1     |
+| 1  | 7     | 7      | 0      |
+| 1  | 8     | 7      | +1     |
+| 2  | 4     | 5      | -1     |
+| 2  | 5     | 5      | 0      |
+| 2  | 6     | 5      | +1     |
+
+These values are obtained by averaging the observed sleep values by ID.
+Then by taking the difference between the observed sleep duration values 
+and the between person mean sleep values, thus:
+
+$$
+WSleep = Sleep - BSleep
+$$
+
+Both `BSleep` and `WSleep` could be included as predictor variables in a model,
+or if the interest is solely in the within person association, `WSleep` only
+included.
+
+This type of centering is relatively common in mixed effects or multilevel models,
+at least for continuous predictors. The presence, or absence, of such centering
+for continuous variables has relatively little bearing on calculating the 
+average marginal effects (AMEs) as generally both variables remain continuous 
+and a derivative makes sense.
+
+In contrast to continuous predictors where it is common, it is relatively 
+*un*common to center categorical predictors. However, a recent paper
+(Yaremych, Preacher, & Hedeker, 2021) highlights how the same rationale 
+that apply to continuous predictors, in regards to the benefits of centering,
+equally apply to categorical predictors. They likewise show that an equivalent 
+algebraic approach to creating centered variables can be applied to categorical
+variables, after coding (e.g., using dummy coding).
+In the same study used for the continuous example, suppose that whether or not 
+people had a good night's sleep was recorded dummy coded as yes = 1 and no = 0.
+This table shows how it might be centered.
+
+| ID | GoodSleep | BSleep | WSleep |
+|:--:|:---------:|:------:|:------:|
+| 1  | 0         | 0.50   | -0.50  |
+| 1  | 0         | 0.50   | -0.50  |
+| 1  | 1         | 0.50   | +0.50  |
+| 1  | 1         | 0.50   | +0.50  |
+| 2  | 0         | 0.75   | -0.75  |
+| 2  | 1         | 0.75   | +0.25  |
+| 2  | 1         | 0.75   | +0.25  |
+| 2  | 1         | 0.75   | +0.25  |
+| 3  | 0         | 0      | 0      |
+| 3  | 0         | 0      | 0      |
+| 3  | 0         | 0      | 0      |
+| 3  | 0         | 0      | 0      |
+
+It is trivial enough to include these new variables as predictors in a model.
+However, in contrast to the continuous case where for the AMEs we tend to 
+calculate a derivative, the categorical case is more challenging.
+Typically, for categorical variables, AMEs are calculated as the 
+AME moving from one category to another category.
+This can easily be accomplished in `brmsmargins` using the `at` argument.
+However, when a categorical variable is centered by ID, the values
+for one category are not constant by ID.
+
+To address, this, `brmsmargins` implements an additional argument, `wat` 
+for within level `at`. This argument is used to give the values to be used 
+at each ID level. The `wat` argument is used in conjuction with the `at` argument.
+The `at` argument continues to be used for the general setup, with `wat` used 
+for the specific values.
+
+This is more easily shown than said. Here we simulate some multilevel data
+with a binary predictor, `x` and a binary outcome, `y`.
+
+
+```r
+d <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + 1
+
+    d <- data.table(ID = seq_len(nGroups))
+    d <- d[, .(x = rbinom(n = nObs, size = 1, prob = runif(1, 0, 1))), by = ID]
+
+    for (i in seq_len(nGroups)) {
+      d[ID == i, y := rbinom(
+        n = nObs,
+        size = 1,
+        prob = plogis(theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(d)
+  })
+```
+
+Now we can create a between and within person version of `x`,
+which we will call `xb` and `xw`. We also fit the `brms` model, using
+`xw`. In this instance we are not interested in any between person effects,
+so that variable is omitted. Any variation not explained by it will go into 
+the random intercept, anyways.
+
+
+```r
+## within person centering binary predictor
+d[, xb := mean(x), by = ID]
+d[, xw := x - xb]
+
+mlogitcent <- brms::brm(
+  y ~ 1 + xw + (1 + xw | ID), family = "bernoulli",
+  data = d, seed = 1234,
+  silent = 2, refresh = 0,
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+#> Compiling Stan program...
+#> -\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/- Running MCMC with 4 parallel chains...
+#> 
+#> Chain 2 finished in 7.7 seconds.
+#> Chain 4 finished in 7.7 seconds.
+#> Chain 1 finished in 8.0 seconds.
+#> Chain 3 finished in 7.9 seconds.
+#> 
+#> All 4 chains finished successfully.
+#> Mean chain execution time: 7.8 seconds.
+#> Total execution time: 9.6 seconds.
+```
+
+Now comes the new part. We calculate the minimum and maximum observed, 
+non missing values by ID and (arbitrarily) label these `a` and `b`.
+We could have chosen any label, `min` and `max` or `low` and `high` or
+whatever we wanted. These get turned into a single long `data.table`,
+called `xwid`. We use this to create a list, saved as `usewat`.
+The list must have two elements at a minimum:
+
+1. A named element, named "ID" that contains a character string with
+   the name of the ID variable.
+2. An element named after the centered variable, with a `data.frame` 
+   or `data.table` containing the values to use for each ID and
+   for each label we chose, here `a` and `b`.
+   
+The table shows a few examples of what the dataset looks like.
+
+
+```r
+
+xwid <- melt(
+  d[, .(a = min(xw, na.rm = TRUE),
+        b = max(xw, na.rm = TRUE)),
+    by = ID], id.vars = "ID")
+
+usewat <- list(ID = "ID", xw = xwid)
+
+knitr::kable(xwid[ID %in% c(1, 2, 100)][order(ID)], digits = 2)
+```
+
+
+
+|  ID|variable | value|
+|---:|:--------|-----:|
+|   1|a        |  0.00|
+|   1|b        |  0.00|
+|   2|a        | -0.30|
+|   2|b        |  0.70|
+| 100|a        | -0.15|
+| 100|b        |  0.85|
+
+This new dataset shows what values to use for moving from
+one category of `x` to another category of `x` looks like, 
+for each ID. Note that sometimes these are the same. In the case 
+of ID 1, all `x` values were identical and thus all `xw` values
+will be 0. This is appropriate because for that ID, there was no 
+variation on `x` and so we have no idea what the "true" change 
+for ID 1 would be if moving from one category to another.
+
+Now we can use `brmsmargins()` to calculate the AME.
+We must still specify the `at` argument. Here we use
+our arbitrary lables of `a` and `b` for the variable,
+`xw`. We also pass our list to the argument `wat`.
+Internally, `brmsmargins()` will substitute `a` for
+all the values for `a` by ID from our list, and similarly for 
+`b`. The reason for this separation is in the `at` argument,
+one might have specific values of other variables as well,
+had there been other predictors in the model.
+
+The resulting summary gives the average marginal predictions 
+for `xw = a` and `xw = b` which in our case refers to when 
+`xw` is at the minimum for that ID and when it is at the maximum 
+for that ID.
+
+
+```r
+ame.cent <- brmsmargins(
+  object = mlogit,
+  at = expand.grid(xw = c("a", "b")),
+  wat = usewat,
+  contrasts = cbind("AME xw" = c(-1, 1)),
+  effects = "integrateoutRE", k = 20L)
+
+knitr::kable(ame.cent$Summary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
+| 0.176| 0.174| 0.094| 0.283|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.176| 0.174| 0.094| 0.283|          NA|         NA| 0.99|HDI    |NA   |NA  |
+
+Just as in other examples, we can get a summary of the
+contrast of these two values, our AME.
+
+
+```r
+knitr::kable(ame.cent$ContrastSummary, digits = 3)
+```
+
+
+
+|  M| Mdn| LL| UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
+|--:|---:|--:|--:|-----------:|----------:|----:|:------|:----|:---|:------|
+|  0|   0|  0|  0|          NA|         NA| 0.99|HDI    |NA   |NA  |AME xw |
+
+## References
+
+Potentially useful references.
+
+- Norton, E. C., Dowd, B. E., & Maciejewski, M. L. (2019). Marginal effects—quantifying the effect of changes in risk factors in logistic regression models. *JAMA, 321*(13), 1304-1305.
+- Mize, T. D., Doan, L., & Long, J. S. (2019). A general framework for comparing predictions and marginal effects across models. *Sociological Methodology, 49*(1), 152-189.
+- Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015). A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes. *BMC Medical Research Methodology, 15*(1), 1-6.
+- Hedeker, D., du Toit, S. H., Demirtas, H., & Gibbons, R. D. (2018). A note on marginalization of regression parameters from mixed models of binary outcomes. *Biometrics, 74*(1), 354-361.
+- Yaremych, H. E., Preacher, K. J., & Hedeker, D. (2021). Centering categorical predictors in multilevel models: Best practices and interpretation. *Psychological Methods*. https://doi.org/10.1037/met0000434
