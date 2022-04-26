@@ -1008,262 +1008,17 @@ WSleep = Sleep - BSleep
     <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>
   <span class="op">}</span><span class="op">)</span></code></pre></div>
 <p>Now we can create a between and within person version of <code>x</code>, which we will call <code>xb</code> and <code>xw</code>. We also fit the <code>brms</code> model, using <code>xw</code>. In this instance we are not interested in any between person effects, so that variable is omitted. Any variation not explained by it will go into the random intercept, anyways.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co">## within person centering binary predictor</span></span>
-<span id="cb26-2"><a href="#cb26-2"></a>d[, xb <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">mean</span>(x), by =<span class="st"> </span>ID]</span>
-<span id="cb26-3"><a href="#cb26-3"></a>d[, xw <span class="op">:</span><span class="er">=</span><span class="st"> </span>x <span class="op">-</span><span class="st"> </span>xb]</span>
-<span id="cb26-4"><a href="#cb26-4"></a></span>
-<span id="cb26-5"><a href="#cb26-5"></a>mlogitcent &lt;-<span class="st"> </span>brms<span class="op">::</span><span class="kw">brm</span>(</span>
-<span id="cb26-6"><a href="#cb26-6"></a>  y <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>xw <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>xw <span class="op">|</span><span class="st"> </span>ID), <span class="dt">family =</span> <span class="st">"bernoulli"</span>,</span>
-<span id="cb26-7"><a href="#cb26-7"></a>  <span class="dt">data =</span> d, <span class="dt">seed =</span> <span class="dv">1234</span>,</span>
-<span id="cb26-8"><a href="#cb26-8"></a>  <span class="dt">silent =</span> <span class="dv">2</span>, <span class="dt">refresh =</span> <span class="dv">0</span>,</span>
-<span id="cb26-9"><a href="#cb26-9"></a>  <span class="dt">chains =</span> 4L, <span class="dt">cores =</span> 4L, <span class="dt">backend =</span> <span class="st">"cmdstanr"</span>)</span>
-<span id="cb26-10"><a href="#cb26-10"></a><span class="co">#&gt; Compiling Stan program...</span></span>
-<span id="cb26-11"><a href="#cb26-11"></a><span class="co">#&gt; </span></span>
-<span id="cb26-12"><a href="#cb26-12"></a><span class="op">-</span></span>
-<span id="cb26-13"><a href="#cb26-13"></a></span>
-<span id="cb26-14"><a href="#cb26-14"></a>\</span>
-<span id="cb26-15"><a href="#cb26-15"></a></span>
-<span id="cb26-16"><a href="#cb26-16"></a><span class="op">|</span></span>
-<span id="cb26-17"><a href="#cb26-17"></a></span>
-<span id="cb26-18"><a href="#cb26-18"></a><span class="er">/</span></span>
-<span id="cb26-19"><a href="#cb26-19"></a></span>
-<span id="cb26-20"><a href="#cb26-20"></a><span class="op">-</span></span>
-<span id="cb26-21"><a href="#cb26-21"></a></span>
-<span id="cb26-22"><a href="#cb26-22"></a>\</span>
-<span id="cb26-23"><a href="#cb26-23"></a></span>
-<span id="cb26-24"><a href="#cb26-24"></a><span class="op">|</span></span>
-<span id="cb26-25"><a href="#cb26-25"></a></span>
-<span id="cb26-26"><a href="#cb26-26"></a><span class="er">/</span></span>
-<span id="cb26-27"><a href="#cb26-27"></a></span>
-<span id="cb26-28"><a href="#cb26-28"></a><span class="op">-</span></span>
-<span id="cb26-29"><a href="#cb26-29"></a></span>
-<span id="cb26-30"><a href="#cb26-30"></a>\</span>
-<span id="cb26-31"><a href="#cb26-31"></a></span>
-<span id="cb26-32"><a href="#cb26-32"></a><span class="op">|</span></span>
-<span id="cb26-33"><a href="#cb26-33"></a></span>
-<span id="cb26-34"><a href="#cb26-34"></a><span class="er">/</span></span>
-<span id="cb26-35"><a href="#cb26-35"></a></span>
-<span id="cb26-36"><a href="#cb26-36"></a><span class="op">-</span></span>
-<span id="cb26-37"><a href="#cb26-37"></a></span>
-<span id="cb26-38"><a href="#cb26-38"></a>\</span>
-<span id="cb26-39"><a href="#cb26-39"></a></span>
-<span id="cb26-40"><a href="#cb26-40"></a><span class="op">|</span></span>
-<span id="cb26-41"><a href="#cb26-41"></a></span>
-<span id="cb26-42"><a href="#cb26-42"></a><span class="er">/</span></span>
-<span id="cb26-43"><a href="#cb26-43"></a></span>
-<span id="cb26-44"><a href="#cb26-44"></a><span class="op">-</span></span>
-<span id="cb26-45"><a href="#cb26-45"></a></span>
-<span id="cb26-46"><a href="#cb26-46"></a>\</span>
-<span id="cb26-47"><a href="#cb26-47"></a></span>
-<span id="cb26-48"><a href="#cb26-48"></a><span class="op">|</span></span>
-<span id="cb26-49"><a href="#cb26-49"></a></span>
-<span id="cb26-50"><a href="#cb26-50"></a><span class="er">/</span></span>
-<span id="cb26-51"><a href="#cb26-51"></a></span>
-<span id="cb26-52"><a href="#cb26-52"></a><span class="op">-</span></span>
-<span id="cb26-53"><a href="#cb26-53"></a></span>
-<span id="cb26-54"><a href="#cb26-54"></a>\</span>
-<span id="cb26-55"><a href="#cb26-55"></a></span>
-<span id="cb26-56"><a href="#cb26-56"></a><span class="op">|</span></span>
-<span id="cb26-57"><a href="#cb26-57"></a></span>
-<span id="cb26-58"><a href="#cb26-58"></a><span class="er">/</span></span>
-<span id="cb26-59"><a href="#cb26-59"></a></span>
-<span id="cb26-60"><a href="#cb26-60"></a><span class="op">-</span></span>
-<span id="cb26-61"><a href="#cb26-61"></a></span>
-<span id="cb26-62"><a href="#cb26-62"></a>\</span>
-<span id="cb26-63"><a href="#cb26-63"></a></span>
-<span id="cb26-64"><a href="#cb26-64"></a><span class="op">|</span></span>
-<span id="cb26-65"><a href="#cb26-65"></a></span>
-<span id="cb26-66"><a href="#cb26-66"></a><span class="er">/</span></span>
-<span id="cb26-67"><a href="#cb26-67"></a></span>
-<span id="cb26-68"><a href="#cb26-68"></a><span class="op">-</span></span>
-<span id="cb26-69"><a href="#cb26-69"></a></span>
-<span id="cb26-70"><a href="#cb26-70"></a>\</span>
-<span id="cb26-71"><a href="#cb26-71"></a></span>
-<span id="cb26-72"><a href="#cb26-72"></a><span class="op">|</span></span>
-<span id="cb26-73"><a href="#cb26-73"></a></span>
-<span id="cb26-74"><a href="#cb26-74"></a><span class="er">/</span></span>
-<span id="cb26-75"><a href="#cb26-75"></a></span>
-<span id="cb26-76"><a href="#cb26-76"></a><span class="op">-</span></span>
-<span id="cb26-77"><a href="#cb26-77"></a></span>
-<span id="cb26-78"><a href="#cb26-78"></a>\</span>
-<span id="cb26-79"><a href="#cb26-79"></a></span>
-<span id="cb26-80"><a href="#cb26-80"></a><span class="op">|</span></span>
-<span id="cb26-81"><a href="#cb26-81"></a></span>
-<span id="cb26-82"><a href="#cb26-82"></a><span class="er">/</span></span>
-<span id="cb26-83"><a href="#cb26-83"></a></span>
-<span id="cb26-84"><a href="#cb26-84"></a><span class="op">-</span></span>
-<span id="cb26-85"><a href="#cb26-85"></a></span>
-<span id="cb26-86"><a href="#cb26-86"></a>\</span>
-<span id="cb26-87"><a href="#cb26-87"></a></span>
-<span id="cb26-88"><a href="#cb26-88"></a><span class="op">|</span></span>
-<span id="cb26-89"><a href="#cb26-89"></a></span>
-<span id="cb26-90"><a href="#cb26-90"></a><span class="er">/</span></span>
-<span id="cb26-91"><a href="#cb26-91"></a></span>
-<span id="cb26-92"><a href="#cb26-92"></a><span class="op">-</span></span>
-<span id="cb26-93"><a href="#cb26-93"></a></span>
-<span id="cb26-94"><a href="#cb26-94"></a>\</span>
-<span id="cb26-95"><a href="#cb26-95"></a></span>
-<span id="cb26-96"><a href="#cb26-96"></a><span class="op">|</span></span>
-<span id="cb26-97"><a href="#cb26-97"></a></span>
-<span id="cb26-98"><a href="#cb26-98"></a><span class="er">/</span></span>
-<span id="cb26-99"><a href="#cb26-99"></a></span>
-<span id="cb26-100"><a href="#cb26-100"></a><span class="op">-</span></span>
-<span id="cb26-101"><a href="#cb26-101"></a></span>
-<span id="cb26-102"><a href="#cb26-102"></a>\</span>
-<span id="cb26-103"><a href="#cb26-103"></a></span>
-<span id="cb26-104"><a href="#cb26-104"></a><span class="op">|</span></span>
-<span id="cb26-105"><a href="#cb26-105"></a></span>
-<span id="cb26-106"><a href="#cb26-106"></a><span class="er">/</span></span>
-<span id="cb26-107"><a href="#cb26-107"></a></span>
-<span id="cb26-108"><a href="#cb26-108"></a><span class="op">-</span></span>
-<span id="cb26-109"><a href="#cb26-109"></a></span>
-<span id="cb26-110"><a href="#cb26-110"></a>\</span>
-<span id="cb26-111"><a href="#cb26-111"></a></span>
-<span id="cb26-112"><a href="#cb26-112"></a><span class="op">|</span></span>
-<span id="cb26-113"><a href="#cb26-113"></a></span>
-<span id="cb26-114"><a href="#cb26-114"></a><span class="er">/</span></span>
-<span id="cb26-115"><a href="#cb26-115"></a></span>
-<span id="cb26-116"><a href="#cb26-116"></a><span class="op">-</span></span>
-<span id="cb26-117"><a href="#cb26-117"></a></span>
-<span id="cb26-118"><a href="#cb26-118"></a>\</span>
-<span id="cb26-119"><a href="#cb26-119"></a></span>
-<span id="cb26-120"><a href="#cb26-120"></a><span class="op">|</span></span>
-<span id="cb26-121"><a href="#cb26-121"></a></span>
-<span id="cb26-122"><a href="#cb26-122"></a><span class="er">/</span></span>
-<span id="cb26-123"><a href="#cb26-123"></a></span>
-<span id="cb26-124"><a href="#cb26-124"></a><span class="op">-</span></span>
-<span id="cb26-125"><a href="#cb26-125"></a></span>
-<span id="cb26-126"><a href="#cb26-126"></a>\</span>
-<span id="cb26-127"><a href="#cb26-127"></a></span>
-<span id="cb26-128"><a href="#cb26-128"></a><span class="op">|</span></span>
-<span id="cb26-129"><a href="#cb26-129"></a></span>
-<span id="cb26-130"><a href="#cb26-130"></a><span class="er">/</span></span>
-<span id="cb26-131"><a href="#cb26-131"></a></span>
-<span id="cb26-132"><a href="#cb26-132"></a><span class="op">-</span></span>
-<span id="cb26-133"><a href="#cb26-133"></a></span>
-<span id="cb26-134"><a href="#cb26-134"></a>\</span>
-<span id="cb26-135"><a href="#cb26-135"></a></span>
-<span id="cb26-136"><a href="#cb26-136"></a><span class="op">|</span></span>
-<span id="cb26-137"><a href="#cb26-137"></a></span>
-<span id="cb26-138"><a href="#cb26-138"></a><span class="er">/</span></span>
-<span id="cb26-139"><a href="#cb26-139"></a></span>
-<span id="cb26-140"><a href="#cb26-140"></a><span class="op">-</span></span>
-<span id="cb26-141"><a href="#cb26-141"></a></span>
-<span id="cb26-142"><a href="#cb26-142"></a>\</span>
-<span id="cb26-143"><a href="#cb26-143"></a></span>
-<span id="cb26-144"><a href="#cb26-144"></a><span class="op">|</span></span>
-<span id="cb26-145"><a href="#cb26-145"></a></span>
-<span id="cb26-146"><a href="#cb26-146"></a><span class="er">/</span></span>
-<span id="cb26-147"><a href="#cb26-147"></a></span>
-<span id="cb26-148"><a href="#cb26-148"></a><span class="op">-</span></span>
-<span id="cb26-149"><a href="#cb26-149"></a></span>
-<span id="cb26-150"><a href="#cb26-150"></a>\</span>
-<span id="cb26-151"><a href="#cb26-151"></a></span>
-<span id="cb26-152"><a href="#cb26-152"></a><span class="op">|</span></span>
-<span id="cb26-153"><a href="#cb26-153"></a></span>
-<span id="cb26-154"><a href="#cb26-154"></a><span class="er">/</span></span>
-<span id="cb26-155"><a href="#cb26-155"></a></span>
-<span id="cb26-156"><a href="#cb26-156"></a><span class="op">-</span></span>
-<span id="cb26-157"><a href="#cb26-157"></a></span>
-<span id="cb26-158"><a href="#cb26-158"></a>\</span>
-<span id="cb26-159"><a href="#cb26-159"></a></span>
-<span id="cb26-160"><a href="#cb26-160"></a><span class="op">|</span></span>
-<span id="cb26-161"><a href="#cb26-161"></a></span>
-<span id="cb26-162"><a href="#cb26-162"></a><span class="er">/</span></span>
-<span id="cb26-163"><a href="#cb26-163"></a></span>
-<span id="cb26-164"><a href="#cb26-164"></a><span class="op">-</span></span>
-<span id="cb26-165"><a href="#cb26-165"></a></span>
-<span id="cb26-166"><a href="#cb26-166"></a>\</span>
-<span id="cb26-167"><a href="#cb26-167"></a></span>
-<span id="cb26-168"><a href="#cb26-168"></a><span class="op">|</span></span>
-<span id="cb26-169"><a href="#cb26-169"></a></span>
-<span id="cb26-170"><a href="#cb26-170"></a><span class="er">/</span></span>
-<span id="cb26-171"><a href="#cb26-171"></a></span>
-<span id="cb26-172"><a href="#cb26-172"></a><span class="op">-</span></span>
-<span id="cb26-173"><a href="#cb26-173"></a></span>
-<span id="cb26-174"><a href="#cb26-174"></a>\</span>
-<span id="cb26-175"><a href="#cb26-175"></a></span>
-<span id="cb26-176"><a href="#cb26-176"></a><span class="op">|</span></span>
-<span id="cb26-177"><a href="#cb26-177"></a></span>
-<span id="cb26-178"><a href="#cb26-178"></a><span class="er">/</span></span>
-<span id="cb26-179"><a href="#cb26-179"></a></span>
-<span id="cb26-180"><a href="#cb26-180"></a><span class="op">-</span></span>
-<span id="cb26-181"><a href="#cb26-181"></a></span>
-<span id="cb26-182"><a href="#cb26-182"></a>\</span>
-<span id="cb26-183"><a href="#cb26-183"></a></span>
-<span id="cb26-184"><a href="#cb26-184"></a><span class="op">|</span></span>
-<span id="cb26-185"><a href="#cb26-185"></a></span>
-<span id="cb26-186"><a href="#cb26-186"></a><span class="er">/</span></span>
-<span id="cb26-187"><a href="#cb26-187"></a></span>
-<span id="cb26-188"><a href="#cb26-188"></a><span class="op">-</span></span>
-<span id="cb26-189"><a href="#cb26-189"></a></span>
-<span id="cb26-190"><a href="#cb26-190"></a>\</span>
-<span id="cb26-191"><a href="#cb26-191"></a></span>
-<span id="cb26-192"><a href="#cb26-192"></a><span class="op">|</span></span>
-<span id="cb26-193"><a href="#cb26-193"></a></span>
-<span id="cb26-194"><a href="#cb26-194"></a><span class="er">/</span></span>
-<span id="cb26-195"><a href="#cb26-195"></a></span>
-<span id="cb26-196"><a href="#cb26-196"></a><span class="op">-</span></span>
-<span id="cb26-197"><a href="#cb26-197"></a></span>
-<span id="cb26-198"><a href="#cb26-198"></a>\</span>
-<span id="cb26-199"><a href="#cb26-199"></a></span>
-<span id="cb26-200"><a href="#cb26-200"></a><span class="op">|</span></span>
-<span id="cb26-201"><a href="#cb26-201"></a></span>
-<span id="cb26-202"><a href="#cb26-202"></a><span class="er">/</span></span>
-<span id="cb26-203"><a href="#cb26-203"></a></span>
-<span id="cb26-204"><a href="#cb26-204"></a><span class="op">-</span></span>
-<span id="cb26-205"><a href="#cb26-205"></a></span>
-<span id="cb26-206"><a href="#cb26-206"></a>\</span>
-<span id="cb26-207"><a href="#cb26-207"></a></span>
-<span id="cb26-208"><a href="#cb26-208"></a><span class="op">|</span></span>
-<span id="cb26-209"><a href="#cb26-209"></a></span>
-<span id="cb26-210"><a href="#cb26-210"></a><span class="er">/</span></span>
-<span id="cb26-211"><a href="#cb26-211"></a></span>
-<span id="cb26-212"><a href="#cb26-212"></a><span class="op">-</span></span>
-<span id="cb26-213"><a href="#cb26-213"></a></span>
-<span id="cb26-214"><a href="#cb26-214"></a>\</span>
-<span id="cb26-215"><a href="#cb26-215"></a></span>
-<span id="cb26-216"><a href="#cb26-216"></a><span class="op">|</span></span>
-<span id="cb26-217"><a href="#cb26-217"></a></span>
-<span id="cb26-218"><a href="#cb26-218"></a><span class="er">/</span></span>
-<span id="cb26-219"><a href="#cb26-219"></a></span>
-<span id="cb26-220"><a href="#cb26-220"></a><span class="op">-</span></span>
-<span id="cb26-221"><a href="#cb26-221"></a></span>
-<span id="cb26-222"><a href="#cb26-222"></a>\</span>
-<span id="cb26-223"><a href="#cb26-223"></a></span>
-<span id="cb26-224"><a href="#cb26-224"></a><span class="op">|</span></span>
-<span id="cb26-225"><a href="#cb26-225"></a></span>
-<span id="cb26-226"><a href="#cb26-226"></a><span class="er">/</span></span>
-<span id="cb26-227"><a href="#cb26-227"></a></span>
-<span id="cb26-228"><a href="#cb26-228"></a><span class="op">-</span></span>
-<span id="cb26-229"><a href="#cb26-229"></a></span>
-<span id="cb26-230"><a href="#cb26-230"></a>\</span>
-<span id="cb26-231"><a href="#cb26-231"></a></span>
-<span id="cb26-232"><a href="#cb26-232"></a><span class="op">|</span></span>
-<span id="cb26-233"><a href="#cb26-233"></a></span>
-<span id="cb26-234"><a href="#cb26-234"></a><span class="er">/</span></span>
-<span id="cb26-235"><a href="#cb26-235"></a></span>
-<span id="cb26-236"><a href="#cb26-236"></a><span class="op">-</span></span>
-<span id="cb26-237"><a href="#cb26-237"></a></span>
-<span id="cb26-238"><a href="#cb26-238"></a>\</span>
-<span id="cb26-239"><a href="#cb26-239"></a></span>
-<span id="cb26-240"><a href="#cb26-240"></a><span class="op">|</span></span>
-<span id="cb26-241"><a href="#cb26-241"></a></span>
-<span id="cb26-242"><a href="#cb26-242"></a><span class="er">/</span></span>
-<span id="cb26-243"><a href="#cb26-243"></a></span>
-<span id="cb26-244"><a href="#cb26-244"></a><span class="op">-</span></span>
-<span id="cb26-245"><a href="#cb26-245"></a></span>
-<span id="cb26-246"><a href="#cb26-246"></a><span class="st"> </span></span>
-<span id="cb26-247"><a href="#cb26-247"></a>Running MCMC with <span class="dv">4</span> parallel chains...</span>
-<span id="cb26-248"><a href="#cb26-248"></a><span class="co">#&gt; </span></span>
-<span id="cb26-249"><a href="#cb26-249"></a><span class="co">#&gt; Chain 2 finished in 7.7 seconds.</span></span>
-<span id="cb26-250"><a href="#cb26-250"></a><span class="co">#&gt; Chain 4 finished in 7.7 seconds.</span></span>
-<span id="cb26-251"><a href="#cb26-251"></a><span class="co">#&gt; Chain 1 finished in 8.0 seconds.</span></span>
-<span id="cb26-252"><a href="#cb26-252"></a><span class="co">#&gt; Chain 3 finished in 7.9 seconds.</span></span>
-<span id="cb26-253"><a href="#cb26-253"></a><span class="co">#&gt; </span></span>
-<span id="cb26-254"><a href="#cb26-254"></a><span class="co">#&gt; All 4 chains finished successfully.</span></span>
-<span id="cb26-255"><a href="#cb26-255"></a><span class="co">#&gt; Mean chain execution time: 7.8 seconds.</span></span>
-<span id="cb26-256"><a href="#cb26-256"></a><span class="co">#&gt; Total execution time: 9.6 seconds.</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## within person centering binary predictor</span>
+<span class="va">d</span><span class="op">[</span>, <span class="va">xb</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">ID</span><span class="op">]</span>
+<span class="va">d</span><span class="op">[</span>, <span class="va">xw</span> <span class="op">:=</span> <span class="va">x</span> <span class="op">-</span> <span class="va">xb</span><span class="op">]</span>
+
+<span class="va">mlogitcent</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/brms/man/brm.html" class="external-link">brm</a></span><span class="op">(</span>
+  <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">xw</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">xw</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"bernoulli"</span>,
+  data <span class="op">=</span> <span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1234</span>,
+  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,
+  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span>
+<span class="co">#&gt; Compiling Stan program...</span></code></pre></div>
 <p>Now comes the new part. We calculate the minimum and maximum observed, non missing values by ID and (arbitrarily) label these <code>a</code> and <code>b</code>. We could have chosen any label, <code>min</code> and <code>max</code> or <code>low</code> and <code>high</code> or whatever we wanted. These get turned into a single long <code>data.table</code>, called <code>xwid</code>. We use this to create a list, saved as <code>usewat</code>. The list must have two elements at a minimum:</p>
 <ol style="list-style-type: decimal">
 <li>A named element, named “ID” that contains a character string with the name of the ID variable.</li>
@@ -1324,7 +1079,7 @@ WSleep = Sleep - BSleep
 <p>The resulting summary gives the average marginal predictions for <code>xw = a</code> and <code>xw = b</code> which in our case refers to when <code>xw</code> is at the minimum for that ID and when it is at the maximum for that ID.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ame.cent</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span>
-  object <span class="op">=</span> <span class="va">mlogit</span>,
+  object <span class="op">=</span> <span class="va">mlogitcent</span>,
   at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>xw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span><span class="op">)</span>,
   wat <span class="op">=</span> <span class="va">usewat</span>,
   contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME xw"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
@@ -1346,10 +1101,10 @@ WSleep = Sleep - BSleep
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.176</td>
-<td align="right">0.174</td>
-<td align="right">0.094</td>
-<td align="right">0.283</td>
+<td align="right">0.128</td>
+<td align="right">0.125</td>
+<td align="right">0.058</td>
+<td align="right">0.216</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1358,10 +1113,10 @@ WSleep = Sleep - BSleep
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">0.176</td>
-<td align="right">0.174</td>
-<td align="right">0.094</td>
-<td align="right">0.283</td>
+<td align="right">0.227</td>
+<td align="right">0.224</td>
+<td align="right">0.118</td>
+<td align="right">0.341</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1389,10 +1144,10 @@ WSleep = Sleep - BSleep
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">0.099</td>
+<td align="right">0.099</td>
+<td align="right">0.037</td>
+<td align="right">0.166</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
