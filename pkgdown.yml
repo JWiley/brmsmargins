@@ -1,11 +1,11 @@
 pandoc: 2.7.3
-pkgdown: 2.0.2
+pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
   fixed-effects-marginaleffects: fixed-effects-marginaleffects.html
   location-scale-marginaleffects: location-scale-marginaleffects.html
   mixed-effects-marginaleffects: mixed-effects-marginaleffects.html
-last_built: 2022-03-01T06:54Z
+last_built: 2022-04-26T09:54Z
 urls:
   reference: https://joshuawiley.com/brmsmargins/reference
   article: https://joshuawiley.com/brmsmargins/articles

@@ -108,7 +108,17 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span>
+<span class="co">#&gt; data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span>
+<span class="co">#&gt; Loading required package: Rcpp</span>
+<span class="co">#&gt; Loading 'brms' package (version 2.17.0). Useful instructions</span>
+<span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span>
+<span class="co">#&gt; to the package is available through vignette('brms_overview').</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Attaching package: 'brms'</span>
+<span class="co">#&gt; The following object is masked from 'package:stats':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     ar</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://joshuawiley.com/brmsmargins/">brmsmargins</a></span><span class="op">)</span></code></pre></div>
 <p>This vignette provides a brief overview of how to calculate marginal effects for Bayesian regression models involving only mixed effects (i.e., fixed and random) and fit using the <code>brms</code> package.</p>
 <div class="section level2">
@@ -196,27 +206,37 @@
   data <span class="op">=</span> <span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1234</span>,
   silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,
   chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span>
-<span class="co">#&gt; Compiling Stan program...</span></code></pre></div>
+<span class="co">#&gt; Compiling Stan program...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Warning: 25 of 4000 (1.0%) transitions ended with a divergence.</span>
+<span class="co">#&gt; This may indicate insufficient exploration of the posterior distribution.</span>
+<span class="co">#&gt; Possible remedies include: </span>
+<span class="co">#&gt;   * Increasing adapt_delta closer to 1 (default is 0.8) </span>
+<span class="co">#&gt;   * Reparameterizing the model (e.g. using a non-centered parameterization)</span>
+<span class="co">#&gt;   * Using informative or weakly informative prior distributions</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mlogit</span><span class="op">)</span>
+<span class="co">#&gt; Warning: There were 25 divergent transitions after warmup. Increasing</span>
+<span class="co">#&gt; adapt_delta above may help. See http://mc-stan.org/misc/warnings.html#divergent-</span>
+<span class="co">#&gt; transitions-after-warmup</span>
 <span class="co">#&gt;  Family: bernoulli </span>
 <span class="co">#&gt;   Links: mu = logit </span>
 <span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span>
 <span class="co">#&gt;    Data: d (Number of observations: 2000) </span>
-<span class="co">#&gt;   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span>
 <span class="co">#&gt;          total post-warmup draws = 4000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Group-Level Effects: </span>
 <span class="co">#&gt; ~ID (Number of levels: 100) </span>
 <span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; sd(Intercept)        1.18      0.19     0.85     1.59 1.00     1371     2302</span>
-<span class="co">#&gt; sd(x)                0.53      0.28     0.04     1.07 1.01      338     1039</span>
-<span class="co">#&gt; cor(Intercept,x)    -0.18      0.42    -0.83     0.81 1.00     1444     1313</span>
+<span class="co">#&gt; sd(Intercept)        1.17      0.19     0.85     1.58 1.01     1038     1913</span>
+<span class="co">#&gt; sd(x)                0.53      0.28     0.03     1.11 1.03      223      409</span>
+<span class="co">#&gt; cor(Intercept,x)    -0.16      0.42    -0.81     0.82 1.01     1403     1047</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept    -2.47      0.19    -2.87    -2.13 1.00     1678     2281</span>
-<span class="co">#&gt; x             0.95      0.19     0.60     1.33 1.00     3021     2803</span>
+<span class="co">#&gt; Intercept    -2.47      0.20    -2.89    -2.10 1.01     1116     1292</span>
+<span class="co">#&gt; x             0.95      0.18     0.59     1.34 1.00     2152     2024</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
@@ -249,10 +269,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.111</td>
-<td align="right">0.111</td>
-<td align="right">0.058</td>
-<td align="right">0.168</td>
+<td align="right">0.112</td>
+<td align="right">0.112</td>
+<td align="right">0.063</td>
+<td align="right">0.169</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -287,9 +307,9 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.119</td>
+<td align="right">0.120</td>
 <td align="right">0.118</td>
-<td align="right">0.076</td>
+<td align="right">0.071</td>
 <td align="right">0.174</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
@@ -299,10 +319,10 @@
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">0.230</td>
-<td align="right">0.229</td>
-<td align="right">0.163</td>
-<td align="right">0.306</td>
+<td align="right">0.231</td>
+<td align="right">0.231</td>
+<td align="right">0.157</td>
+<td align="right">0.302</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -330,9 +350,9 @@
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">0.111</td>
-<td align="right">0.11</td>
-<td align="right">0.061</td>
-<td align="right">0.172</td>
+<td align="right">0.111</td>
+<td align="right">0.06</td>
+<td align="right">0.169</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -385,10 +405,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">-0.679</td>
-<td align="right">-0.951</td>
-<td align="right">-165.694</td>
-<td align="right">169.524</td>
+<td align="right">-0.703</td>
+<td align="right">-0.98</td>
+<td align="right">-162.906</td>
+<td align="right">172.759</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -468,14 +488,14 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">-2.013</td>
-<td align="left">[-2.367, -1.658]</td>
+<td align="left">-2.010</td>
+<td align="left">[-2.386, -1.666]</td>
 <td align="left">-2.021</td>
 <td align="left">[-2.219, -1.833]</td>
 </tr>
 <tr class="even">
-<td align="left">0.796</td>
-<td align="left">[0.516, 1.080]</td>
+<td align="left">0.800</td>
+<td align="left">[0.520, 1.083]</td>
 <td align="left">0.802</td>
 <td align="left">[0.561, 1.047]</td>
 </tr>
@@ -525,20 +545,20 @@
 <span class="co">#&gt;   Links: mu = log </span>
 <span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span>
 <span class="co">#&gt;    Data: dpoisson (Number of observations: 2000) </span>
-<span class="co">#&gt;   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span>
 <span class="co">#&gt;          total post-warmup draws = 4000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Group-Level Effects: </span>
 <span class="co">#&gt; ~ID (Number of levels: 100) </span>
 <span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; sd(Intercept)        1.18      0.15     0.91     1.50 1.00     1362     2382</span>
-<span class="co">#&gt; sd(x)                0.38      0.20     0.03     0.77 1.01      313      798</span>
-<span class="co">#&gt; cor(Intercept,x)    -0.08      0.39    -0.74     0.79 1.00     1449     1348</span>
+<span class="co">#&gt; sd(Intercept)        1.18      0.15     0.91     1.52 1.00     1353     2327</span>
+<span class="co">#&gt; sd(x)                0.36      0.20     0.02     0.75 1.01      308      949</span>
+<span class="co">#&gt; cor(Intercept,x)    -0.06      0.41    -0.75     0.85 1.00     1680     1536</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept    -2.47      0.18    -2.84    -2.13 1.00     1373     2132</span>
-<span class="co">#&gt; x             0.97      0.15     0.68     1.28 1.00     3100     2584</span>
+<span class="co">#&gt; Intercept    -2.47      0.17    -2.82    -2.14 1.00     1777     2484</span>
+<span class="co">#&gt; x             0.97      0.15     0.68     1.27 1.00     3307     2893</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
@@ -571,10 +591,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.335</td>
-<td align="right">0.314</td>
-<td align="right">0.141</td>
-<td align="right">0.749</td>
+<td align="right">0.332</td>
+<td align="right">0.312</td>
+<td align="right">0.14</td>
+<td align="right">0.731</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -608,10 +628,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.2965975</td>
-<td align="right">0.279079</td>
-<td align="right">0.1152076</td>
-<td align="right">0.6196911</td>
+<td align="right">0.294537</td>
+<td align="right">0.2780058</td>
+<td align="right">0.1076343</td>
+<td align="right">0.5973478</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -653,14 +673,14 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">-1.766</td>
-<td align="left">[-2.236, -1.240]</td>
+<td align="left">-1.765</td>
+<td align="left">[-2.218, -1.239]</td>
 <td align="left">-1.858</td>
 <td align="left">[-2.019, -1.705]</td>
 </tr>
 <tr class="even">
-<td align="left">0.991</td>
-<td align="left">[0.703, 1.301]</td>
+<td align="left">0.987</td>
+<td align="left">[0.697, 1.279]</td>
 <td align="left">0.983</td>
 <td align="left">[0.802, 1.170]</td>
 </tr>
@@ -685,24 +705,24 @@
 <span class="co">#&gt;   Links: mu = log; shape = identity </span>
 <span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span>
 <span class="co">#&gt;    Data: dpoisson (Number of observations: 2000) </span>
-<span class="co">#&gt;   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span>
 <span class="co">#&gt;          total post-warmup draws = 4000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Group-Level Effects: </span>
 <span class="co">#&gt; ~ID (Number of levels: 100) </span>
 <span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; sd(Intercept)        1.18      0.15     0.91     1.52 1.00      959     1314</span>
-<span class="co">#&gt; sd(x)                0.36      0.20     0.03     0.75 1.02      236      607</span>
-<span class="co">#&gt; cor(Intercept,x)    -0.05      0.41    -0.76     0.84 1.00     1241     1125</span>
+<span class="co">#&gt; sd(Intercept)        1.19      0.15     0.93     1.51 1.01      975     1816</span>
+<span class="co">#&gt; sd(x)                0.35      0.20     0.01     0.74 1.01      252      821</span>
+<span class="co">#&gt; cor(Intercept,x)    -0.07      0.41    -0.77     0.84 1.00     1432     1277</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept    -2.48      0.18    -2.85    -2.16 1.00     1163     1711</span>
-<span class="co">#&gt; x             0.97      0.15     0.67     1.27 1.00     2704     2632</span>
+<span class="co">#&gt; Intercept    -2.46      0.18    -2.83    -2.14 1.00     1057     1993</span>
+<span class="co">#&gt; x             0.98      0.15     0.70     1.28 1.00     2711     2153</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Family Specific Parameters: </span>
 <span class="co">#&gt;       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; shape    61.33     60.34     8.53   232.25 1.00     4555     3481</span>
+<span class="co">#&gt; shape    61.06     63.22     8.15   243.02 1.00     5885     2745</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
@@ -735,10 +755,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.325</td>
-<td align="right">0.306</td>
+<td align="right">0.335</td>
+<td align="right">0.313</td>
 <td align="right">0.141</td>
-<td align="right">0.716</td>
+<td align="right">0.777</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -772,10 +792,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.288</td>
-<td align="right">0.275</td>
-<td align="right">0.131</td>
-<td align="right">0.602</td>
+<td align="right">0.298</td>
+<td align="right">0.28</td>
+<td align="right">0.141</td>
+<td align="right">0.662</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -795,8 +815,7 @@
 <span class="va">mc.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mnb</span>, CI <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></code></pre></div>
 <p>View the results.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>
   <span class="va">mc.nb</span><span class="op">$</span><span class="va">Summary</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>
     MargCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">M</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
     MargCoefCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">LL</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">UL</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></code></pre></div>
@@ -807,16 +826,595 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">-1.788</td>
-<td align="left">[-2.256, -1.285]</td>
+<td align="left">-1.759</td>
+<td align="left">[-2.225, -1.234]</td>
 </tr>
 <tr class="even">
-<td align="left">0.989</td>
-<td align="left">[0.701, 1.261]</td>
+<td align="left">0.988</td>
+<td align="left">[0.725, 1.283]</td>
 </tr>
 </tbody>
 </table>
 </div>
+</div>
+<div class="section level2">
+<h2 id="centered-categorical-predictors">Centered Categorical Predictors<a class="anchor" aria-label="anchor" href="#centered-categorical-predictors"></a>
+</h2>
+<p>In mixed effects models, it is common to center continuous predictors. Consider a longitudinal study where sleep was collected nightly for a week in multiple people. Hours of sleep duration will have variation that exists between people (different people have different typical or average sleep durations) and within people (the same person will sleep different amounts on different nights).</p>
+<p>Entering observed hours of sleep duration as a predictor in the model will conflate associations between sleep duration and the outcome that exist at the between person and within person level.</p>
+<p>Here is a small example for two people with observed sleep (“Sleep”), the between person component, the average sleep per person (“BSleep”), and the within person sleep, the person centered sleep duration (“WSleep”).</p>
+<table class="table">
+<thead><tr class="header">
+<th align="center">ID</th>
+<th align="center">Sleep</th>
+<th align="center">BSleep</th>
+<th align="center">WSleep</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">-1</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">7</td>
+<td align="center">7</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">8</td>
+<td align="center">7</td>
+<td align="center">+1</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">-1</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">5</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">6</td>
+<td align="center">5</td>
+<td align="center">+1</td>
+</tr>
+</tbody>
+</table>
+<p>These values are obtained by averaging the observed sleep values by ID. Then by taking the difference between the observed sleep duration values and the between person mean sleep values, thus:</p>
+<p><span class="math display">\[
+WSleep = Sleep - BSleep
+\]</span></p>
+<p>Both <code>BSleep</code> and <code>WSleep</code> could be included as predictor variables in a model, or if the interest is solely in the within person association, <code>WSleep</code> only included.</p>
+<p>This type of centering is relatively common in mixed effects or multilevel models, at least for continuous predictors. The presence, or absence, of such centering for continuous variables has relatively little bearing on calculating the average marginal effects (AMEs) as generally both variables remain continuous and a derivative makes sense.</p>
+<p>In contrast to continuous predictors where it is common, it is relatively <em>un</em>common to center categorical predictors. However, a recent paper (Yaremych, Preacher, &amp; Hedeker, 2021) highlights how the same rationale that apply to continuous predictors, in regards to the benefits of centering, equally apply to categorical predictors. They likewise show that an equivalent algebraic approach to creating centered variables can be applied to categorical variables, after coding (e.g., using dummy coding). In the same study used for the continuous example, suppose that whether or not people had a good night’s sleep was recorded dummy coded as yes = 1 and no = 0. This table shows how it might be centered.</p>
+<table class="table">
+<thead><tr class="header">
+<th align="center">ID</th>
+<th align="center">GoodSleep</th>
+<th align="center">BSleep</th>
+<th align="center">WSleep</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.50</td>
+<td align="center">-0.50</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0.50</td>
+<td align="center">-0.50</td>
+</tr>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0.50</td>
+<td align="center">+0.50</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0.50</td>
+<td align="center">+0.50</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">0.75</td>
+<td align="center">-0.75</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">0.75</td>
+<td align="center">+0.25</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">0.75</td>
+<td align="center">+0.25</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">0.75</td>
+<td align="center">+0.25</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+</tbody>
+</table>
+<p>It is trivial enough to include these new variables as predictors in a model. However, in contrast to the continuous case where for the AMEs we tend to calculate a derivative, the categorical case is more challenging. Typically, for categorical variables, AMEs are calculated as the AME moving from one category to another category. This can easily be accomplished in <code>brmsmargins</code> using the <code>at</code> argument. However, when a categorical variable is centered by ID, the values for one category are not constant by ID.</p>
+<p>To address, this, <code>brmsmargins</code> implements an additional argument, <code>wat</code> for within level <code>at</code>. This argument is used to give the values to be used at each ID level. The <code>wat</code> argument is used in conjuction with the <code>at</code> argument. The <code>at</code> argument continues to be used for the general setup, with <code>wat</code> used for the specific values.</p>
+<p>This is more easily shown than said. Here we simulate some multilevel data with a binary predictor, <code>x</code> and a binary outcome, <code>y</code>.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span>
+  seed <span class="op">=</span> <span class="fl">12345</span>, code <span class="op">=</span> <span class="op">{</span>
+    <span class="va">nGroups</span> <span class="op">&lt;-</span> <span class="fl">100</span>
+    <span class="va">nObs</span> <span class="op">&lt;-</span> <span class="fl">20</span>
+    <span class="va">theta.location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">nGroups</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">nGroups</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">theta.location</span> <span class="op">&lt;-</span> <span class="va">theta.location</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/chol.html" class="external-link">chol</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="op">-</span><span class="fl">.25</span>, <span class="op">-</span><span class="fl">.25</span>, <span class="fl">.5</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fl">2.5</span>
+    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1</span>
+
+    <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">nGroups</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">d</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">nObs</span>, size <span class="op">=</span> <span class="fl">1</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">ID</span><span class="op">]</span>
+
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">nGroups</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+      <span class="va">d</span><span class="op">[</span><span class="va">ID</span> <span class="op">==</span> <span class="va">i</span>, <span class="va">y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span>
+        n <span class="op">=</span> <span class="va">nObs</span>,
+        size <span class="op">=</span> <span class="fl">1</span>,
+        prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span>
+        <span class="op">]</span>
+    <span class="op">}</span>
+    <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>
+  <span class="op">}</span><span class="op">)</span></code></pre></div>
+<p>Now we can create a between and within person version of <code>x</code>, which we will call <code>xb</code> and <code>xw</code>. We also fit the <code>brms</code> model, using <code>xw</code>. In this instance we are not interested in any between person effects, so that variable is omitted. Any variation not explained by it will go into the random intercept, anyways.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co">## within person centering binary predictor</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a>d[, xb <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">mean</span>(x), by =<span class="st"> </span>ID]</span>
+<span id="cb26-3"><a href="#cb26-3"></a>d[, xw <span class="op">:</span><span class="er">=</span><span class="st"> </span>x <span class="op">-</span><span class="st"> </span>xb]</span>
+<span id="cb26-4"><a href="#cb26-4"></a></span>
+<span id="cb26-5"><a href="#cb26-5"></a>mlogitcent &lt;-<span class="st"> </span>brms<span class="op">::</span><span class="kw">brm</span>(</span>
+<span id="cb26-6"><a href="#cb26-6"></a>  y <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>xw <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>xw <span class="op">|</span><span class="st"> </span>ID), <span class="dt">family =</span> <span class="st">"bernoulli"</span>,</span>
+<span id="cb26-7"><a href="#cb26-7"></a>  <span class="dt">data =</span> d, <span class="dt">seed =</span> <span class="dv">1234</span>,</span>
+<span id="cb26-8"><a href="#cb26-8"></a>  <span class="dt">silent =</span> <span class="dv">2</span>, <span class="dt">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb26-9"><a href="#cb26-9"></a>  <span class="dt">chains =</span> 4L, <span class="dt">cores =</span> 4L, <span class="dt">backend =</span> <span class="st">"cmdstanr"</span>)</span>
+<span id="cb26-10"><a href="#cb26-10"></a><span class="co">#&gt; Compiling Stan program...</span></span>
+<span id="cb26-11"><a href="#cb26-11"></a><span class="co">#&gt; </span></span>
+<span id="cb26-12"><a href="#cb26-12"></a><span class="op">-</span></span>
+<span id="cb26-13"><a href="#cb26-13"></a></span>
+<span id="cb26-14"><a href="#cb26-14"></a>\</span>
+<span id="cb26-15"><a href="#cb26-15"></a></span>
+<span id="cb26-16"><a href="#cb26-16"></a><span class="op">|</span></span>
+<span id="cb26-17"><a href="#cb26-17"></a></span>
+<span id="cb26-18"><a href="#cb26-18"></a><span class="er">/</span></span>
+<span id="cb26-19"><a href="#cb26-19"></a></span>
+<span id="cb26-20"><a href="#cb26-20"></a><span class="op">-</span></span>
+<span id="cb26-21"><a href="#cb26-21"></a></span>
+<span id="cb26-22"><a href="#cb26-22"></a>\</span>
+<span id="cb26-23"><a href="#cb26-23"></a></span>
+<span id="cb26-24"><a href="#cb26-24"></a><span class="op">|</span></span>
+<span id="cb26-25"><a href="#cb26-25"></a></span>
+<span id="cb26-26"><a href="#cb26-26"></a><span class="er">/</span></span>
+<span id="cb26-27"><a href="#cb26-27"></a></span>
+<span id="cb26-28"><a href="#cb26-28"></a><span class="op">-</span></span>
+<span id="cb26-29"><a href="#cb26-29"></a></span>
+<span id="cb26-30"><a href="#cb26-30"></a>\</span>
+<span id="cb26-31"><a href="#cb26-31"></a></span>
+<span id="cb26-32"><a href="#cb26-32"></a><span class="op">|</span></span>
+<span id="cb26-33"><a href="#cb26-33"></a></span>
+<span id="cb26-34"><a href="#cb26-34"></a><span class="er">/</span></span>
+<span id="cb26-35"><a href="#cb26-35"></a></span>
+<span id="cb26-36"><a href="#cb26-36"></a><span class="op">-</span></span>
+<span id="cb26-37"><a href="#cb26-37"></a></span>
+<span id="cb26-38"><a href="#cb26-38"></a>\</span>
+<span id="cb26-39"><a href="#cb26-39"></a></span>
+<span id="cb26-40"><a href="#cb26-40"></a><span class="op">|</span></span>
+<span id="cb26-41"><a href="#cb26-41"></a></span>
+<span id="cb26-42"><a href="#cb26-42"></a><span class="er">/</span></span>
+<span id="cb26-43"><a href="#cb26-43"></a></span>
+<span id="cb26-44"><a href="#cb26-44"></a><span class="op">-</span></span>
+<span id="cb26-45"><a href="#cb26-45"></a></span>
+<span id="cb26-46"><a href="#cb26-46"></a>\</span>
+<span id="cb26-47"><a href="#cb26-47"></a></span>
+<span id="cb26-48"><a href="#cb26-48"></a><span class="op">|</span></span>
+<span id="cb26-49"><a href="#cb26-49"></a></span>
+<span id="cb26-50"><a href="#cb26-50"></a><span class="er">/</span></span>
+<span id="cb26-51"><a href="#cb26-51"></a></span>
+<span id="cb26-52"><a href="#cb26-52"></a><span class="op">-</span></span>
+<span id="cb26-53"><a href="#cb26-53"></a></span>
+<span id="cb26-54"><a href="#cb26-54"></a>\</span>
+<span id="cb26-55"><a href="#cb26-55"></a></span>
+<span id="cb26-56"><a href="#cb26-56"></a><span class="op">|</span></span>
+<span id="cb26-57"><a href="#cb26-57"></a></span>
+<span id="cb26-58"><a href="#cb26-58"></a><span class="er">/</span></span>
+<span id="cb26-59"><a href="#cb26-59"></a></span>
+<span id="cb26-60"><a href="#cb26-60"></a><span class="op">-</span></span>
+<span id="cb26-61"><a href="#cb26-61"></a></span>
+<span id="cb26-62"><a href="#cb26-62"></a>\</span>
+<span id="cb26-63"><a href="#cb26-63"></a></span>
+<span id="cb26-64"><a href="#cb26-64"></a><span class="op">|</span></span>
+<span id="cb26-65"><a href="#cb26-65"></a></span>
+<span id="cb26-66"><a href="#cb26-66"></a><span class="er">/</span></span>
+<span id="cb26-67"><a href="#cb26-67"></a></span>
+<span id="cb26-68"><a href="#cb26-68"></a><span class="op">-</span></span>
+<span id="cb26-69"><a href="#cb26-69"></a></span>
+<span id="cb26-70"><a href="#cb26-70"></a>\</span>
+<span id="cb26-71"><a href="#cb26-71"></a></span>
+<span id="cb26-72"><a href="#cb26-72"></a><span class="op">|</span></span>
+<span id="cb26-73"><a href="#cb26-73"></a></span>
+<span id="cb26-74"><a href="#cb26-74"></a><span class="er">/</span></span>
+<span id="cb26-75"><a href="#cb26-75"></a></span>
+<span id="cb26-76"><a href="#cb26-76"></a><span class="op">-</span></span>
+<span id="cb26-77"><a href="#cb26-77"></a></span>
+<span id="cb26-78"><a href="#cb26-78"></a>\</span>
+<span id="cb26-79"><a href="#cb26-79"></a></span>
+<span id="cb26-80"><a href="#cb26-80"></a><span class="op">|</span></span>
+<span id="cb26-81"><a href="#cb26-81"></a></span>
+<span id="cb26-82"><a href="#cb26-82"></a><span class="er">/</span></span>
+<span id="cb26-83"><a href="#cb26-83"></a></span>
+<span id="cb26-84"><a href="#cb26-84"></a><span class="op">-</span></span>
+<span id="cb26-85"><a href="#cb26-85"></a></span>
+<span id="cb26-86"><a href="#cb26-86"></a>\</span>
+<span id="cb26-87"><a href="#cb26-87"></a></span>
+<span id="cb26-88"><a href="#cb26-88"></a><span class="op">|</span></span>
+<span id="cb26-89"><a href="#cb26-89"></a></span>
+<span id="cb26-90"><a href="#cb26-90"></a><span class="er">/</span></span>
+<span id="cb26-91"><a href="#cb26-91"></a></span>
+<span id="cb26-92"><a href="#cb26-92"></a><span class="op">-</span></span>
+<span id="cb26-93"><a href="#cb26-93"></a></span>
+<span id="cb26-94"><a href="#cb26-94"></a>\</span>
+<span id="cb26-95"><a href="#cb26-95"></a></span>
+<span id="cb26-96"><a href="#cb26-96"></a><span class="op">|</span></span>
+<span id="cb26-97"><a href="#cb26-97"></a></span>
+<span id="cb26-98"><a href="#cb26-98"></a><span class="er">/</span></span>
+<span id="cb26-99"><a href="#cb26-99"></a></span>
+<span id="cb26-100"><a href="#cb26-100"></a><span class="op">-</span></span>
+<span id="cb26-101"><a href="#cb26-101"></a></span>
+<span id="cb26-102"><a href="#cb26-102"></a>\</span>
+<span id="cb26-103"><a href="#cb26-103"></a></span>
+<span id="cb26-104"><a href="#cb26-104"></a><span class="op">|</span></span>
+<span id="cb26-105"><a href="#cb26-105"></a></span>
+<span id="cb26-106"><a href="#cb26-106"></a><span class="er">/</span></span>
+<span id="cb26-107"><a href="#cb26-107"></a></span>
+<span id="cb26-108"><a href="#cb26-108"></a><span class="op">-</span></span>
+<span id="cb26-109"><a href="#cb26-109"></a></span>
+<span id="cb26-110"><a href="#cb26-110"></a>\</span>
+<span id="cb26-111"><a href="#cb26-111"></a></span>
+<span id="cb26-112"><a href="#cb26-112"></a><span class="op">|</span></span>
+<span id="cb26-113"><a href="#cb26-113"></a></span>
+<span id="cb26-114"><a href="#cb26-114"></a><span class="er">/</span></span>
+<span id="cb26-115"><a href="#cb26-115"></a></span>
+<span id="cb26-116"><a href="#cb26-116"></a><span class="op">-</span></span>
+<span id="cb26-117"><a href="#cb26-117"></a></span>
+<span id="cb26-118"><a href="#cb26-118"></a>\</span>
+<span id="cb26-119"><a href="#cb26-119"></a></span>
+<span id="cb26-120"><a href="#cb26-120"></a><span class="op">|</span></span>
+<span id="cb26-121"><a href="#cb26-121"></a></span>
+<span id="cb26-122"><a href="#cb26-122"></a><span class="er">/</span></span>
+<span id="cb26-123"><a href="#cb26-123"></a></span>
+<span id="cb26-124"><a href="#cb26-124"></a><span class="op">-</span></span>
+<span id="cb26-125"><a href="#cb26-125"></a></span>
+<span id="cb26-126"><a href="#cb26-126"></a>\</span>
+<span id="cb26-127"><a href="#cb26-127"></a></span>
+<span id="cb26-128"><a href="#cb26-128"></a><span class="op">|</span></span>
+<span id="cb26-129"><a href="#cb26-129"></a></span>
+<span id="cb26-130"><a href="#cb26-130"></a><span class="er">/</span></span>
+<span id="cb26-131"><a href="#cb26-131"></a></span>
+<span id="cb26-132"><a href="#cb26-132"></a><span class="op">-</span></span>
+<span id="cb26-133"><a href="#cb26-133"></a></span>
+<span id="cb26-134"><a href="#cb26-134"></a>\</span>
+<span id="cb26-135"><a href="#cb26-135"></a></span>
+<span id="cb26-136"><a href="#cb26-136"></a><span class="op">|</span></span>
+<span id="cb26-137"><a href="#cb26-137"></a></span>
+<span id="cb26-138"><a href="#cb26-138"></a><span class="er">/</span></span>
+<span id="cb26-139"><a href="#cb26-139"></a></span>
+<span id="cb26-140"><a href="#cb26-140"></a><span class="op">-</span></span>
+<span id="cb26-141"><a href="#cb26-141"></a></span>
+<span id="cb26-142"><a href="#cb26-142"></a>\</span>
+<span id="cb26-143"><a href="#cb26-143"></a></span>
+<span id="cb26-144"><a href="#cb26-144"></a><span class="op">|</span></span>
+<span id="cb26-145"><a href="#cb26-145"></a></span>
+<span id="cb26-146"><a href="#cb26-146"></a><span class="er">/</span></span>
+<span id="cb26-147"><a href="#cb26-147"></a></span>
+<span id="cb26-148"><a href="#cb26-148"></a><span class="op">-</span></span>
+<span id="cb26-149"><a href="#cb26-149"></a></span>
+<span id="cb26-150"><a href="#cb26-150"></a>\</span>
+<span id="cb26-151"><a href="#cb26-151"></a></span>
+<span id="cb26-152"><a href="#cb26-152"></a><span class="op">|</span></span>
+<span id="cb26-153"><a href="#cb26-153"></a></span>
+<span id="cb26-154"><a href="#cb26-154"></a><span class="er">/</span></span>
+<span id="cb26-155"><a href="#cb26-155"></a></span>
+<span id="cb26-156"><a href="#cb26-156"></a><span class="op">-</span></span>
+<span id="cb26-157"><a href="#cb26-157"></a></span>
+<span id="cb26-158"><a href="#cb26-158"></a>\</span>
+<span id="cb26-159"><a href="#cb26-159"></a></span>
+<span id="cb26-160"><a href="#cb26-160"></a><span class="op">|</span></span>
+<span id="cb26-161"><a href="#cb26-161"></a></span>
+<span id="cb26-162"><a href="#cb26-162"></a><span class="er">/</span></span>
+<span id="cb26-163"><a href="#cb26-163"></a></span>
+<span id="cb26-164"><a href="#cb26-164"></a><span class="op">-</span></span>
+<span id="cb26-165"><a href="#cb26-165"></a></span>
+<span id="cb26-166"><a href="#cb26-166"></a>\</span>
+<span id="cb26-167"><a href="#cb26-167"></a></span>
+<span id="cb26-168"><a href="#cb26-168"></a><span class="op">|</span></span>
+<span id="cb26-169"><a href="#cb26-169"></a></span>
+<span id="cb26-170"><a href="#cb26-170"></a><span class="er">/</span></span>
+<span id="cb26-171"><a href="#cb26-171"></a></span>
+<span id="cb26-172"><a href="#cb26-172"></a><span class="op">-</span></span>
+<span id="cb26-173"><a href="#cb26-173"></a></span>
+<span id="cb26-174"><a href="#cb26-174"></a>\</span>
+<span id="cb26-175"><a href="#cb26-175"></a></span>
+<span id="cb26-176"><a href="#cb26-176"></a><span class="op">|</span></span>
+<span id="cb26-177"><a href="#cb26-177"></a></span>
+<span id="cb26-178"><a href="#cb26-178"></a><span class="er">/</span></span>
+<span id="cb26-179"><a href="#cb26-179"></a></span>
+<span id="cb26-180"><a href="#cb26-180"></a><span class="op">-</span></span>
+<span id="cb26-181"><a href="#cb26-181"></a></span>
+<span id="cb26-182"><a href="#cb26-182"></a>\</span>
+<span id="cb26-183"><a href="#cb26-183"></a></span>
+<span id="cb26-184"><a href="#cb26-184"></a><span class="op">|</span></span>
+<span id="cb26-185"><a href="#cb26-185"></a></span>
+<span id="cb26-186"><a href="#cb26-186"></a><span class="er">/</span></span>
+<span id="cb26-187"><a href="#cb26-187"></a></span>
+<span id="cb26-188"><a href="#cb26-188"></a><span class="op">-</span></span>
+<span id="cb26-189"><a href="#cb26-189"></a></span>
+<span id="cb26-190"><a href="#cb26-190"></a>\</span>
+<span id="cb26-191"><a href="#cb26-191"></a></span>
+<span id="cb26-192"><a href="#cb26-192"></a><span class="op">|</span></span>
+<span id="cb26-193"><a href="#cb26-193"></a></span>
+<span id="cb26-194"><a href="#cb26-194"></a><span class="er">/</span></span>
+<span id="cb26-195"><a href="#cb26-195"></a></span>
+<span id="cb26-196"><a href="#cb26-196"></a><span class="op">-</span></span>
+<span id="cb26-197"><a href="#cb26-197"></a></span>
+<span id="cb26-198"><a href="#cb26-198"></a>\</span>
+<span id="cb26-199"><a href="#cb26-199"></a></span>
+<span id="cb26-200"><a href="#cb26-200"></a><span class="op">|</span></span>
+<span id="cb26-201"><a href="#cb26-201"></a></span>
+<span id="cb26-202"><a href="#cb26-202"></a><span class="er">/</span></span>
+<span id="cb26-203"><a href="#cb26-203"></a></span>
+<span id="cb26-204"><a href="#cb26-204"></a><span class="op">-</span></span>
+<span id="cb26-205"><a href="#cb26-205"></a></span>
+<span id="cb26-206"><a href="#cb26-206"></a>\</span>
+<span id="cb26-207"><a href="#cb26-207"></a></span>
+<span id="cb26-208"><a href="#cb26-208"></a><span class="op">|</span></span>
+<span id="cb26-209"><a href="#cb26-209"></a></span>
+<span id="cb26-210"><a href="#cb26-210"></a><span class="er">/</span></span>
+<span id="cb26-211"><a href="#cb26-211"></a></span>
+<span id="cb26-212"><a href="#cb26-212"></a><span class="op">-</span></span>
+<span id="cb26-213"><a href="#cb26-213"></a></span>
+<span id="cb26-214"><a href="#cb26-214"></a>\</span>
+<span id="cb26-215"><a href="#cb26-215"></a></span>
+<span id="cb26-216"><a href="#cb26-216"></a><span class="op">|</span></span>
+<span id="cb26-217"><a href="#cb26-217"></a></span>
+<span id="cb26-218"><a href="#cb26-218"></a><span class="er">/</span></span>
+<span id="cb26-219"><a href="#cb26-219"></a></span>
+<span id="cb26-220"><a href="#cb26-220"></a><span class="op">-</span></span>
+<span id="cb26-221"><a href="#cb26-221"></a></span>
+<span id="cb26-222"><a href="#cb26-222"></a>\</span>
+<span id="cb26-223"><a href="#cb26-223"></a></span>
+<span id="cb26-224"><a href="#cb26-224"></a><span class="op">|</span></span>
+<span id="cb26-225"><a href="#cb26-225"></a></span>
+<span id="cb26-226"><a href="#cb26-226"></a><span class="er">/</span></span>
+<span id="cb26-227"><a href="#cb26-227"></a></span>
+<span id="cb26-228"><a href="#cb26-228"></a><span class="op">-</span></span>
+<span id="cb26-229"><a href="#cb26-229"></a></span>
+<span id="cb26-230"><a href="#cb26-230"></a>\</span>
+<span id="cb26-231"><a href="#cb26-231"></a></span>
+<span id="cb26-232"><a href="#cb26-232"></a><span class="op">|</span></span>
+<span id="cb26-233"><a href="#cb26-233"></a></span>
+<span id="cb26-234"><a href="#cb26-234"></a><span class="er">/</span></span>
+<span id="cb26-235"><a href="#cb26-235"></a></span>
+<span id="cb26-236"><a href="#cb26-236"></a><span class="op">-</span></span>
+<span id="cb26-237"><a href="#cb26-237"></a></span>
+<span id="cb26-238"><a href="#cb26-238"></a>\</span>
+<span id="cb26-239"><a href="#cb26-239"></a></span>
+<span id="cb26-240"><a href="#cb26-240"></a><span class="op">|</span></span>
+<span id="cb26-241"><a href="#cb26-241"></a></span>
+<span id="cb26-242"><a href="#cb26-242"></a><span class="er">/</span></span>
+<span id="cb26-243"><a href="#cb26-243"></a></span>
+<span id="cb26-244"><a href="#cb26-244"></a><span class="op">-</span></span>
+<span id="cb26-245"><a href="#cb26-245"></a></span>
+<span id="cb26-246"><a href="#cb26-246"></a><span class="st"> </span></span>
+<span id="cb26-247"><a href="#cb26-247"></a>Running MCMC with <span class="dv">4</span> parallel chains...</span>
+<span id="cb26-248"><a href="#cb26-248"></a><span class="co">#&gt; </span></span>
+<span id="cb26-249"><a href="#cb26-249"></a><span class="co">#&gt; Chain 2 finished in 7.7 seconds.</span></span>
+<span id="cb26-250"><a href="#cb26-250"></a><span class="co">#&gt; Chain 4 finished in 7.7 seconds.</span></span>
+<span id="cb26-251"><a href="#cb26-251"></a><span class="co">#&gt; Chain 1 finished in 8.0 seconds.</span></span>
+<span id="cb26-252"><a href="#cb26-252"></a><span class="co">#&gt; Chain 3 finished in 7.9 seconds.</span></span>
+<span id="cb26-253"><a href="#cb26-253"></a><span class="co">#&gt; </span></span>
+<span id="cb26-254"><a href="#cb26-254"></a><span class="co">#&gt; All 4 chains finished successfully.</span></span>
+<span id="cb26-255"><a href="#cb26-255"></a><span class="co">#&gt; Mean chain execution time: 7.8 seconds.</span></span>
+<span id="cb26-256"><a href="#cb26-256"></a><span class="co">#&gt; Total execution time: 9.6 seconds.</span></span></code></pre></div>
+<p>Now comes the new part. We calculate the minimum and maximum observed, non missing values by ID and (arbitrarily) label these <code>a</code> and <code>b</code>. We could have chosen any label, <code>min</code> and <code>max</code> or <code>low</code> and <code>high</code> or whatever we wanted. These get turned into a single long <code>data.table</code>, called <code>xwid</code>. We use this to create a list, saved as <code>usewat</code>. The list must have two elements at a minimum:</p>
+<ol style="list-style-type: decimal">
+<li>A named element, named “ID” that contains a character string with the name of the ID variable.</li>
+<li>An element named after the centered variable, with a <code>data.frame</code> or <code>data.table</code> containing the values to use for each ID and for each label we chose, here <code>a</code> and <code>b</code>.</li>
+</ol>
+<p>The table shows a few examples of what the dataset looks like.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">xwid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span>
+  <span class="va">d</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">xw</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
+        b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">xw</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,
+    by <span class="op">=</span> <span class="va">ID</span><span class="op">]</span>, id.vars <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>
+
+<span class="va">usewat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ID <span class="op">=</span> <span class="st">"ID"</span>, xw <span class="op">=</span> <span class="va">xwid</span><span class="op">)</span>
+
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">xwid</span><span class="op">[</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">100</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">order</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">ID</th>
+<th align="left">variable</th>
+<th align="right">value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">a</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">b</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="left">a</td>
+<td align="right">-0.30</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">b</td>
+<td align="right">0.70</td>
+</tr>
+<tr class="odd">
+<td align="right">100</td>
+<td align="left">a</td>
+<td align="right">-0.15</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="left">b</td>
+<td align="right">0.85</td>
+</tr>
+</tbody>
+</table>
+<p>This new dataset shows what values to use for moving from one category of <code>x</code> to another category of <code>x</code> looks like, for each ID. Note that sometimes these are the same. In the case of ID 1, all <code>x</code> values were identical and thus all <code>xw</code> values will be 0. This is appropriate because for that ID, there was no variation on <code>x</code> and so we have no idea what the “true” change for ID 1 would be if moving from one category to another.</p>
+<p>Now we can use <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> to calculate the AME. We must still specify the <code>at</code> argument. Here we use our arbitrary lables of <code>a</code> and <code>b</code> for the variable, <code>xw</code>. We also pass our list to the argument <code>wat</code>. Internally, <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> will substitute <code>a</code> for all the values for <code>a</code> by ID from our list, and similarly for <code>b</code>. The reason for this separation is in the <code>at</code> argument, one might have specific values of other variables as well, had there been other predictors in the model.</p>
+<p>The resulting summary gives the average marginal predictions for <code>xw = a</code> and <code>xw = b</code> which in our case refers to when <code>xw</code> is at the minimum for that ID and when it is at the maximum for that ID.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ame.cent</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span>
+  object <span class="op">=</span> <span class="va">mlogit</span>,
+  at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>xw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span><span class="op">)</span>,
+  wat <span class="op">=</span> <span class="va">usewat</span>,
+  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME xw"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
+  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">20L</span><span class="op">)</span>
+
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">Summary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.176</td>
+<td align="right">0.174</td>
+<td align="right">0.094</td>
+<td align="right">0.283</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">0.176</td>
+<td align="right">0.174</td>
+<td align="right">0.094</td>
+<td align="right">0.283</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
+<p>Just as in other examples, we can get a summary of the contrast of these two values, our AME.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME xw</td>
+</tr></tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Potentially useful references.</p>
+<ul>
+<li>Norton, E. C., Dowd, B. E., &amp; Maciejewski, M. L. (2019). Marginal effects—quantifying the effect of changes in risk factors in logistic regression models. <em>JAMA, 321</em>(13), 1304-1305.</li>
+<li>Mize, T. D., Doan, L., &amp; Long, J. S. (2019). A general framework for comparing predictions and marginal effects across models. <em>Sociological Methodology, 49</em>(1), 152-189.</li>
+<li>Pavlou, M., Ambler, G., Seaman, S., &amp; Omar, R. Z. (2015). A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes. <em>BMC Medical Research Methodology, 15</em>(1), 1-6.</li>
+<li>Hedeker, D., du Toit, S. H., Demirtas, H., &amp; Gibbons, R. D. (2018). A note on marginalization of regression parameters from mixed models of binary outcomes. <em>Biometrics, 74</em>(1), 354-361.</li>
+<li>Yaremych, H. E., Preacher, K. J., &amp; Hedeker, D. (2021). Centering categorical predictors in multilevel models: Best practices and interpretation. <em>Psychological Methods</em>. <a href="https://doi.org/10.1037/met0000434" class="external-link uri">https://doi.org/10.1037/met0000434</a>
+</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
@@ -831,7 +1429,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 
