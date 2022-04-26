@@ -598,7 +598,7 @@ which we will call `xb` and `xw`. We also fit the `brms` model, using
 so that variable is omitted. Any variation not explained by it will go into 
 the random intercept, anyways.
 
-```{r}
+```{r, results = "hide"}
 ## within person centering binary predictor
 d[, xb := mean(x), by = ID]
 d[, xw := x - xb]
@@ -662,7 +662,7 @@ for that ID.
 
 ```{r, results = "asis"}
 ame.cent <- brmsmargins(
-  object = mlogit,
+  object = mlogitcent,
   at = expand.grid(xw = c("a", "b")),
   wat = usewat,
   contrasts = cbind("AME xw" = c(-1, 1)),
