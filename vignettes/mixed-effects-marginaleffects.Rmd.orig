@@ -521,14 +521,22 @@ average marginal effects (AMEs) as generally both variables remain continuous
 and a derivative makes sense.
 
 In contrast to continuous predictors where it is common, it is relatively 
-*un*common to center categorical predictors. However, a recent paper
+*un*common to center categorical predictors. However, research 
 (Yaremych, Preacher, & Hedeker, 2021) highlights how the same rationale 
 that apply to continuous predictors, in regards to the benefits of centering,
-equally apply to categorical predictors. They likewise show that an equivalent 
-algebraic approach to creating centered variables can be applied to categorical
-variables, after coding (e.g., using dummy coding).
-In the same study used for the continuous example, suppose that whether or not 
-people had a good night's sleep was recorded dummy coded as yes = 1 and no = 0.
+equally apply to categorical predictors. 
+One area where particular attention has been paid to the importance 
+of centering, whether continuous or categorical predictors,
+are in individual participant data meta analyses (IPDMA) with one stage analyses.
+In these IPDMA where there are treatment x covariate interactions to evaluate 
+effect modifiers, centering the predictor / covariate is critical for 
+avoiding 'ecological bias' (Hua et al., 2017).
+
+Yaremych et al (2021) showed that an equivalent algebraic approach to 
+creating centered continuous variables can be applied to categorical variables, 
+after coding (e.g., using dummy coding). In the same study used for the 
+continuous example, suppose that whether or not people had a good night's
+sleep was recorded dummy coded as yes = 1 and no = 0. 
 This table shows how it might be centered.
 
 | ID | GoodSleep | BSleep | WSleep |
@@ -546,9 +554,9 @@ This table shows how it might be centered.
 | 3  | 0         | 0      | 0      |
 | 3  | 0         | 0      | 0      |
 
-It is trivial enough to include these new variables as predictors in a model.
-However, in contrast to the continuous case where for the AMEs we tend to 
-calculate a derivative, the categorical case is more challenging.
+We can include these new variables as predictors in a model just as any other 
+predictors. However, in contrast to the continuous case where for the AMEs we 
+tend to calculate a derivative, the categorical case is more challenging.
 Typically, for categorical variables, AMEs are calculated as the 
 AME moving from one category to another category.
 This can easily be accomplished in `brmsmargins` using the `at` argument.
@@ -610,10 +618,15 @@ mlogitcent <- brms::brm(
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ``` 
 
-Now comes the new part. We calculate the minimum and maximum observed, 
-non missing values by ID and (arbitrarily) label these `a` and `b`.
+Now comes the new part. Based on how we coded our predictor, `x`,
+we will create the two values by ID. In this case, `x` was coded 
+as 0 and 1. So we start with 0 as the low value and 1 as the high value.
+Then we need to take the difference between 0 and 1 with the mean 
+by ID. We (arbitrarily) label these `a` and `b`.
 We could have chosen any label, `min` and `max` or `low` and `high` or
-whatever we wanted. These get turned into a single long `data.table`,
+whatever we wanted. It just needs to be distinct and something that 
+`brmsmargins()` can match between the `at` and the `wat` arguments.
+The resulting data get turned into a single long `data.table`,
 called `xwid`. We use this to create a list, saved as `usewat`.
 The list must have two elements at a minimum:
 
@@ -628,13 +641,13 @@ The table shows a few examples of what the dataset looks like.
 ```{r, results = "asis"}
 
 xwid <- melt(
-  d[, .(a = min(xw, na.rm = TRUE),
-        b = max(xw, na.rm = TRUE)),
+  d[, .(a = 0 - na.omit(xb)[1],
+        b = 1 - na.omit(xb)[1]),
     by = ID], id.vars = "ID")
 
 usewat <- list(ID = "ID", xw = xwid)
 
-knitr::kable(xwid[ID %in% c(1, 2, 100)][order(ID)], digits = 2)
+knitr::kable(xwid[ID %in% c(1, 2, 4, 100)][order(ID)], digits = 2)
 ```
 
 This new dataset shows what values to use for moving from
@@ -657,8 +670,8 @@ had there been other predictors in the model.
 
 The resulting summary gives the average marginal predictions 
 for `xw = a` and `xw = b` which in our case refers to when 
-`xw` is at the minimum for that ID and when it is at the maximum 
-for that ID.
+`xw` is at 0 on `x` **for that ID** and when it is at 1 for `x`
+**for that ID**.
 
 ```{r, results = "asis"}
 ame.cent <- brmsmargins(
@@ -682,8 +695,9 @@ knitr::kable(ame.cent$ContrastSummary, digits = 3)
 
 Potentially useful references.
 
-- Norton, E. C., Dowd, B. E., & Maciejewski, M. L. (2019). Marginal effects—quantifying the effect of changes in risk factors in logistic regression models. *JAMA, 321*(13), 1304-1305.
-- Mize, T. D., Doan, L., & Long, J. S. (2019). A general framework for comparing predictions and marginal effects across models. *Sociological Methodology, 49*(1), 152-189.
-- Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015). A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes. *BMC Medical Research Methodology, 15*(1), 1-6.
 - Hedeker, D., du Toit, S. H., Demirtas, H., & Gibbons, R. D. (2018). A note on marginalization of regression parameters from mixed models of binary outcomes. *Biometrics, 74*(1), 354-361.
+- Hua, H., Burke, D. L., Crowther, M. J., Ensor, J., Tudur Smith, C., & Riley, R. D. (2017). One-stage individual participant data meta-analysis models: estimation of treatment-covariate interactions must avoid ecological bias by separating out within-trial and across-trial information. *Statistics in Medicine, 36*(5), 772–789. https://doi.org/10.1002/sim.7171
+- Mize, T. D., Doan, L., & Long, J. S. (2019). A general framework for comparing predictions and marginal effects across models. *Sociological Methodology, 49*(1), 152-189.
+- Norton, E. C., Dowd, B. E., & Maciejewski, M. L. (2019). Marginal effects—quantifying the effect of changes in risk factors in logistic regression models. *JAMA, 321*(13), 1304-1305.
+- Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015). A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes. *BMC Medical Research Methodology, 15*(1), 1-6.
 - Yaremych, H. E., Preacher, K. J., & Hedeker, D. (2021). Centering categorical predictors in multilevel models: Best practices and interpretation. *Psychological Methods*. https://doi.org/10.1037/met0000434
