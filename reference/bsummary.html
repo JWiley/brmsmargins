@@ -38,7 +38,7 @@ uncertainty."><meta name="twitter:card" content="summary"><meta name="twitter:cr
     
     <a class="navbar-brand me-2" href="../index.html">brmsmargins</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -176,16 +176,16 @@ the bounds specified.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             M        Mdn        LL       UL PercentROPE PercentMID   CI CIType</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.03771344 0.06620075 -2.831997 2.273061          NA         NA 0.99    HDI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ROPE  MID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;NA&gt; &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              M         Mdn        LL       UL PercentROPE PercentMID   CI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.01198066 -0.03909689 -2.604069 2.665518          NA         NA 0.99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    CIType ROPE  MID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    HDI &lt;NA&gt; &lt;NA&gt;</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">bsummary</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>, ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              M         Mdn        LL       UL PercentROPE PercentMID   CI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.01501952 -0.02240417 -2.427656 2.236337        36.9         32 0.99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    CIType        ROPE                   MID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    HDI [-0.5, 0.5] [-Inf, -1] | [1, Inf]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             M        Mdn        LL       UL PercentROPE PercentMID   CI CIType</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.02930421 0.03786671 -2.330636 2.560977        35.3       33.3 0.99    HDI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           ROPE                   MID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: [-0.5, 0.5] [-Inf, -1] | [1, Inf]</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

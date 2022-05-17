@@ -46,7 +46,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">brmsmargins</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,7 +108,17 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span>
+<span class="co">#&gt; data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span>
+<span class="co">#&gt; Loading required package: Rcpp</span>
+<span class="co">#&gt; Loading 'brms' package (version 2.17.0). Useful instructions</span>
+<span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span>
+<span class="co">#&gt; to the package is available through vignette('brms_overview').</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Attaching package: 'brms'</span>
+<span class="co">#&gt; The following object is masked from 'package:stats':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     ar</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://joshuawiley.com/brmsmargins/">brmsmargins</a></span><span class="op">)</span></code></pre></div>
 <p>This vignette provides a brief overview of how to calculate marginal effects for Bayesian location scale regression models, involving fixed effects only or mixed effects (i.e., fixed and random) and fit using the <code>brms</code> package.</p>
 <p>A simpler introduction and very brief overview and motivation for marginal effects is available in the vignette for fixed effects only.</p>
@@ -150,17 +160,17 @@
 <span class="co">#&gt; Formula: y ~ 1 + x + grp </span>
 <span class="co">#&gt;          sigma ~ 1 + x + grp</span>
 <span class="co">#&gt;    Data: d (Number of observations: 1000) </span>
-<span class="co">#&gt;   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span>
 <span class="co">#&gt;          total post-warmup draws = 4000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept          -0.09      0.13    -0.34     0.15 1.00     4494     3498</span>
-<span class="co">#&gt; sigma_Intercept     1.01      0.03     0.95     1.07 1.00     4690     2937</span>
-<span class="co">#&gt; x                   1.62      0.46     0.74     2.48 1.00     4563     3023</span>
-<span class="co">#&gt; grp                 1.01      0.33     0.36     1.66 1.00     3338     3273</span>
-<span class="co">#&gt; sigma_x             0.85      0.09     0.67     1.02 1.00     5705     2988</span>
-<span class="co">#&gt; sigma_grp           1.01      0.04     0.92     1.09 1.00     4712     2521</span>
+<span class="co">#&gt; Intercept          -0.09      0.12    -0.33     0.15 1.00     4829     3553</span>
+<span class="co">#&gt; sigma_Intercept     1.01      0.03     0.94     1.07 1.00     4696     3023</span>
+<span class="co">#&gt; x                   1.62      0.45     0.75     2.49 1.00     4470     2830</span>
+<span class="co">#&gt; grp                 1.02      0.35     0.34     1.69 1.00     2526     2684</span>
+<span class="co">#&gt; sigma_x             0.85      0.09     0.67     1.02 1.00     4878     3309</span>
+<span class="co">#&gt; sigma_grp           1.01      0.05     0.92     1.09 1.00     4425     2871</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
@@ -192,10 +202,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">1.615</td>
-<td align="right">1.61</td>
-<td align="right">0.742</td>
-<td align="right">2.485</td>
+<td align="right">1.623</td>
+<td align="right">1.631</td>
+<td align="right">0.746</td>
+<td align="right">2.492</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -230,10 +240,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">1.013</td>
-<td align="right">1.015</td>
-<td align="right">0.362</td>
-<td align="right">1.664</td>
+<td align="right">1.016</td>
+<td align="right">1.02</td>
+<td align="right">0.343</td>
+<td align="right">1.69</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -271,9 +281,9 @@
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">4.463</td>
-<td align="right">4.453</td>
-<td align="right">3.512</td>
-<td align="right">5.457</td>
+<td align="right">4.456</td>
+<td align="right">3.488</td>
+<td align="right">5.442</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -308,10 +318,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">4.902</td>
-<td align="right">4.895</td>
-<td align="right">4.4</td>
-<td align="right">5.426</td>
+<td align="right">4.907</td>
+<td align="right">4.905</td>
+<td align="right">4.409</td>
+<td align="right">5.436</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -365,47 +375,42 @@
   silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,
   chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span>
 <span class="co">#&gt; Compiling Stan program...</span>
-<span class="co">#&gt; 304 of 4000 (8.0%) transitions hit the maximum treedepth limit of 10 or 2^10-1 leapfrog steps.</span>
-<span class="co">#&gt; Trajectories that are prematurely terminated due to this limit will result in slow exploration.</span>
-<span class="co">#&gt; Increasing the max_treedepth limit can avoid this at the expense of more computation.</span>
-<span class="co">#&gt; If increasing max_treedepth does not remove warnings, try to reparameterize the model.</span></code></pre></div>
+<span class="co">#&gt; Warning: 102 of 4000 (3.0%) transitions hit the maximum treedepth limit of 10.</span>
+<span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></code></pre></div>
 <p>Note that this model has not achieved good convergence, but as it already took about 6 minutes to run, for the sake of demonstration we continue. In practice, one would want to make adjustments to ensure good convergence and an adequate effective sample size.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ls.me</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Parts of the model have not converged (some Rhats are &gt; 1.05). Be</span>
-<span class="co">#&gt; careful when analysing the results! We recommend running more iterations and/or</span>
-<span class="co">#&gt; setting stronger priors.</span>
 <span class="co">#&gt;  Family: gaussian </span>
 <span class="co">#&gt;   Links: mu = identity; sigma = log </span>
 <span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span>
 <span class="co">#&gt;          sigma ~ 1 + x + (1 + x | ID)</span>
 <span class="co">#&gt;    Data: dmixed (Number of observations: 2000) </span>
-<span class="co">#&gt;   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span>
 <span class="co">#&gt;          total post-warmup draws = 4000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Group-Level Effects: </span>
 <span class="co">#&gt; ~ID (Number of levels: 100) </span>
 <span class="co">#&gt;                              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS</span>
-<span class="co">#&gt; sd(Intercept)                    1.20      0.09     1.04     1.38 1.02      204</span>
-<span class="co">#&gt; sd(x)                            0.43      0.04     0.35     0.52 1.01      618</span>
-<span class="co">#&gt; sd(sigma_Intercept)              1.26      0.09     1.09     1.45 1.00      410</span>
-<span class="co">#&gt; sd(sigma_x)                      0.50      0.05     0.40     0.61 1.00     1352</span>
-<span class="co">#&gt; cor(Intercept,x)                -0.40      0.12    -0.62    -0.15 1.01      421</span>
-<span class="co">#&gt; cor(sigma_Intercept,sigma_x)    -0.35      0.11    -0.55    -0.14 1.00     1463</span>
+<span class="co">#&gt; sd(Intercept)                    1.19      0.09     1.03     1.37 1.02      211</span>
+<span class="co">#&gt; sd(x)                            0.42      0.04     0.35     0.51 1.00      862</span>
+<span class="co">#&gt; sd(sigma_Intercept)              1.27      0.09     1.11     1.47 1.01      536</span>
+<span class="co">#&gt; sd(sigma_x)                      0.50      0.05     0.41     0.61 1.00     1569</span>
+<span class="co">#&gt; cor(Intercept,x)                -0.40      0.12    -0.61    -0.16 1.00      577</span>
+<span class="co">#&gt; cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.55    -0.13 1.00     1516</span>
 <span class="co">#&gt;                              Tail_ESS</span>
-<span class="co">#&gt; sd(Intercept)                     482</span>
-<span class="co">#&gt; sd(x)                            1217</span>
-<span class="co">#&gt; sd(sigma_Intercept)               998</span>
-<span class="co">#&gt; sd(sigma_x)                      2047</span>
-<span class="co">#&gt; cor(Intercept,x)                  950</span>
-<span class="co">#&gt; cor(sigma_Intercept,sigma_x)     1983</span>
+<span class="co">#&gt; sd(Intercept)                     519</span>
+<span class="co">#&gt; sd(x)                            1634</span>
+<span class="co">#&gt; sd(sigma_Intercept)               819</span>
+<span class="co">#&gt; sd(sigma_x)                      2418</span>
+<span class="co">#&gt; cor(Intercept,x)                 1159</span>
+<span class="co">#&gt; cor(sigma_Intercept,sigma_x)     2200</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept          -2.55      0.12    -2.77    -2.32 1.06      114      293</span>
-<span class="co">#&gt; sigma_Intercept    -1.48      0.12    -1.71    -1.23 1.03      163      392</span>
-<span class="co">#&gt; x                   0.94      0.06     0.82     1.04 1.00      651     1184</span>
-<span class="co">#&gt; sigma_x             0.97      0.06     0.85     1.10 1.00     1117     1807</span>
+<span class="co">#&gt; Intercept          -2.55      0.12    -2.77    -2.33 1.03      105      300</span>
+<span class="co">#&gt; sigma_Intercept    -1.48      0.13    -1.72    -1.22 1.02      217      388</span>
+<span class="co">#&gt; x                   0.94      0.06     0.83     1.06 1.00      572     1550</span>
+<span class="co">#&gt; sigma_x             0.97      0.06     0.85     1.09 1.00     1031     1892</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
@@ -437,10 +442,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.407</td>
+<td align="right">0.408</td>
 <td align="right">0.404</td>
-<td align="right">0.279</td>
-<td align="right">0.567</td>
+<td align="right">0.283</td>
+<td align="right">0.555</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -476,10 +481,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.798</td>
-<td align="right">0.759</td>
-<td align="right">0.382</td>
-<td align="right">1.545</td>
+<td align="right">0.804</td>
+<td align="right">0.766</td>
+<td align="right">0.391</td>
+<td align="right">1.575</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -514,10 +519,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.3776728</td>
-<td align="right">0.3746012</td>
-<td align="right">0.2613735</td>
-<td align="right">0.5223517</td>
+<td align="right">0.3782473</td>
+<td align="right">0.3750965</td>
+<td align="right">0.2673526</td>
+<td align="right">0.509232</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -552,10 +557,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.7073939</td>
-<td align="right">0.674368</td>
-<td align="right">0.3101035</td>
-<td align="right">1.323658</td>
+<td align="right">0.7127988</td>
+<td align="right">0.6795497</td>
+<td align="right">0.3513727</td>
+<td align="right">1.382269</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>

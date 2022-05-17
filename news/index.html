@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">brmsmargins</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,6 +68,17 @@
       <small>Source: <a href="https://github.com/JWiley/brmsmargins/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="brmsmargins-020">brmsmargins 0.2.0<a class="anchor" aria-label="anchor" href="#brmsmargins-020"></a></h2>
+<ul><li>Fixed a bug when using <code><a href="../reference/prediction.html">prediction()</a></code> with option <code>effects = "integrateoutRE"</code> when smooth terms were present. As <code><a href="../reference/prediction.html">prediction()</a></code> underpins other functions, such as <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> this issue also impacts those other functions.</li>
+<li>New function: <code><a href="../reference/marginalcoef.html">marginalcoef()</a></code> which calculates population averaged (marginal) coefficients for the fixed effects coefficients from mixed effects models using a method described by Donald Hedeker, who joins the author team. Currently, only the main location parameter is supported. That is, marginal coefficients for the scale part of a model, in location and scale models, is not currently supported.</li>
+<li>New argument, <code>wat</code>, added to <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> to support including calculating average marginal effects for multilevel centered categorical predictors.</li>
+<li>Updates to vignettes demonstrating: (1) the use of marginal coefficients;<ol start="2" style="list-style-type: decimal"><li>marginal effects for centered categorical predictors; and</li>
+<li>‘simple’ marginal effects when models include interaction terms.</li>
+</ol></li>
+<li>Revised documentation for <code>bmrsmargins()</code> and <code><a href="../reference/prediction.html">prediction()</a></code> to be clearer around which arguments users must directly specify and which are optional or have sensible defaults.</li>
+<li>Added more unit testing and vignettes.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="brmsmargins-011">brmsmargins 0.1.1<a class="anchor" aria-label="anchor" href="#brmsmargins-011"></a></h2><p class="text-muted">CRAN release: 2021-12-16</p>
 <ul><li>Fixed a bug preventing predictions integrating out random effects for mixed effects models with a random intercept only (reported in Issue#1). Thanks to <a href="https://github.com/ajnafa" class="external-link">@ajnafa</a> for reporting.</li>

@@ -46,7 +46,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">brmsmargins</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,7 +111,7 @@
 <span class="co">#&gt; data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: Rcpp</span>
-<span class="co">#&gt; Loading 'brms' package (version 2.16.3). Useful instructions</span>
+<span class="co">#&gt; Loading 'brms' package (version 2.17.0). Useful instructions</span>
 <span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span>
 <span class="co">#&gt; to the package is available through vignette('brms_overview').</span>
 <span class="co">#&gt; </span>
@@ -252,14 +252,14 @@
 <span class="co">#&gt;   Links: mu = logit </span>
 <span class="co">#&gt; Formula: vs ~ am + mpg </span>
 <span class="co">#&gt;    Data: mtcars (Number of observations: 32) </span>
-<span class="co">#&gt;   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span>
 <span class="co">#&gt;          total post-warmup draws = 4000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept   -16.13      5.56   -28.70    -7.35 1.00     1826     1853</span>
-<span class="co">#&gt; am           -3.80      1.84    -7.83    -0.70 1.00     1663     1449</span>
-<span class="co">#&gt; mpg           0.87      0.30     0.39     1.55 1.00     1702     1854</span>
+<span class="co">#&gt; Intercept   -16.03      5.49   -28.79    -7.15 1.00     1797     1897</span>
+<span class="co">#&gt; am           -3.77      1.82    -7.87    -0.71 1.00     1689     1766</span>
+<span class="co">#&gt; mpg           0.86      0.30     0.38     1.57 1.00     1707     1842</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
@@ -291,7 +291,7 @@
 <tbody><tr class="odd">
 <td align="right">0.071</td>
 <td align="right">0.07</td>
-<td align="right">0.053</td>
+<td align="right">0.054</td>
 <td align="right">0.091</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
@@ -327,9 +327,9 @@
 <tbody>
 <tr class="odd">
 <td align="right">0.543</td>
-<td align="right">0.545</td>
-<td align="right">0.421</td>
-<td align="right">0.652</td>
+<td align="right">0.544</td>
+<td align="right">0.419</td>
+<td align="right">0.653</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -340,8 +340,8 @@
 <tr class="even">
 <td align="right">0.284</td>
 <td align="right">0.277</td>
-<td align="right">0.177</td>
-<td align="right">0.406</td>
+<td align="right">0.180</td>
+<td align="right">0.409</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -368,10 +368,10 @@
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">-0.2597831</td>
-<td align="right">-0.2654204</td>
-<td align="right">-0.428464</td>
-<td align="right">-0.0882898</td>
+<td align="right">-0.258856</td>
+<td align="right">-0.2648354</td>
+<td align="right">-0.4252779</td>
+<td align="right">-0.0862889</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -404,15 +404,15 @@
 <span class="co">#&gt;   Links: mu = log </span>
 <span class="co">#&gt; Formula: num_awards ~ prog + math </span>
 <span class="co">#&gt;    Data: d (Number of observations: 200) </span>
-<span class="co">#&gt;   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span>
 <span class="co">#&gt;          total post-warmup draws = 4000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept         -5.33      0.67    -6.70    -4.06 1.00     2202     1923</span>
-<span class="co">#&gt; progAcademic       1.14      0.37     0.45     1.91 1.00     1957     2210</span>
-<span class="co">#&gt; progVocational     0.38      0.45    -0.49     1.30 1.00     2114     1882</span>
-<span class="co">#&gt; math               0.07      0.01     0.05     0.09 1.00     2238     2373</span>
+<span class="co">#&gt; Intercept         -5.31      0.66    -6.66    -4.03 1.00     1933     2312</span>
+<span class="co">#&gt; progAcademic       1.15      0.38     0.46     1.97 1.00     2088     1947</span>
+<span class="co">#&gt; progVocational     0.39      0.47    -0.48     1.36 1.00     2174     2024</span>
+<span class="co">#&gt; math               0.07      0.01     0.05     0.09 1.00     2592     2120</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
@@ -443,8 +443,8 @@
 <tbody><tr class="odd">
 <td align="right">0.044</td>
 <td align="right">0.044</td>
-<td align="right">0.025</td>
-<td align="right">0.064</td>
+<td align="right">0.026</td>
+<td align="right">0.065</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -483,9 +483,9 @@
 <tbody>
 <tr class="odd">
 <td align="right">0.263</td>
-<td align="right">0.250</td>
-<td align="right">0.080</td>
-<td align="right">0.538</td>
+<td align="right">0.253</td>
+<td align="right">0.076</td>
+<td align="right">0.526</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -494,10 +494,10 @@
 <td align="left">NA</td>
 </tr>
 <tr class="even">
+<td align="right">0.781</td>
 <td align="right">0.779</td>
-<td align="right">0.776</td>
-<td align="right">0.583</td>
-<td align="right">0.996</td>
+<td align="right">0.600</td>
+<td align="right">0.988</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -506,10 +506,10 @@
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">0.377</td>
+<td align="right">0.380</td>
 <td align="right">0.368</td>
-<td align="right">0.133</td>
-<td align="right">0.681</td>
+<td align="right">0.126</td>
+<td align="right">0.710</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -537,10 +537,10 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.516</td>
-<td align="right">-0.525</td>
-<td align="right">-0.815</td>
-<td align="right">-0.175</td>
+<td align="right">-0.518</td>
+<td align="right">-0.524</td>
+<td align="right">-0.820</td>
+<td align="right">-0.176</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -550,10 +550,10 @@
 <td align="left">AME General v Academic</td>
 </tr>
 <tr class="even">
-<td align="right">-0.114</td>
+<td align="right">-0.117</td>
 <td align="right">-0.111</td>
-<td align="right">-0.473</td>
-<td align="right">0.244</td>
+<td align="right">-0.503</td>
+<td align="right">0.280</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -563,9 +563,9 @@
 <td align="left">AME General v Vocational</td>
 </tr>
 <tr class="odd">
-<td align="right">0.402</td>
-<td align="right">0.409</td>
-<td align="right">0.006</td>
+<td align="right">0.400</td>
+<td align="right">0.406</td>
+<td align="right">0.019</td>
 <td align="right">0.726</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
@@ -598,19 +598,19 @@
 <span class="co">#&gt;   Links: mu = log; shape = identity </span>
 <span class="co">#&gt; Formula: num_awards ~ prog + math </span>
 <span class="co">#&gt;    Data: d (Number of observations: 200) </span>
-<span class="co">#&gt;   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span>
 <span class="co">#&gt;          total post-warmup draws = 4000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Population-Level Effects: </span>
 <span class="co">#&gt;                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; Intercept         -5.38      0.71    -6.79    -3.98 1.00     2747     2510</span>
-<span class="co">#&gt; progAcademic       1.13      0.37     0.43     1.87 1.00     2565     2476</span>
-<span class="co">#&gt; progVocational     0.38      0.47    -0.54     1.27 1.00     2547     2094</span>
-<span class="co">#&gt; math               0.07      0.01     0.05     0.09 1.00     2846     2549</span>
+<span class="co">#&gt; Intercept         -5.39      0.70    -6.82    -4.06 1.00     2813     2387</span>
+<span class="co">#&gt; progAcademic       1.14      0.38     0.42     1.89 1.00     2187     2343</span>
+<span class="co">#&gt; progVocational     0.40      0.47    -0.49     1.32 1.00     2155     2093</span>
+<span class="co">#&gt; math               0.07      0.01     0.05     0.09 1.00     3139     2500</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Family Specific Parameters: </span>
 <span class="co">#&gt;       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
-<span class="co">#&gt; shape    20.34     37.45     1.95   115.92 1.00     2723     2398</span>
+<span class="co">#&gt; shape    19.82     35.82     1.91   112.92 1.00     2453     2214</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
 <span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
@@ -642,7 +642,7 @@
 <td align="right">0.045</td>
 <td align="right">0.045</td>
 <td align="right">0.022</td>
-<td align="right">0.069</td>
+<td align="right">0.07</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -680,10 +680,10 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.267</td>
-<td align="right">0.255</td>
-<td align="right">0.079</td>
-<td align="right">0.561</td>
+<td align="right">0.264</td>
+<td align="right">0.251</td>
+<td align="right">0.072</td>
+<td align="right">0.562</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -692,10 +692,10 @@
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">0.779</td>
-<td align="right">0.775</td>
-<td align="right">0.579</td>
-<td align="right">1.014</td>
+<td align="right">0.781</td>
+<td align="right">0.778</td>
+<td align="right">0.565</td>
+<td align="right">1.010</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -704,10 +704,10 @@
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">0.387</td>
-<td align="right">0.375</td>
-<td align="right">0.142</td>
-<td align="right">0.728</td>
+<td align="right">0.388</td>
+<td align="right">0.374</td>
+<td align="right">0.146</td>
+<td align="right">0.756</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -735,10 +735,10 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.512</td>
 <td align="right">-0.517</td>
-<td align="right">-0.847</td>
-<td align="right">-0.161</td>
+<td align="right">-0.523</td>
+<td align="right">-0.840</td>
+<td align="right">-0.127</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -748,10 +748,10 @@
 <td align="left">AME General v Academic</td>
 </tr>
 <tr class="even">
+<td align="right">-0.124</td>
 <td align="right">-0.120</td>
-<td align="right">-0.117</td>
-<td align="right">-0.524</td>
-<td align="right">0.288</td>
+<td align="right">-0.532</td>
+<td align="right">0.270</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -761,10 +761,10 @@
 <td align="left">AME General v Vocational</td>
 </tr>
 <tr class="odd">
-<td align="right">0.391</td>
-<td align="right">0.397</td>
-<td align="right">-0.022</td>
-<td align="right">0.748</td>
+<td align="right">0.392</td>
+<td align="right">0.405</td>
+<td align="right">-0.024</td>
+<td align="right">0.768</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
