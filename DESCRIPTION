@@ -20,14 +20,14 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Depends:
     R (>= 4.0.0)
 Imports: 
     methods,
     stats,
     data.table (>= 1.12.0),
-    extraoperators (>= 0.1.1),
+    extraoperators (>= 0.2.0),
     brms,
     bayestestR,
     Rcpp,

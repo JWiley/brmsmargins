@@ -378,7 +378,6 @@ ame2.pois <- brmsmargins(
 knitr::kable(ame2.pois$ContrastSummary)
 ```
 
-
 ### Marginal Coefficients
 
 Just as for mixed effects logistic regression, 
@@ -410,7 +409,6 @@ knitr::kable(cbind(
     GLMCI = sprintf("[%0.3f, %0.3f]", round(`2.5 %`, 3), round(`97.5 %`, 3)))]))
 
 ```
-
 
 ## Mixed Effects Negative Binomial Regression
 
@@ -689,6 +687,208 @@ contrast of these two values, our AME.
 
 ```{r, results = "asis"}
 knitr::kable(ame.cent$ContrastSummary, digits = 3)
+```
+
+## Interactions and Marginal Effects
+
+As a final example, we will look at a model with an interaction.
+Specifically we have a binary outcome, `y`, measured repeatedly.
+A binary predictor, `x` measured repeatedly within units and 
+group membership, `Group`, a binary variable that is constant within 
+units so only varies between units.
+
+To map these to a concrete potential research question, suppose that 
+100 people were randomized 1:1 to either a waitlist control group 
+(Group = 0) or an emotion regulation intervention designed to help 
+manage stress (Group = 1). After completing the intervention, 
+participants completed 20 days of daily diaries. Sleep was recorded 
+each day and categorized as a good night sleep 
+(`y` = 1) or a poor night sleep (`y` = 0).
+Each day participants' also reported whether they experienced 
+no stressor (`x` = 0) or any stressor (`x` = 1).
+
+The goal is to examine whether the intervention group moderates 
+participants' stress reactivity, defined as the association between 
+experiencing a stressor or not on a given day and whether they have 
+good or poor sleep that night. Based on clinical judgement and the 
+intervention cost, it is estimated that any probability difference 
+of plus or minus 2% is practically equivalent, so the 
+region of practical equivalence (ROPE) is set at -0.02 to +0.02.
+A probability difference of 5% or more is considered the minimally 
+important difference (MID), the smallest difference that is clinically 
+meaningful. Thus the MID is set at less than or equal to -0.05 or 
+greater than or equal to +0.05.
+
+To show this example, we first simulate a dataset, using a similar 
+process as in previous examples.
+
+```{r}
+d <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + rep(c(-1, 1), each = nGroups / 2)
+
+    d <- data.table(ID = seq_len(nGroups), group = rep(0:1, each = nGroups / 2))
+    d <- d[, .(x = rbinom(n = nObs, size = 1, prob = runif(1, 0, 1))), by = .(ID, group)]
+
+    for (i in seq_len(nGroups)) {
+      d[ID == i, y := rbinom(
+        n = nObs,
+        size = 1,
+        prob = plogis(theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(d)
+  })
+```
+
+Following the earlier example, we center our binary predictor, `x`
+(whether participants experienced any stressor that day).
+This separates the effects of experiencing a stressor within a person 
+from the fact that some people may experience stressors most days 
+or rarely experience any stressors. We call the between person variable,
+the average proportion of days experiencing a stressor, `xb`.
+We call the within person variable, `xw`. As in the example on 
+centering within person categorical variables, we also create a 
+dataset with the within person hypothetical values for each person,
+`usewat`.
+
+```{r}
+## within person centering binary predictor
+d[, xb := mean(x), by = ID]
+d[, xw := x - xb]
+
+xwid <- melt(
+  d[, .(a = 0 - na.omit(xb)[1],
+        b = 1 - na.omit(xb)[1]),
+    by = ID], id.vars = "ID")
+
+usewat <- list(ID = "ID", xw = xwid)
+```
+
+Group is measured between people so we do not need to center it.
+We include a random slope by `xw` (within person experience or not of a stressor)
+and an interaction between `xw` and `Group` to evaluate whether the 
+association between experiencing a stressor on a given day, at the within person level,
+is associated with a good or poor night sleep and whether that differs 
+between people randomized to the waitlist control or the intervention.
+The model can be fit as in the following code.
+
+```{r, results = "hide"}
+mlogitcentint <- brms::brm(
+  y ~ 1 + xw * group + xb + (1 + xw | ID), family = "bernoulli",
+  data = d, seed = 1234,
+  silent = 2, refresh = 0,
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+``` 
+
+We will generate average marginal predicted probabilities 
+for each group and with within person stressor exposure held at
+none and any. The grid of possibilities is created and stored in 
+`use.at` and shown in the following table.
+
+```{r, results = "asis"}
+use.at <- expand.grid(group = 0:1, xw = c("a", "b"))
+knitr::kable(use.at, digits = 0)
+```
+
+From this grid, there are three contrasts of interest.
+
+1. What is the average marginal effect (AME) of 
+within person stressor exposure on good or poor sleep 
+that night if everyone were randomized to the waitlist control group?
+2. What is the AME of within person stressor exposure on good or poor sleep
+that night if everyone were randomized to the intervention group?
+3. What is the difference in the AME of within person stressor exposure
+between the intervention and waitlist control group?
+
+A quick way to create this contrast matrix is to start 
+with our contrast codes for the AME: -1 and +1. 
+We use the kronecker product with a 2 x 2 identity matrix
+to expand this into the contrast codes needed for our 
+1st and 2nd questions. Then we take the difference in contrast
+weights between these two which are the weights for the 3rd question.
+The code to do this and the resulting contrast matrix with labels 
+is shown in the following code and table.
+
+```{r, results = "asis"}
+contr.mat <- cbind(xw = c(-1, 1)) %x% diag(2)
+contr.mat <- cbind(
+  contr.mat,
+  contr.mat[, 2] - contr.mat[, 1])
+
+colnames(contr.mat) <- c(
+  paste0("AME xw: Grp ", 0:1),
+  "delta AME xw")
+
+knitr::kable(contr.mat, digits = 0)
+```
+
+Now we can use `brmsmargins()` with the model, 
+our grid of values to generate average marginal predictions,
+and our contrast matrix to generate the AMEs and answer our 
+three questions. We specify here that we want 95% credible intervals,
+and we specify the desired ROPE and MID regions as well as the 
+seed so that we can reproduce the results exactly.
+Once run, we can see the average marginal predictions for our grid 
+of values in `use.at` in the following table.
+
+```{r, results = "asis"}
+ame.centint <- brmsmargins(
+  object = mlogitcentint,
+  at = use.at,
+  wat = usewat,
+  contrasts = contr.mat, CI = 0.95,
+  ROPE = c(-.02, .02), MID = c(-.05, .05),
+  effects = "integrateoutRE", k = 20L, seed = 1234)
+
+knitr::kable(ame.centint$Summary[, .(M, LL, UL, CI, CIType)], digits = 3)
+```
+
+Finally we can look at the contrast summary to answer our three 
+questions of interest: the two simple AMEs of within person stressor 
+exposure and the difference between intervention conditions in those AMEs.
+These are shown in the following table.
+
+From the results, we can see that if everyone were randomized 
+to the waitlist control group, we would expect a lower probability
+of a good night sleep on stressor compared to non stressor days,
+at the within person level. This effect is unlikely to be 
+practically equivalent to 0 (< 5% of the posterior falls in the ROPE) 
+but it also is not clearly exceeding the MID with < 90% of the posterior 
+distribution exceeding the MID.
+
+In comparison, if everyone were randomized to the intervention group,
+we would expect a better night sleep on stressor compared to non stressor 
+days at the within person level. This is unlikely to be an effect 
+practically equivalent to zero (< 5% of the posterior falls in the ROPE)
+and is likely to be at least a MID, as most of the posterior exceeds 
+the MID.
+
+Finally, we can see that the difference in the AMEs between 
+the control and intervention groups is quite large, with none of the 
+posterior distribution falling in the ROPE and nearly all of it exceeding 
+the MID.
+
+We can also see that our contrast coding did indeed yield the difference between 
+the two simple AMEs and can confirm with 'by hand' calculations that the 
+mean contrast estimate for the group difference is indeed the mean 
+for the AME for the intervention (Grp 1) minus the mean for the AME 
+for the waitlist control (Grp 0). Collectively, this suggests that 
+within people, days they are exposed to a stressor or not is associated 
+with their sleep that night, and that the emotion regulation intervention 
+moderates the association between within person stressor exposure and sleep.
+
+```{r, results = "asis"}
+knitr::kable(ame.centint$ContrastSummary, digits = 3)
 ```
 
 ## References
