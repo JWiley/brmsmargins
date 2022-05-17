@@ -1,6 +1,6 @@
 Package: brmsmargins
 Title: Bayesian Marginal Effects for 'brms' Models
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: 
     c(person(given = "Joshua F.",
              family = "Wiley",
@@ -18,7 +18,6 @@ BugReports: https://github.com/JWiley/brmsmargins/issues
 Description: Calculate Bayesian marginal effects, average marginal effects, and marginal coefficients (also called population averaged coefficients) for models fit using the 'brms' package including fixed effects, mixed effects, and location scale models. These are based on marginal predictions that integrate out random effects if necessary (see for example <doi:10.1186/s12874-015-0046-6> and <doi:10.1111/biom.12707>).
 License: GPL (>= 3)
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
 Depends:
@@ -27,7 +26,7 @@ Imports:
     methods,
     stats,
     data.table (>= 1.12.0),
-    extraoperators (>= 0.2.0),
+    extraoperators (>= 0.1.1),
     brms,
     bayestestR,
     Rcpp,

@@ -22,7 +22,7 @@ library(data.table)
 #> data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
 #> Loading required package: Rcpp
-#> Loading 'brms' package (version 2.16.3). Useful instructions
+#> Loading 'brms' package (version 2.17.0). Useful instructions
 #> can be found by typing help('brms'). A more detailed introduction
 #> to the package is available through vignette('brms_overview').
 #> 
@@ -256,14 +256,14 @@ summary(bayes.logistic)
 #>   Links: mu = logit 
 #> Formula: vs ~ am + mpg 
 #>    Data: mtcars (Number of observations: 32) 
-#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
 #> Population-Level Effects: 
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept   -16.13      5.56   -28.70    -7.35 1.00     1826     1853
-#> am           -3.80      1.84    -7.83    -0.70 1.00     1663     1449
-#> mpg           0.87      0.30     0.39     1.55 1.00     1702     1854
+#> Intercept   -16.03      5.49   -28.79    -7.15 1.00     1797     1897
+#> am           -3.77      1.82    -7.87    -0.71 1.00     1689     1766
+#> mpg           0.86      0.30     0.38     1.57 1.00     1707     1842
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -297,7 +297,7 @@ kable(ame1$ContrastSummary, digits = 3)
 
 |     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
 |-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-------|
-| 0.071| 0.07| 0.053| 0.091|          NA|         NA| 0.95|HDI    |NA   |NA  |AME MPG |
+| 0.071| 0.07| 0.054| 0.091|          NA|         NA| 0.95|HDI    |NA   |NA  |AME MPG |
 
 Now we can look at how we could calculate a discrete AME.
 This time we use the `at` argument instead of the `add` 
@@ -322,8 +322,8 @@ kable(ame2$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.543| 0.545| 0.421| 0.652|          NA|         NA| 0.95|HDI    |NA   |NA  |
-| 0.284| 0.277| 0.177| 0.406|          NA|         NA| 0.95|HDI    |NA   |NA  |
+| 0.543| 0.544| 0.419| 0.653|          NA|         NA| 0.95|HDI    |NA   |NA  |
+| 0.284| 0.277| 0.180| 0.409|          NA|         NA| 0.95|HDI    |NA   |NA  |
 
 
 ```r
@@ -332,9 +332,9 @@ kable(ame2$ContrastSummary)
 
 
 
-|          M|        Mdn|        LL|         UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
-|----------:|----------:|---------:|----------:|-----------:|----------:|----:|:------|:----|:---|:------|
-| -0.2597831| -0.2654204| -0.428464| -0.0882898|          NA|         NA| 0.95|HDI    |NA   |NA  |AME am |
+|         M|        Mdn|         LL|         UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
+|---------:|----------:|----------:|----------:|-----------:|----------:|----:|:------|:----|:---|:------|
+| -0.258856| -0.2648354| -0.4252779| -0.0862889|          NA|         NA| 0.95|HDI    |NA   |NA  |AME am |
 
 Note that by default, `brmsmargins()` uses the model frame 
 from the model object as the dataset. This, however, can be overridden.
@@ -370,15 +370,15 @@ summary(bayes.poisson)
 #>   Links: mu = log 
 #> Formula: num_awards ~ prog + math 
 #>    Data: d (Number of observations: 200) 
-#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
 #> Population-Level Effects: 
 #>                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept         -5.33      0.67    -6.70    -4.06 1.00     2202     1923
-#> progAcademic       1.14      0.37     0.45     1.91 1.00     1957     2210
-#> progVocational     0.38      0.45    -0.49     1.30 1.00     2114     1882
-#> math               0.07      0.01     0.05     0.09 1.00     2238     2373
+#> Intercept         -5.31      0.66    -6.66    -4.03 1.00     1933     2312
+#> progAcademic       1.15      0.38     0.46     1.97 1.00     2088     1947
+#> progVocational     0.39      0.47    -0.48     1.36 1.00     2174     2024
+#> math               0.07      0.01     0.05     0.09 1.00     2592     2120
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -402,7 +402,7 @@ kable(ame1.p$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:--------|
-| 0.044| 0.044| 0.025| 0.064|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+| 0.044| 0.044| 0.026| 0.065|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
 
 AME for a categorical variable. Here we calculate pairwise contrasts
 for all three program types. These are the predicted number of awards.
@@ -426,9 +426,9 @@ kable(ame2.p$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.263| 0.250| 0.080| 0.538|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.779| 0.776| 0.583| 0.996|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.377| 0.368| 0.133| 0.681|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.263| 0.253| 0.076| 0.526|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.781| 0.779| 0.600| 0.988|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.380| 0.368| 0.126| 0.710|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
 ```r
@@ -439,9 +439,9 @@ kable(ame2.p$ContrastSummary, digits = 3)
 
 |      M|    Mdn|     LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label                     |
 |------:|------:|------:|------:|-----------:|----------:|----:|:------|:----|:---|:-------------------------|
-| -0.516| -0.525| -0.815| -0.175|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
-| -0.114| -0.111| -0.473|  0.244|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
-|  0.402|  0.409|  0.006|  0.726|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+| -0.518| -0.524| -0.820| -0.176|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
+| -0.117| -0.111| -0.503|  0.280|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
+|  0.400|  0.406|  0.019|  0.726|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
 
 
 ## AMEs for Negative Binomial Regression
@@ -469,19 +469,19 @@ summary(bayes.nb)
 #>   Links: mu = log; shape = identity 
 #> Formula: num_awards ~ prog + math 
 #>    Data: d (Number of observations: 200) 
-#>   Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
 #> Population-Level Effects: 
 #>                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept         -5.38      0.71    -6.79    -3.98 1.00     2747     2510
-#> progAcademic       1.13      0.37     0.43     1.87 1.00     2565     2476
-#> progVocational     0.38      0.47    -0.54     1.27 1.00     2547     2094
-#> math               0.07      0.01     0.05     0.09 1.00     2846     2549
+#> Intercept         -5.39      0.70    -6.82    -4.06 1.00     2813     2387
+#> progAcademic       1.14      0.38     0.42     1.89 1.00     2187     2343
+#> progVocational     0.40      0.47    -0.49     1.32 1.00     2155     2093
+#> math               0.07      0.01     0.05     0.09 1.00     3139     2500
 #> 
 #> Family Specific Parameters: 
 #>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> shape    20.34     37.45     1.95   115.92 1.00     2723     2398
+#> shape    19.82     35.82     1.91   112.92 1.00     2453     2214
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -503,9 +503,9 @@ kable(ame1.nb$ContrastSummary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:--------|
-| 0.045| 0.045| 0.022| 0.069|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+|     M|   Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
+|-----:|-----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|:--------|
+| 0.045| 0.045| 0.022| 0.07|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
 
 AME for a categorical variable. Here we calculate pairwise contrasts
 for all three program types. These are the predicted number of awards.
@@ -529,9 +529,9 @@ kable(ame2.nb$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.267| 0.255| 0.079| 0.561|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.779| 0.775| 0.579| 1.014|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.387| 0.375| 0.142| 0.728|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.264| 0.251| 0.072| 0.562|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.781| 0.778| 0.565| 1.010|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.388| 0.374| 0.146| 0.756|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
 ```r
@@ -542,9 +542,9 @@ kable(ame2.nb$ContrastSummary, digits = 3)
 
 |      M|    Mdn|     LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label                     |
 |------:|------:|------:|------:|-----------:|----------:|----:|:------|:----|:---|:-------------------------|
-| -0.512| -0.517| -0.847| -0.161|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
-| -0.120| -0.117| -0.524|  0.288|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
-|  0.391|  0.397| -0.022|  0.748|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+| -0.517| -0.523| -0.840| -0.127|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
+| -0.124| -0.120| -0.532|  0.270|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
+|  0.392|  0.405| -0.024|  0.768|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
 
 ## References
 

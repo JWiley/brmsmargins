@@ -23,15 +23,14 @@ brmsmargins(
 )
 }
 \arguments{
-\item{object}{A fitted \code{brms} model object. Required.}
+\item{object}{A \emph{required} argument specifying a fitted \code{brms} model object.}
 
-\item{at}{An optional object inheriting from data frame indicating
+\item{at}{An \emph{optional} argument (but note, either \code{at} or \code{add} are
+\emph{required}) specifying an object inheriting from data frame indicating
 the values to hold specific variables at when calculating average
-predictions. This is intended for AMEs from categorical variables.
-Currently, you must specify either \code{at} or \code{add}, and
-cannot specify both.}
+predictions. This is intended for AMEs from categorical variables.}
 
-\item{wat}{A list with named elements including one element named,
+\item{wat}{An \emph{optional} list with named elements including one element named,
 \dQuote{ID} with a single character string, the name of the variable
 in the model frame that is the ID variable. Additionally,
 there should be one or more named elements, named after variables
@@ -42,51 +41,56 @@ specified for the variable in the \code{at} argument, and
 (3) the actual values to be substituted for each ID.
 \code{wat} cannot be non null unless \code{at} also is non null.}
 
-\item{add}{An optional object inheriting from data frame indicating
+\item{add}{An \emph{optional} argument (but note, either \code{at} or \code{add} are
+\emph{required}) specifying an object inheriting from data frame indicating
 the values to add to specific variables at when calculating average
-predictions. This is intended for AMEs for continuous variables.
-Currently, you must specify either \code{at} or \code{add}, and
-cannot specify both.}
+predictions. This is intended for AMEs for continuous variables.}
 
-\item{newdata}{An object inheriting from data frame indicating
-the baseline values to use for predictions and AMEs.
-Defaults to be the model frame.}
+\item{newdata}{An \emph{optional} argument specifying an object inheriting
+from data frame indicating the baseline values to use for predictions and AMEs.
+It uses a sensible default: the model frame from the \code{brms}
+model object passed on the \code{object} argument.}
 
-\item{CI}{A numeric value specifying the width of the credible interval.
-Defaults to \code{0.99}.}
+\item{CI}{An \emph{optional} argument with a numeric value specifying the width
+of the credible interval. Defaults to \code{0.99}. This default is arbitrary,
+but is purposefully higher than the common \code{0.95} to encourage science
+with greater acknowledgment of uncertainty or larger sample sizes (ideally).}
 
-\item{CIType}{A character string specifying the type of credible interval
-(e.g., highest density interval). It is passed down to
+\item{CIType}{An \emph{optional} argument, a character string specifying the
+type of credible interval (e.g., highest density interval). It is passed down to
 \code{\link{bsummary}} which in turn passes it to
 \code{\link[bayestestR]{ci}}. Defaults to \dQuote{HDI}.}
 
-\item{contrasts}{An optional contrast matrix. The posterior predictions matrix
+\item{contrasts}{An \emph{optional} argument specifying a contrast matrix.
+The posterior predictions matrix
 is post multiplied by the contrast matrix, so they must be conformable.
 The posterior predictions matrix has a separate column for each row in the
 \code{at} or \code{add} object, so the contrast matrix should have the same
 number of rows. It can have multiple columns, if you desire multiple specific
 contrasts.}
 
-\item{ROPE}{Either left as \code{NULL}, the default, or a numeric vector of
-length 2, specifying the lower and upper thresholds for the
+\item{ROPE}{An \emph{optional} argument, that can either be left as \code{NULL},
+the default, or a numeric vector of length 2, specifying the
+lower and upper thresholds for the
 Region of Practical Equivalence (ROPE).}
 
-\item{MID}{Either left as \code{NULL}, the default, or a numeric vector of
-length 2, specifying the lower and upper thresholds for a
+\item{MID}{An \emph{optional} argument, that can either left as \code{NULL},
+the default, or a numeric vector of length 2, specifying the
+lower and upper thresholds for a
 Minimally Important Difference (MID). Unlike the ROPE, percentages for
 the MID are calculated as at or exceeding the bounds specified by this
 argument, whereas the ROPE is the percentage of the posterior at or inside
 the bounds specified.}
 
-\item{subset}{A character string that is a valid \code{R} expression
-used to subset the dataset passed in \code{newdata},
+\item{subset}{An \emph{optional} argument, a character string that is a
+valid \code{R} expression used to subset the dataset passed in \code{newdata},
 prior to analysis. Defaults to \code{NULL}.}
 
-\item{dpar}{Parameter passed on the \code{dpar}
-argument of \code{fitted()} in brms. Defaults to \code{NULL}
+\item{dpar}{An \emph{optional} argument giving the parameter passed on to the \code{dpar}
+argument of \code{fitted()} in brms. Defaults to \code{NULL},
 indicating the mean or location parameter typically.}
 
-\item{seed}{Argument that controls whether (and if so what) random seed
+\item{seed}{An \emph{optional} argument that controls whether (and if so what) random seed
 to use. This does not matter when using fixed effects only. However,
 when using Monte Carlo integration to integrate out random effects from
 mixed effects models, it is critical if you are looking at a continuous
@@ -109,13 +113,13 @@ This would be fine, for instance, when only using fixed effects,
 or if you know what you are doing and intend that behavior when
 integrating out random effects.}
 
-\item{verbose}{Logical argument whether to print more verbose messages.
-Defaults to \code{FALSE} which is quieter. Set to \code{TRUE} for
-more messages to be printed where relevant.}
+\item{verbose}{An \emph{optional} argument, a logical value whether to print
+more verbose messages. Defaults to \code{FALSE} which is quieter. Set to
+\code{TRUE} for more messages to be printed where relevant.}
 
-\item{...}{Additional arguments passed on to \code{\link{prediction}}.
-In particular, the \code{effects} argument of \code{\link[=prediction]{prediction()}} is
-important for mixed effects models to control how random effects
+\item{...}{An \emph{optional} argument, additional arguments passed on to
+\code{\link{prediction}}. In particular, the \code{effects} argument of \code{\link[=prediction]{prediction()}}
+is important for mixed effects models to control how random effects
 are treated in the predictions, which subsequently changes the
 marginal effect estimates.}
 }
@@ -131,6 +135,11 @@ A list with four elements.
 \description{
 This function is designed to help calculate marginal effects
 including average marginal effects (AMEs) from \code{brms} models.
+Arguments are labeled as \emph{required} when it is required that the
+user directly specify the argument. Arguments are labeled as
+\emph{optional} when either the argument is optional or there are
+sensible default values so that users do not typically need to specify
+the argument.
 }
 \details{
 The main parts required for the function are a fitted model object,

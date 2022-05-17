@@ -22,67 +22,81 @@ prediction(
 )
 }
 \arguments{
-\item{object}{A fitted brms model object. Required.}
+\item{object}{A \emph{required} argument specifying a fitted
+\code{brms} model object.}
 
-\item{data}{A data frame or data table passed to \code{fitted()}
-as the new data to be used for predictions. Required.}
+\item{data}{A \emph{required} argument specifying a data frame or
+data table passed to \code{fitted()} as the new data to be used
+for predictions.}
 
-\item{summarize}{A logical value, whether or not to
-calculate summaries of the posterior predictions.
+\item{summarize}{An \emph{optional} argument, a logical value, whether
+or not to calculate summaries of the posterior predictions.
 Defaults to \code{TRUE}.}
 
-\item{posterior}{A logical value whether or not to
-save and return the posterior samples. Defaults
+\item{posterior}{An \emph{optional} argument, a logical value whether
+or not to save and return the posterior samples. Defaults
 to \code{FALSE} as the assumption is a typical
 use case is to return the summaries only.}
 
-\item{index}{An optional integer vector, giving the posterior draws
-to be used in the calculations. If omitted, defaults to all
-posterior draws.}
+\item{index}{An \emph{optional} argument, an integer vector, giving the
+posterior draws to be used in the calculations. If omitted,
+defaults to all posterior draws.}
 
-\item{dpar}{Parameter passed on the \code{dpar}
-argument of \code{fitted()} in brms. Defaults to \code{NULL}
+\item{dpar}{An \emph{optional} argument, the parameter passed on to the
+\code{dpar} argument of \code{fitted()} in brms. Defaults to \code{NULL}
 indicating the mean or location parameter typically.}
 
-\item{resample}{An integer indicating the number of
-bootstrap resamples of the posterior predictions to
+\item{resample}{An \emph{optional} argument, an integer indicating the
+number of bootstrap resamples of the posterior predictions to
 use when calculating summaries. Defaults to \code{0L}.
-See documentation from \code{\link[=.averagePosterior]{.averagePosterior()}} for more details.}
+See documentation from \code{\link[=.averagePosterior]{.averagePosterior()}} for more details.
+This should be considered experimental.}
 
-\item{resampleseed}{A seed for random number generation. Defaults to \code{FALSE},
-which means no seed is set.
+\item{resampleseed}{An \emph{optional} argument, a seed for random number
+generation. Defaults to \code{FALSE}, which means no seed is set.
 Only used if \code{resample} is a positive, non-zero integer.
-See documentation from \code{\link[=.averagePosterior]{.averagePosterior()}} for more details.}
+See documentation from \code{\link[=.averagePosterior]{.averagePosterior()}} for more details.
+This should be considered experimental.}
 
-\item{effects}{A character string indicating the type of
-prediction to be made. Can be one of
+\item{effects}{An \emph{optional} argument, a character string indicating
+the type of prediction to be made. Can be one of
 \dQuote{fixedonly} meaning only use fixed effects,
 \dQuote{includeRE} meaning that random effects should be
 included in the predictions, or
 \dQuote{integrateoutRE} meaning that random effects should be
-integrated out / over in the predictions.}
+integrated out / over in the predictions.
+It defaults to \dQuote{fixedonly} so is not typically required for
+a user to specify it.}
 
-\item{backtrans}{A character string indicating the type of
-back transformation to be applied. Can be one of
+\item{backtrans}{An \emph{optional} argument, a character string indicating
+the type of back transformation to be applied. Can be one of
 \dQuote{response} meaning to use the response scale,
 \dQuote{linear} or \dQuote{identity} meaning to use the linear predictor scale,
 or a specific back transformation desired, from a possible list of
 \dQuote{invlogit}, \dQuote{exp}, \dQuote{square}, or \dQuote{inverse}.
 Custom back transformations should only be needed if, for example,
-the outcome variable was transformed prior to fitting the model.}
+the outcome variable was transformed prior to fitting the model.
+It defaults to \dQuote{response} so is not typically required for
+a user to specify it.}
 
-\item{k}{An integer providing the number of random draws to use for
-integrating out the random effects. Only relevant when \code{effects}
-is \dQuote{integrateoutRE}.}
+\item{k}{An \emph{optional} argument, an integer providing the number of
+random draws to use for integrating out the random effects.
+Only relevant when \code{effects} is \dQuote{integrateoutRE}.
+It defaults to \code{100L}, a rather arbitrary number attempting to
+balance the increased precision that comes from a larger value,
+with the increased computational cost of more Monte Carlo simulations
+when integrating out random effects.}
 
-\item{raw}{A logical value indicating whether to return the raw output or
-to average over the Monte Carlo samples. Defaults to \code{FALSE}.
+\item{raw}{An \emph{optional} argument, a logical value indicating whether to
+return the raw output or to average over the Monte Carlo samples.
+Defaults to \code{FALSE}.
 Setting it to \code{TRUE} can be useful if you want not only the
 full posterior distribution but also the \code{k} Monte Carlo samples
 used for the numerical integration. This cannot be used with
 \code{summarize = TRUE}.}
 
-\item{...}{Additional arguments passed to \code{fitted()}}
+\item{...}{An \emph{optional} argument, additional arguments passed
+to \code{fitted()}.}
 }
 \value{
 A list with \code{Summary} and \code{Posterior}.
@@ -93,6 +107,11 @@ Calculate marginal predictions from a \code{brms} model.
 Marginal predictions average over the input data for each posterior draw.
 Marginal predictions for models with random effects will integrate
 over random effects.
+Arguments are labeled as \emph{required} when it is required that the
+user directly specify the argument. Arguments are labeled as
+\emph{optional} when either the argument is optional or there are
+sensible default values so that users do not typically need to specify
+the argument.
 }
 \references{
 Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
