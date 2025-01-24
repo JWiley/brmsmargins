@@ -174,6 +174,11 @@ d <- withr::with_seed(
 mlogit <- brms::brm(
   y ~ 1 + x + (1 + x | ID), family = "bernoulli",
   data = d, seed = 1234,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
+  prior = prior(normal(-2.5, 1), class = "Intercept") +
+    prior(normal(1, .5), class = "b") +
+    prior(student_t(3, 1.25, 1), class = "sd", coef = "Intercept", group = "ID") + 
+    prior(student_t(3, .5, .5), class = "sd", coef = "x", group = "ID"),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ```
@@ -342,6 +347,11 @@ dpoisson <- withr::with_seed(
 mpois <- brms::brm(
   y ~ 1 + x + (1 + x | ID), family = "poisson",
   data = dpoisson, seed = 1234,
+  prior = prior(normal(-2.5, 1), class = "Intercept") +
+    prior(normal(1, .5), class = "b") +
+    prior(student_t(3, 1.25, 1), class = "sd", coef = "Intercept", group = "ID") + 
+    prior(student_t(3, .5, .5), class = "sd", coef = "x", group = "ID"),
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr",
   silent = 2, refresh = 0, adapt_delta = 0.99)
 ```
@@ -416,9 +426,36 @@ Negative binomial models work the same way as for poisson models.
 We use the same dataset, just for demonstration.
 
 ```{r, results = 'hide'}
+dnb <- withr::with_seed(
+  seed = 12345, code = {
+    nGroups <- 100
+    nObs <- 20
+    theta.location <- matrix(rnorm(nGroups * 2), nrow = nGroups, ncol = 2)
+    theta.location[, 1] <- theta.location[, 1] - mean(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] - mean(theta.location[, 2])
+    theta.location[, 1] <- theta.location[, 1] / sd(theta.location[, 1])
+    theta.location[, 2] <- theta.location[, 2] / sd(theta.location[, 2])
+    theta.location <- theta.location %*% chol(matrix(c(1.5, -.25, -.25, .5^2), 2))
+    theta.location[, 1] <- theta.location[, 1] - 2.5
+    theta.location[, 2] <- theta.location[, 2] + 1
+    d <- data.table(
+      x = rep(rep(0:1, each = nObs / 2), times = nGroups))
+    d[, ID := rep(seq_len(nGroups), each = nObs)]
+
+    for (i in seq_len(nGroups)) {
+      d[ID == i, y := rnbinom(
+        n = nObs,
+        size = 5,
+        mu = exp(theta.location[i, 1] + theta.location[i, 2] * x))
+        ]
+    }
+    copy(d)
+  })
+
 mnb <- brms::brm(
   y ~ 1 + x + (1 + x | ID), family = "negbinomial",
-  data = dpoisson, seed = 1234,
+  data = dnb, seed = 1234,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr",
   silent = 2, refresh = 0, adapt_delta = 0.99)
 ```
@@ -612,6 +649,7 @@ d[, xw := x - xb]
 mlogitcent <- brms::brm(
   y ~ 1 + xw + (1 + xw | ID), family = "bernoulli",
   data = d, seed = 1234,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ``` 
@@ -786,6 +824,7 @@ The model can be fit as in the following code.
 mlogitcentint <- brms::brm(
   y ~ 1 + xw * group + xb + (1 + xw | ID), family = "bernoulli",
   data = d, seed = 1234,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ``` 

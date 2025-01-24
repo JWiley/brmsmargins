@@ -213,6 +213,7 @@ bayes.logistic <- brm(
   vs ~ am + mpg, data = mtcars,
   family = "bernoulli", seed = 1234,
   silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ```
 
@@ -286,6 +287,7 @@ bayes.poisson <- brm(
   num_awards ~ prog + math, data = d,
   family = "poisson", seed = 1234,
   silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ```
 
@@ -330,16 +332,17 @@ kable(ame2.p$ContrastSummary, digits = 3)
 ## AMEs for Negative Binomial Regression
 
 Here is a short example for Negative Binomial regression used for 
-count outcomes. We use the same setup as for the Poisson regression example.
+count outcomes.
 
 ```{r, results = 'hide'}
-d <- read.csv("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
-d$prog <- factor(d$prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))
+d <- fread("https://stats.oarc.ucla.edu/stat/data/fish.csv")
+d[, nofish := factor(nofish, levels = 0:1, labels = c("no fish", "fish"))]
 
 bayes.nb <- brm(
-  num_awards ~ prog + math, data = d,
+  count ~ nofish + xb, data = d,
   family = "negbinomial", seed = 1234,
   silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ```
 
@@ -353,25 +356,23 @@ AME for a continuous variable, using default CI interval and type.
 h <- .001
 ame1.nb <- brmsmargins(
   bayes.nb,
-  add = data.frame(math = c(0, 0 + h)),
-  contrasts = cbind("AME math" = c(-1 / h, 1 / h)))
+  add = data.frame(xb = c(0, 0 + h)),
+  contrasts = cbind("AME xb" = c(-1 / h, 1 / h)))
 
 kable(ame1.nb$ContrastSummary, digits = 3)
 ```
 
 AME for a categorical variable. Here we calculate pairwise contrasts
-for all three program types. These are the predicted number of awards.
+for no fish versus fish. The estimate is how many are caught.
 
 ```{r, results = 'asis'}
 ame2.nb <- brmsmargins(
   bayes.nb,
   at = data.frame(
-    prog = factor(1:3,
-                  labels = c("General", "Academic", "Vocational"))),
+    nofish = factor(0:1,
+                  labels = c("no fish", "fish"))),
   contrasts = cbind(
-    "AME General v Academic" = c(1, -1, 0),
-    "AME General v Vocational" = c(1, 0, -1),
-    "AME Academic v Vocational" = c(0, 1, -1)))
+    "AME No Fish v Fish" = c(1, -1)))
     
 kable(ame2.nb$Summary, digits = 3)
 ```

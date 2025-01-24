@@ -246,6 +246,7 @@ bayes.logistic <- brm(
   vs ~ am + mpg, data = mtcars,
   family = "bernoulli", seed = 1234,
   silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr")
 #> Loading required package: rstan
 #> Loading required package: StanHeaders
@@ -377,6 +378,7 @@ bayes.poisson <- brm(
   num_awards ~ prog + math, data = d,
   family = "poisson", seed = 1234,
   silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ```
 
@@ -470,56 +472,40 @@ kable(ame2.p$ContrastSummary, digits = 3)
 ## AMEs for Negative Binomial Regression
 
 Here is a short example for Negative Binomial regression used for 
-count outcomes. We use the same setup as for the Poisson regression example.
+count outcomes.
 
 
 ``` r
-d <- read.csv("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
-d$prog <- factor(d$prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))
+d <- fread("https://stats.oarc.ucla.edu/stat/data/fish.csv")
+d[, nofish := factor(nofish, levels = 0:1, labels = c("no fish", "fish"))]
 
 bayes.nb <- brm(
-  num_awards ~ prog + math, data = d,
+  count ~ nofish + xb, data = d,
   family = "negbinomial", seed = 1234,
   silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Warning: 569 of 4000 (14.0%) transitions ended with a divergence.
-#> See https://mc-stan.org/misc/warnings for details.
-#> Warning: 3431 of 4000 (86.0%) transitions hit the maximum treedepth limit of 10.
-#> See https://mc-stan.org/misc/warnings for details.
-#> Warning: 2 of 4 chains have a NaN E-BFMI.
-#> See https://mc-stan.org/misc/warnings for details.
 ```
 
 
 ``` r
 summary(bayes.nb)
-#> Warning: Parts of the model have not converged (some Rhats are > 1.05). Be
-#> careful when analysing the results! We recommend running more iterations and/or
-#> setting stronger priors.
-#> Warning: There were 569 divergent transitions after warmup. Increasing
-#> adapt_delta above 0.8 may help. See
-#> http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 #>  Family: negbinomial 
 #>   Links: mu = log; shape = identity 
-#> Formula: num_awards ~ prog + math 
-#>    Data: d (Number of observations: 200) 
+#> Formula: count ~ nofish + xb 
+#>    Data: d (Number of observations: 250) 
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
 #> Regression Coefficients:
-#>                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept         -7.43      2.17    -9.81    -5.00  Inf        4       NA
-#> progAcademic       2.68      2.02     0.67     5.96  Inf        4       NA
-#> progVocational    -0.49      1.26    -2.66     0.42  Inf        4       NA
-#> math               0.10      0.03     0.06     0.13  Inf        4       NA
+#>            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept     -1.38      0.21    -1.78    -0.97 1.00     2936     2491
+#> nofishfish    -0.08      0.25    -0.56     0.42 1.00     3667     2776
+#> xb             1.24      0.10     1.06     1.43 1.00     3223     3165
 #> 
 #> Further Distributional Parameters:
-#>                                    Estimate
-#> shape 6464950012624176290022006848644662.00
-#>                                    Est.Error          l-95% CI
-#> shape 11199021826335432527262864286824266.00 21779500000000.00
-#>                                     u-95% CI Rhat Bulk_ESS Tail_ESS
-#> shape 25859800000000002248084824408282220.00  Inf        4       NA
+#>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> shape     0.72      0.12     0.52     0.99 1.00     3464     2956
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -533,45 +519,42 @@ AME for a continuous variable, using default CI interval and type.
 h <- .001
 ame1.nb <- brmsmargins(
   bayes.nb,
-  add = data.frame(math = c(0, 0 + h)),
-  contrasts = cbind("AME math" = c(-1 / h, 1 / h)))
+  add = data.frame(xb = c(0, 0 + h)),
+  contrasts = cbind("AME xb" = c(-1 / h, 1 / h)))
 
 kable(ame1.nb$ContrastSummary, digits = 3)
 ```
 
 
 
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:--------|
-| 0.641| 0.189| 0.042| 2.145|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+|     M|   Mdn|    LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
+|-----:|-----:|-----:|------:|-----------:|----------:|----:|:------|:----|:---|:------|
+| 5.623| 5.296| 2.654| 11.735|          NA|         NA| 0.99|HDI    |NA   |NA  |AME xb |
 
 
 
 AME for a categorical variable. Here we calculate pairwise contrasts
-for all three program types. These are the predicted number of awards.
+for no fish versus fish. The estimate is how many are caught.
 
 
 ``` r
 ame2.nb <- brmsmargins(
   bayes.nb,
   at = data.frame(
-    prog = factor(1:3,
-                  labels = c("General", "Academic", "Vocational"))),
+    nofish = factor(0:1,
+                  labels = c("no fish", "fish"))),
   contrasts = cbind(
-    "AME General v Academic" = c(1, -1, 0),
-    "AME General v Vocational" = c(1, 0, -1),
-    "AME Academic v Vocational" = c(0, 1, -1)))
+    "AME No Fish v Fish" = c(1, -1)))
     
 kable(ame2.nb$Summary, digits = 3)
 ```
 
 
 
-|     M|   Mdn|    LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
-|-----:|-----:|-----:|------:|-----------:|----------:|----:|:------|:----|:---|
-| 0.210| 0.218| 0.061|  0.345|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 7.051| 2.021| 0.676| 23.486|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.209| 0.195| 0.015|  0.432|          NA|         NA| 0.99|HDI    |NA   |NA  |
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
+| 4.523| 4.367| 2.485| 7.975|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 4.274| 4.043| 1.695| 8.816|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
 
@@ -582,11 +565,9 @@ kable(ame2.nb$ContrastSummary, digits = 3)
 
 
 
-|      M|    Mdn|      LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label                     |
-|------:|------:|-------:|------:|-----------:|----------:|----:|:------|:----|:---|:-------------------------|
-| -6.841| -1.803| -23.425| -0.331|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
-|  0.001| -0.045|  -0.110|  0.206|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
-|  6.842|  1.851|   0.244| 23.421|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+|    M|   Mdn|     LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label              |
+|----:|-----:|------:|-----:|-----------:|----------:|----:|:------|:----|:---|:------------------|
+| 0.25| 0.343| -3.065| 3.026|          NA|         NA| 0.99|HDI    |NA   |NA  |AME No Fish v Fish |
 
 
 

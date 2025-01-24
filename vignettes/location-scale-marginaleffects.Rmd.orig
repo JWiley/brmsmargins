@@ -74,6 +74,7 @@ ls.fe <- brm(bf(
   sigma ~ 1 + x + grp),
   family = "gaussian",
   data = d, seed = 1234,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ```
@@ -185,7 +186,7 @@ dmixed <- withr::with_seed(
     for (i in seq_len(nGroups)) {
       dmixed[ID == i, y := rnorm(
         n = nObs,
-        mean = theta.location[i, 1] + theta.location[i, 2] * x,
+        mean =       theta.location[i, 1] + theta.location[i, 2] * x,
         sd = exp(1 + theta.location[i, 1] + theta.location[i, 2] * x))
         ]
     }
@@ -197,6 +198,15 @@ ls.me <- brm(bf(
   sigma ~ 1 + x + (1 + x | ID)),
   family = "gaussian",
   data = dmixed, seed = 1234,
+  prior = prior(normal(-2.5, 1), class = "Intercept") +
+    prior(normal(1, .5), class = "b") +
+    prior(student_t(3, 1.25, 1), class = "sd", coef = "Intercept", group = "ID") + 
+    prior(student_t(3, .5, .5), class = "sd", coef = "x", group = "ID") +
+    prior(normal(-1.5, 1), class = "Intercept", dpar = "sigma") +
+    prior(normal(1, .5), class = "b", dpar = "sigma") +
+    prior(student_t(3, 1.25, 1), class = "sd", coef = "Intercept", group = "ID", dpar = "sigma") + 
+    prior(student_t(3, .5, .5), class = "sd", coef = "x", group = "ID", dpar = "sigma"),
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
 ```
