@@ -5,52 +5,29 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<!-- Inform modern browsers that this page supports both dark and light color schemes,
-  and the page author prefers light. --><meta name="color-scheme" content="dark light">
-<script>
-  // If `prefers-color-scheme` is not supported, fall back to light mode.
-  // i.e. In this case, inject the `light` CSS before the others, with
-  // no media filter so that it will be downloaded with highest priority.
-  if (window.matchMedia("(prefers-color-scheme: dark)").media === "not all") {
-    document.documentElement.style.display = "none";
-    document.head.insertAdjacentHTML(
-      "beforeend",
-      "<link id=\"css\" rel=\"stylesheet\" href=\"https://bootswatch.com/5/flatly/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
-    );
-  }
-</script><title>Marginal Effects for Location Scale Models • brmsmargins</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Marginal Effects for Location Scale Models • brmsmargins</title>
+<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Marginal Effects for Location Scale Models">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]--><!-- Flatly Theme - Light  --><link id="css-light" rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
-<!-- Darkly Theme - Dark --><link id="css-dark" rel="stylesheet" href="https://bootswatch.com/5/darkly/bootstrap.css" media="(prefers-color-scheme: dark)">
-<!-- preferably CSS --><link rel="stylesheet" href="../preferably.css">
-<link id="css-code-light" rel="stylesheet" href="../code-color-scheme-light.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
-<link id="css-code-dark" rel="stylesheet" href="../code-color-scheme-dark.css" media="(prefers-color-scheme: dark)">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Marginal Effects for Location Scale Models">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top " aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">brmsmargins</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div id="navbar" class="collapse navbar-collapse ms-2">
+    <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
@@ -68,10 +45,14 @@
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/JWiley/brmsmargins/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
-
-
-
-
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-lightswitch">
+<li><button class="dropdown-item" data-bs-theme-value="light"><span class="fa fa-sun"></span> Light</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="dark"><span class="fa fa-moon"></span> Dark</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="auto"><span class="fa fa-adjust"></span> Auto</button></li>
+  </ul>
+</li>
       </ul>
 </div>
 
@@ -97,14 +78,15 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
+<span><span class="co">#&gt; data.table 1.16.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: Rcpp</span></span>
-<span><span class="co">#&gt; Loading 'brms' package (version 2.17.0). Useful instructions</span></span>
+<span><span class="co">#&gt; Loading 'brms' package (version 2.22.0). Useful instructions</span></span>
 <span><span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span></span>
 <span><span class="co">#&gt; to the package is available through vignette('brms_overview').</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attaching package: 'brms'</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     ar</span></span>
@@ -155,7 +137,18 @@ model. We will simulate a dataset.</p>
 <span>  data <span class="op">=</span> <span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Compiling Stan program...</span></span></code></pre></div>
+<span><span class="co">#&gt; Loading required package: rstan</span></span>
+<span><span class="co">#&gt; Loading required package: StanHeaders</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; rstan version 2.32.6 (Stan version 2.32.2)</span></span>
+<span><span class="co">#&gt; For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
+<span><span class="co">#&gt; options(mc.cores = parallel::detectCores()).</span></span>
+<span><span class="co">#&gt; To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
+<span><span class="co">#&gt; rstan_options(auto_write = TRUE)</span></span>
+<span><span class="co">#&gt; For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
+<span><span class="co">#&gt; change `threads_per_chain` option:</span></span>
+<span><span class="co">#&gt; rstan_options(threads_per_chain = 1)</span></span>
+<span><span class="co">#&gt; Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ls.fe</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Family: gaussian </span></span>
@@ -166,14 +159,14 @@ model. We will simulate a dataset.</p>
 <span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
 <span><span class="co">#&gt;          total post-warmup draws = 4000</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Population-Level Effects: </span></span>
+<span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept          -0.09      0.12    -0.33     0.15 1.00     4829     3553</span></span>
-<span><span class="co">#&gt; sigma_Intercept     1.01      0.03     0.94     1.07 1.00     4696     3023</span></span>
-<span><span class="co">#&gt; x                   1.62      0.45     0.75     2.49 1.00     4470     2830</span></span>
-<span><span class="co">#&gt; grp                 1.02      0.35     0.34     1.69 1.00     2526     2684</span></span>
-<span><span class="co">#&gt; sigma_x             0.85      0.09     0.67     1.02 1.00     4878     3309</span></span>
-<span><span class="co">#&gt; sigma_grp           1.01      0.05     0.92     1.09 1.00     4425     2871</span></span>
+<span><span class="co">#&gt; Intercept          -0.09      0.13    -0.34     0.16 1.00     5154     3686</span></span>
+<span><span class="co">#&gt; sigma_Intercept     1.01      0.03     0.95     1.07 1.00     4915     2872</span></span>
+<span><span class="co">#&gt; x                   1.62      0.46     0.72     2.49 1.00     3944     2769</span></span>
+<span><span class="co">#&gt; grp                 1.02      0.34     0.34     1.67 1.00     3055     2998</span></span>
+<span><span class="co">#&gt; sigma_x             0.85      0.09     0.67     1.02 1.00     4847     2766</span></span>
+<span><span class="co">#&gt; sigma_grp           1.01      0.04     0.92     1.09 1.00     4862     2775</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -193,14 +186,14 @@ the regression coefficients.</p>
 <span>  effects <span class="op">=</span> <span class="st">"fixedonly"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
 <col width="8%">
 <col width="8%">
 <col width="8%">
-<col width="8%">
+<col width="6%">
 <col width="16%">
-<col width="14%">
+<col width="15%">
 <col width="6%">
 <col width="9%">
 <col width="6%">
@@ -221,10 +214,10 @@ the regression coefficients.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">1.623</td>
-<td align="right">1.631</td>
-<td align="right">0.746</td>
-<td align="right">2.492</td>
+<td align="right">1.619</td>
+<td align="right">1.629</td>
+<td align="right">0.717</td>
+<td align="right">2.49</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -244,13 +237,13 @@ the regression coefficients.</p>
 <span>  effects <span class="op">=</span> <span class="st">"fixedonly"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="8%">
-<col width="6%">
-<col width="8%">
-<col width="6%">
-<col width="16%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
+<col width="7%">
+<col width="15%">
 <col width="14%">
 <col width="6%">
 <col width="9%">
@@ -272,10 +265,10 @@ the regression coefficients.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">1.016</td>
-<td align="right">1.02</td>
-<td align="right">0.343</td>
-<td align="right">1.69</td>
+<td align="right">1.023</td>
+<td align="right">1.033</td>
+<td align="right">0.338</td>
+<td align="right">1.672</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -330,10 +323,10 @@ transformed).</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">4.463</td>
-<td align="right">4.456</td>
-<td align="right">3.488</td>
-<td align="right">5.442</td>
+<td align="right">4.473</td>
+<td align="right">4.468</td>
+<td align="right">3.491</td>
+<td align="right">5.495</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -381,10 +374,10 @@ transformed).</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">4.907</td>
 <td align="right">4.905</td>
-<td align="right">4.409</td>
-<td align="right">5.436</td>
+<td align="right">4.898</td>
+<td align="right">4.391</td>
+<td align="right">5.433</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -442,8 +435,7 @@ fit the mixed effects location scale model.</p>
 <span>  data <span class="op">=</span> <span class="va">dmixed</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Compiling Stan program...</span></span>
-<span><span class="co">#&gt; Warning: 102 of 4000 (3.0%) transitions hit the maximum treedepth limit of 10.</span></span>
+<span><span class="co">#&gt; Warning: 967 of 4000 (24.0%) transitions hit the maximum treedepth limit of 10.</span></span>
 <span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span></code></pre></div>
 <p>Note that this model has not achieved good convergence, but as it
 already took about 6 minutes to run, for the sake of demonstration we
@@ -451,6 +443,9 @@ continue. In practice, one would want to make adjustments to ensure good
 convergence and an adequate effective sample size.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ls.me</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Parts of the model have not converged (some Rhats are &gt; 1.05). Be</span></span>
+<span><span class="co">#&gt; careful when analysing the results! We recommend running more iterations and/or</span></span>
+<span><span class="co">#&gt; setting stronger priors.</span></span>
 <span><span class="co">#&gt;  Family: gaussian </span></span>
 <span><span class="co">#&gt;   Links: mu = identity; sigma = log </span></span>
 <span><span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span></span>
@@ -459,29 +454,29 @@ convergence and an adequate effective sample size.</p>
 <span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
 <span><span class="co">#&gt;          total post-warmup draws = 4000</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Group-Level Effects: </span></span>
+<span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)                    1.19      0.09     1.03     1.37 1.02      211</span></span>
-<span><span class="co">#&gt; sd(x)                            0.42      0.04     0.35     0.51 1.00      862</span></span>
-<span><span class="co">#&gt; sd(sigma_Intercept)              1.27      0.09     1.11     1.47 1.01      536</span></span>
-<span><span class="co">#&gt; sd(sigma_x)                      0.50      0.05     0.41     0.61 1.00     1569</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)                -0.40      0.12    -0.61    -0.16 1.00      577</span></span>
-<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.55    -0.13 1.00     1516</span></span>
+<span><span class="co">#&gt; sd(Intercept)                    1.19      0.09     1.04     1.38 1.01      363</span></span>
+<span><span class="co">#&gt; sd(x)                            0.42      0.04     0.35     0.51 1.00      720</span></span>
+<span><span class="co">#&gt; sd(sigma_Intercept)              1.26      0.09     1.09     1.46 1.01      450</span></span>
+<span><span class="co">#&gt; sd(sigma_x)                      0.50      0.05     0.40     0.61 1.00     1256</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)                -0.40      0.12    -0.61    -0.16 1.00      724</span></span>
+<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.56    -0.13 1.00     1486</span></span>
 <span><span class="co">#&gt;                              Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)                     519</span></span>
-<span><span class="co">#&gt; sd(x)                            1634</span></span>
-<span><span class="co">#&gt; sd(sigma_Intercept)               819</span></span>
-<span><span class="co">#&gt; sd(sigma_x)                      2418</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)                 1159</span></span>
-<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)     2200</span></span>
+<span><span class="co">#&gt; sd(Intercept)                     765</span></span>
+<span><span class="co">#&gt; sd(x)                            1555</span></span>
+<span><span class="co">#&gt; sd(sigma_Intercept)               949</span></span>
+<span><span class="co">#&gt; sd(sigma_x)                      2447</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)                 1206</span></span>
+<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)     2235</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Population-Level Effects: </span></span>
+<span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept          -2.55      0.12    -2.77    -2.33 1.03      105      300</span></span>
-<span><span class="co">#&gt; sigma_Intercept    -1.48      0.13    -1.72    -1.22 1.02      217      388</span></span>
-<span><span class="co">#&gt; x                   0.94      0.06     0.83     1.06 1.00      572     1550</span></span>
-<span><span class="co">#&gt; sigma_x             0.97      0.06     0.85     1.09 1.00     1031     1892</span></span>
+<span><span class="co">#&gt; Intercept          -2.55      0.13    -2.83    -2.31 1.06       70      185</span></span>
+<span><span class="co">#&gt; sigma_Intercept    -1.47      0.13    -1.71    -1.22 1.01      242      491</span></span>
+<span><span class="co">#&gt; x                   0.94      0.06     0.82     1.05 1.01      605     1639</span></span>
+<span><span class="co">#&gt; sigma_x             0.97      0.06     0.85     1.10 1.00     1208     2288</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -531,9 +526,9 @@ the fixed effects for the AME for the scale parameter,
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">0.408</td>
-<td align="right">0.404</td>
-<td align="right">0.283</td>
-<td align="right">0.555</td>
+<td align="right">0.405</td>
+<td align="right">0.281</td>
+<td align="right">0.565</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -554,49 +549,10 @@ the AME.</p>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  dpar <span class="op">=</span> <span class="st">"sigma"</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_2[1,1], L_2[2,1], L_2[1,2], L_2[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="16%">
-<col width="14%">
-<col width="6%">
-<col width="9%">
-<col width="6%">
-<col width="5%">
-<col width="8%">
-</colgroup>
-<thead><tr class="header">
-<th align="right">M</th>
-<th align="right">Mdn</th>
-<th align="right">LL</th>
-<th align="right">UL</th>
-<th align="right">PercentROPE</th>
-<th align="right">PercentMID</th>
-<th align="right">CI</th>
-<th align="left">CIType</th>
-<th align="left">ROPE</th>
-<th align="left">MID</th>
-<th align="left">Label</th>
-</tr></thead>
-<tbody><tr class="odd">
-<td align="right">0.804</td>
-<td align="right">0.766</td>
-<td align="right">0.391</td>
-<td align="right">1.575</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">0.99</td>
-<td align="left">HDI</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">AME x</td>
-</tr></tbody>
-</table>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'ame1b.lsme' not found</span></span></code></pre></div>
 <p>Here is an example treating <code>x</code> as discrete, using only
 the fixed effects.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -611,9 +567,9 @@ the fixed effects.</p>
 <table class="table">
 <colgroup>
 <col width="11%">
-<col width="11%">
-<col width="11%">
 <col width="10%">
+<col width="11%">
+<col width="11%">
 <col width="13%">
 <col width="12%">
 <col width="5%">
@@ -636,10 +592,10 @@ the fixed effects.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.3782473</td>
-<td align="right">0.3750965</td>
-<td align="right">0.2673526</td>
-<td align="right">0.509232</td>
+<td align="right">0.3786418</td>
+<td align="right">0.376048</td>
+<td align="right">0.2635285</td>
+<td align="right">0.5200144</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -658,49 +614,10 @@ effects, likely the more appropriate estimate for most use cases.</p>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  dpar <span class="op">=</span> <span class="st">"sigma"</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_2[1,1], L_2[2,1], L_2[1,2], L_2[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="11%">
-<col width="11%">
-<col width="11%">
-<col width="10%">
-<col width="13%">
-<col width="12%">
-<col width="5%">
-<col width="7%">
-<col width="5%">
-<col width="4%">
-<col width="6%">
-</colgroup>
-<thead><tr class="header">
-<th align="right">M</th>
-<th align="right">Mdn</th>
-<th align="right">LL</th>
-<th align="right">UL</th>
-<th align="right">PercentROPE</th>
-<th align="right">PercentMID</th>
-<th align="right">CI</th>
-<th align="left">CIType</th>
-<th align="left">ROPE</th>
-<th align="left">MID</th>
-<th align="left">Label</th>
-</tr></thead>
-<tbody><tr class="odd">
-<td align="right">0.7127988</td>
-<td align="right">0.6795497</td>
-<td align="right">0.3513727</td>
-<td align="right">1.382269</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">0.99</td>
-<td align="left">HDI</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">AME x</td>
-</tr></tbody>
-</table>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'ame2b.lsme' not found</span></span></code></pre></div>
 <p>This also is relatively close calculating all the individual standard
 deviations and taking their differences, then averaging.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -714,15 +631,12 @@ deviations and taking their differences, then averaging.</p>
 
 
 
-    <footer><div class="copyright">
-  <p></p>
-<p>Developed by <a href="https://joshuawiley.com" class="external-link">Joshua F. Wiley</a>, Donald Hedeker.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by <a href="https://joshuawiley.com" class="external-link">Joshua F. Wiley</a>, Donald Hedeker.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
-  <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
