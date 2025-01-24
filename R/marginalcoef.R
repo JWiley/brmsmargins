@@ -25,7 +25,11 @@
 #' @param k An integer providing the number of random draws to use for
 #'   integrating out the random effects. Only relevant when \code{effects}
 #'   is \dQuote{integrateoutRE}.
-#' @param ... Additional arguments passed to \code{fitted()}
+#' @param seed An \emph{optional} argument that controls whether (and if so what) random seed
+#'   to use. This can help with reproducibility of results.
+#'   It is missing by default.
+#' @param ... Additional arguments passed to \code{bsummary()}, 
+#'   and only relevant if \code{summarize} is \code{TRUE}.
 #' @return A list with \code{Summary} and \code{Posterior}.
 #'   Some of these may be \code{NULL} depending on the arguments used.
 #' @references
@@ -41,7 +45,7 @@
 marginalcoef <- function(object, summarize = TRUE, posterior = FALSE, index,
                          backtrans = c("response", "linear", "identity",
                                        "invlogit", "exp", "square", "inverse"),
-                         k = 100L, ...) {
+                         k = 100L, seed, ...) {
   ## checks and assertions
   .assertbrmsfit(object)
 
@@ -67,6 +71,12 @@ marginalcoef <- function(object, summarize = TRUE, posterior = FALSE, index,
   mf <- model.frame(object)
   X <- make_standata(formula(object), data = mf)$X
 
+  if (isFALSE(missing(seed))) {
+    if (isFALSE(is.null(seed))) {
+      stopifnot(identical(length(seed), 1L))
+      set.seed(seed)
+    }
+  }
   lambda <- prediction(
     object, data = mf,
     summarize = FALSE, posterior = TRUE, index = index,

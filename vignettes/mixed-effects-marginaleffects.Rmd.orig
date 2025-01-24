@@ -286,7 +286,7 @@ logistic regression that ignores the clustering in the data.
 
 ```{r}
 ## calculate marginal coefficients
-mc.logit <- marginalcoef(mlogit, CI = 0.95)
+mc.logit <- marginalcoef(mlogit, CI = 0.95, seed = 1234)
 
 ## calculate single level logistic regression
 glm.logit <- glm(y ~ 1 + x, family = "binomial", data = d)
@@ -389,7 +389,7 @@ poisson regression that ignores the clustering in the data.
 
 ```{r}
 ## calculate marginal coefficients
-mc.pois <- marginalcoef(mpois, CI = 0.95)
+mc.pois <- marginalcoef(mpois, CI = 0.95, seed = 1234)
 
 ## calculate single level logistic regression
 glm.pois <- glm(y ~ 1 + x, family = "poisson", data = d)
@@ -462,7 +462,7 @@ so we just show the population averaged values from `brms`.
 
 ```{r}
 ## calculate marginal coefficients
-mc.nb <- marginalcoef(mnb, CI = 0.95)
+mc.nb <- marginalcoef(mnb, CI = 0.95, seed = 1234)
 ```
 
 View the results.

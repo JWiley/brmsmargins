@@ -71,8 +71,8 @@
 #'   full posterior distribution but also the \code{k} Monte Carlo samples
 #'   used for the numerical integration. This cannot be used with
 #'   \code{summarize = TRUE}.
-#' @param ... An \emph{optional} argument, additional arguments passed
-#'   to \code{fitted()}.
+#' @param ... Additional arguments passed to \code{bsummary()},
+#'   and only relevant if \code{summarize} is \code{TRUE}.
 #' @return A list with \code{Summary} and \code{Posterior}.
 #'   Some of these may be \code{NULL} depending on the arguments used.
 #' @references

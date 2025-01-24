@@ -7,8 +7,7 @@
 .links(
   link,
   effects = c("fixedonly", "includeRE", "integrateoutRE"),
-  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square",
-    "inverse")
+  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square", "inverse")
 )
 }
 \arguments{

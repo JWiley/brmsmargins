@@ -9,9 +9,9 @@ marginalcoef(
   summarize = TRUE,
   posterior = FALSE,
   index,
-  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square",
-    "inverse"),
+  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square", "inverse"),
   k = 100L,
+  seed,
   ...
 )
 }
@@ -44,7 +44,12 @@ the outcome variable was transformed prior to fitting the model.}
 integrating out the random effects. Only relevant when \code{effects}
 is \dQuote{integrateoutRE}.}
 
-\item{...}{Additional arguments passed to \code{fitted()}}
+\item{seed}{An \emph{optional} argument that controls whether (and if so what) random seed
+to use. This can help with reproducibility of results.
+It is missing by default.}
+
+\item{...}{Additional arguments passed to \code{bsummary()},
+and only relevant if \code{summarize} is \code{TRUE}.}
 }
 \value{
 A list with \code{Summary} and \code{Posterior}.

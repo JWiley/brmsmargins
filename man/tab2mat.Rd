@@ -23,9 +23,9 @@ Not intended to be called directly by most users.
 }
 \section{Functions}{
 \itemize{
-\item \code{tab2matR}: Pure \code{R} implementation of \code{tab2mat}
-}}
+\item \code{tab2matR()}: Pure \code{R} implementation of \code{tab2mat}
 
+}}
 \examples{
 tab2mat(matrix(1:4, 1))
 tab2mat(matrix(1:9, 1))

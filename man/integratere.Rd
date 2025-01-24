@@ -39,9 +39,9 @@ Not intended to be called directly by most users.
 }
 \section{Functions}{
 \itemize{
-\item \code{integratereR}: Pure \code{R} implementation of \code{integratere}
-}}
+\item \code{integratereR()}: Pure \code{R} implementation of \code{integratere}
 
+}}
 \examples{
 integratere(
   d = list(matrix(1, 1, 1)),

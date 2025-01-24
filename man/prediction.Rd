@@ -14,8 +14,7 @@ prediction(
   resample = 0L,
   resampleseed = FALSE,
   effects = c("fixedonly", "includeRE", "integrateoutRE"),
-  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square",
-    "inverse"),
+  backtrans = c("response", "linear", "identity", "invlogit", "exp", "square", "inverse"),
   k = 100L,
   raw = FALSE,
   ...
@@ -95,8 +94,8 @@ full posterior distribution but also the \code{k} Monte Carlo samples
 used for the numerical integration. This cannot be used with
 \code{summarize = TRUE}.}
 
-\item{...}{An \emph{optional} argument, additional arguments passed
-to \code{fitted()}.}
+\item{...}{Additional arguments passed to \code{bsummary()},
+and only relevant if \code{summarize} is \code{TRUE}.}
 }
 \value{
 A list with \code{Summary} and \code{Posterior}.

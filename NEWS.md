@@ -1,3 +1,8 @@
+# brmsmargins 0.2.1
+
+* Added `seed` argument to `marginalcoef()` to allow for reproducible results.
+* Minor documentation edits.
+
 # brmsmargins 0.2.0
 
 * Fixed a bug when using `prediction()` with option `effects = "integrateoutRE"`
