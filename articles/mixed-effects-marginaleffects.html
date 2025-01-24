@@ -245,9 +245,14 @@ intercept and slope.</p>
 <span><span class="va">mlogit</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"bernoulli"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  prior <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="op">-</span><span class="fl">2.5</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"Intercept"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1.25</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"Intercept"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"x"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 4 of 4000 (0.0%) transitions ended with a divergence.</span></span>
+<span><span class="co">#&gt; Warning: 3 of 4000 (0.0%) transitions ended with a divergence.</span></span>
 <span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
 <span><span class="co">#&gt; Loading required package: rstan</span></span>
 <span><span class="co">#&gt; Loading required package: StanHeaders</span></span>
@@ -263,7 +268,7 @@ intercept and slope.</p>
 <span><span class="co">#&gt; Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mlogit</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: There were 4 divergent transitions after warmup. Increasing</span></span>
+<span><span class="co">#&gt; Warning: There were 3 divergent transitions after warmup. Increasing</span></span>
 <span><span class="co">#&gt; adapt_delta above 0.8 may help. See</span></span>
 <span><span class="co">#&gt; http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</span></span>
 <span><span class="co">#&gt;  Family: bernoulli </span></span>
@@ -276,14 +281,14 @@ intercept and slope.</p>
 <span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)        1.18      0.18     0.85     1.57 1.01     1326     2085</span></span>
-<span><span class="co">#&gt; sd(x)                0.54      0.27     0.05     1.05 1.02      386      955</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)    -0.18      0.40    -0.81     0.76 1.00     1778     1373</span></span>
+<span><span class="co">#&gt; sd(Intercept)        1.19      0.18     0.86     1.57 1.00      889     1096</span></span>
+<span><span class="co">#&gt; sd(x)                0.53      0.25     0.06     1.03 1.01      389      799</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)    -0.19      0.39    -0.80     0.74 1.00     1142     1032</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept    -2.48      0.19    -2.88    -2.12 1.00     1722     2017</span></span>
-<span><span class="co">#&gt; x             0.95      0.19     0.59     1.34 1.00     3183     2542</span></span>
+<span><span class="co">#&gt; Intercept    -2.49      0.19    -2.87    -2.15 1.00     1123     1540</span></span>
+<span><span class="co">#&gt; x             0.96      0.17     0.63     1.31 1.00     1785     1306</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -304,10 +309,49 @@ numerical integration are set via the argument, <code>k</code>, here
 <span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame1' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="16%">
+<col width="14%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.111</td>
+<td align="right">0.111</td>
+<td align="right">0.064</td>
+<td align="right">0.162</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 <p>We can follow a similar process getting discrete predictions at x
 held at 0 or 1. In this instance, the summary of predictions is more
 interesting as well, since they are at meaningfully different values of
@@ -319,15 +363,105 @@ data.</p>
 <span>  <span class="va">mlogit</span>,</span>
 <span>  at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span></code></pre></div>
+<span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span></code></pre></div>
 <p>Here is a summary of the predictions.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2</span><span class="op">$</span><span class="va">Summary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame2' not found</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2</span><span class="op">$</span><span class="va">Summary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="17%">
+<col width="16%">
+<col width="7%">
+<col width="10%">
+<col width="7%">
+<col width="5%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.119</td>
+<td align="right">0.117</td>
+<td align="right">0.074</td>
+<td align="right">0.173</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">0.229</td>
+<td align="right">0.228</td>
+<td align="right">0.166</td>
+<td align="right">0.304</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame2' not found</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="8%">
+<col width="6%">
+<col width="8%">
+<col width="8%">
+<col width="16%">
+<col width="15%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.111</td>
+<td align="right">0.11</td>
+<td align="right">0.064</td>
+<td align="right">0.165</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">d</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>M <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">ID</span>, <span class="va">x</span><span class="op">)</span><span class="op">]</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>M <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">M</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">x</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -369,10 +503,49 @@ difference is due to Monte Carlo variation only, but with
 <span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">10L</span>, seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1234</span>, <span class="fl">54321</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.error</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame.error' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.error</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="8%">
+<col width="7%">
+<col width="11%">
+<col width="9%">
+<col width="14%">
+<col width="13%">
+<col width="6%">
+<col width="8%">
+<col width="6%">
+<col width="4%">
+<col width="7%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">-0.599</td>
+<td align="right">0.033</td>
+<td align="right">-165.279</td>
+<td align="right">179.439</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 <p>This disappears when we use the same seed for each row of the data
 used for predictions. Here we get all zeros for the difference, as we
 would expect. Note that you do not need to specify a seed for each row
@@ -386,10 +559,49 @@ rows of the data.</p>
 <span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">10L</span>, seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1234</span>, <span class="fl">1234</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.noerror</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame.noerror' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.noerror</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="4%">
+<col width="6%">
+<col width="4%">
+<col width="4%">
+<col width="19%">
+<col width="17%">
+<col width="7%">
+<col width="11%">
+<col width="7%">
+<col width="6%">
+<col width="9%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="marginal-coefficients">Marginal Coefficients<a class="anchor" aria-label="anchor" href="#marginal-coefficients"></a>
@@ -404,7 +616,6 @@ the data.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## calculate marginal coefficients</span></span>
 <span><span class="va">mc.logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mlogit</span>, CI <span class="op">=</span> <span class="fl">0.95</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
 <span><span class="co">## calculate single level logistic regression</span></span>
 <span><span class="va">glm.logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span>, family <span class="op">=</span> <span class="st">"binomial"</span>, data <span class="op">=</span> <span class="va">d</span><span class="op">)</span></span>
@@ -419,8 +630,29 @@ the data.</p>
 <span>    MargCoefCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">LL</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">UL</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>  <span class="va">glm.logit</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span></span>
 <span>    GLMCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Est</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    GLMCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`2.5 %`</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`97.5 %`</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'mc.logit' not found</span></span></code></pre></div>
+<span>    GLMCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`2.5 %`</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`97.5 %`</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">MargCoef</th>
+<th align="left">MargCoefCI</th>
+<th align="left">GLMCoef</th>
+<th align="left">GLMCI</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">-2.018</td>
+<td align="left">[-2.351, -1.646]</td>
+<td align="left">-2.021</td>
+<td align="left">[-2.219, -1.833]</td>
+</tr>
+<tr class="even">
+<td align="left">0.799</td>
+<td align="left">[0.541, 1.074]</td>
+<td align="left">0.802</td>
+<td align="left">[0.561, 1.047]</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section level2">
@@ -458,6 +690,11 @@ intercept and slope.</p>
 <span><span class="va">mpois</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"poisson"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">dpoisson</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  prior <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="op">-</span><span class="fl">2.5</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"Intercept"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1.25</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"Intercept"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"x"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>, adapt_delta <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -472,14 +709,14 @@ intercept and slope.</p>
 <span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)        1.18      0.15     0.92     1.52 1.01     1265     1683</span></span>
-<span><span class="co">#&gt; sd(x)                0.36      0.21     0.02     0.77 1.01      232      955</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)    -0.05      0.42    -0.77     0.87 1.00     1382     1310</span></span>
+<span><span class="co">#&gt; sd(Intercept)        1.19      0.15     0.92     1.51 1.00     1394     1980</span></span>
+<span><span class="co">#&gt; sd(x)                0.39      0.19     0.04     0.75 1.00      426      784</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)    -0.07      0.39    -0.74     0.79 1.00     1347     1293</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept    -2.46      0.17    -2.83    -2.14 1.00     1375     1907</span></span>
-<span><span class="co">#&gt; x             0.97      0.15     0.68     1.27 1.00     2867     2782</span></span>
+<span><span class="co">#&gt; Intercept    -2.48      0.18    -2.86    -2.15 1.00     1221     2069</span></span>
+<span><span class="co">#&gt; x             0.97      0.15     0.69     1.28 1.00     2885     3135</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -497,10 +734,49 @@ derivative treating <code>x</code> as continuous.</p>
 <span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1.pois</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame1.pois' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1.pois</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="16%">
+<col width="14%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.332</td>
+<td align="right">0.312</td>
+<td align="right">0.137</td>
+<td align="right">0.694</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 <p>Here is an example treating <code>x</code> as discrete.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ame2.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
@@ -508,10 +784,49 @@ derivative treating <code>x</code> as continuous.</p>
 <span>  at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.pois</span><span class="op">$</span><span class="va">ContrastSummary</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame2.pois' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.pois</span><span class="op">$</span><span class="va">ContrastSummary</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="13%">
+<col width="12%">
+<col width="5%">
+<col width="7%">
+<col width="5%">
+<col width="4%">
+<col width="6%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.2934257</td>
+<td align="right">0.2766797</td>
+<td align="right">0.1317953</td>
+<td align="right">0.5968962</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="marginal-coefficients-1">Marginal Coefficients<a class="anchor" aria-label="anchor" href="#marginal-coefficients-1"></a>
@@ -524,7 +839,6 @@ level poisson regression that ignores the clustering in the data.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## calculate marginal coefficients</span></span>
 <span><span class="va">mc.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mpois</span>, CI <span class="op">=</span> <span class="fl">0.95</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
 <span><span class="co">## calculate single level logistic regression</span></span>
 <span><span class="va">glm.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span>, family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">d</span><span class="op">)</span></span>
@@ -539,8 +853,29 @@ level poisson regression that ignores the clustering in the data.</p>
 <span>    MargCoefCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">LL</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">UL</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>  <span class="va">glm.pois</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span></span>
 <span>    GLMCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Est</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    GLMCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`2.5 %`</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`97.5 %`</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'mc.pois' not found</span></span></code></pre></div>
+<span>    GLMCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`2.5 %`</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">`97.5 %`</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">MargCoef</th>
+<th align="left">MargCoefCI</th>
+<th align="left">GLMCoef</th>
+<th align="left">GLMCI</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">-1.782</td>
+<td align="left">[-2.243, -1.257]</td>
+<td align="left">-1.858</td>
+<td align="left">[-2.019, -1.705]</td>
+</tr>
+<tr class="even">
+<td align="left">0.991</td>
+<td align="left">[0.684, 1.271]</td>
+<td align="left">0.983</td>
+<td align="left">[0.802, 1.170]</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section level2">
@@ -549,49 +884,62 @@ level poisson regression that ignores the clustering in the data.</p>
 <p>Negative binomial models work the same way as for poisson models. We
 use the same dataset, just for demonstration.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mnb</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">dnb</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">12345</span>, code <span class="op">=</span> <span class="op">{</span></span>
+<span>    <span class="va">nGroups</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
+<span>    <span class="va">nObs</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
+<span>    <span class="va">theta.location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">nGroups</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">nGroups</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="va">theta.location</span> <span class="op">&lt;-</span> <span class="va">theta.location</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/chol.html" class="external-link">chol</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="op">-</span><span class="fl">.25</span>, <span class="op">-</span><span class="fl">.25</span>, <span class="fl">.5</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fl">2.5</span></span>
+<span>    <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">theta.location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
+<span>      x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, each <span class="op">=</span> <span class="va">nObs</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">nGroups</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">d</span><span class="op">[</span>, <span class="va">ID</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">nGroups</span><span class="op">)</span>, each <span class="op">=</span> <span class="va">nObs</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">nGroups</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">d</span><span class="op">[</span><span class="va">ID</span> <span class="op">==</span> <span class="va">i</span>, <span class="va">y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/stats/NegBinomial.html" class="external-link">rnbinom</a></span><span class="op">(</span></span>
+<span>        n <span class="op">=</span> <span class="va">nObs</span>,</span>
+<span>        size <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>        mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span>        <span class="op">]</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mnb</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"negbinomial"</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">dpoisson</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">dnb</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,</span>
-<span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>, adapt_delta <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 1638 of 4000 (41.0%) transitions ended with a divergence.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
-<span><span class="co">#&gt; Warning: 999 of 4000 (25.0%) transitions hit the maximum treedepth limit of 10.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
-<span><span class="co">#&gt; Warning: 1 of 4 chains have a NaN E-BFMI.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span></code></pre></div>
+<span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>, adapt_delta <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mnb</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Parts of the model have not converged (some Rhats are &gt; 1.05). Be</span></span>
-<span><span class="co">#&gt; careful when analysing the results! We recommend running more iterations and/or</span></span>
-<span><span class="co">#&gt; setting stronger priors.</span></span>
-<span><span class="co">#&gt; Warning: There were 1638 divergent transitions after warmup. Increasing</span></span>
-<span><span class="co">#&gt; adapt_delta above 0.99 may help. See</span></span>
-<span><span class="co">#&gt; http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</span></span>
 <span><span class="co">#&gt;  Family: negbinomial </span></span>
 <span><span class="co">#&gt;   Links: mu = log; shape = identity </span></span>
 <span><span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span></span>
-<span><span class="co">#&gt;    Data: dpoisson (Number of observations: 2000) </span></span>
+<span><span class="co">#&gt;    Data: dnb (Number of observations: 2000) </span></span>
 <span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
 <span><span class="co">#&gt;          total post-warmup draws = 4000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)        1.31      0.22     0.96     1.59 1.47        8       29</span></span>
-<span><span class="co">#&gt; sd(x)                0.42      0.35     0.00     0.85 2.33        5        4</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)    -0.49      0.47    -1.00     0.68 2.02        5        4</span></span>
+<span><span class="co">#&gt; sd(Intercept)        1.19      0.17     0.90     1.57 1.00     1342     2468</span></span>
+<span><span class="co">#&gt; sd(x)                0.52      0.21     0.07     0.91 1.00      415      539</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)    -0.30      0.33    -0.78     0.48 1.00     1810     1077</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept    -2.62      0.24    -2.99    -2.22 1.62        7        6</span></span>
-<span><span class="co">#&gt; x             1.09      0.17     0.75     1.31 1.49        7       83</span></span>
+<span><span class="co">#&gt; Intercept    -2.50      0.19    -2.90    -2.15 1.00     1605     2152</span></span>
+<span><span class="co">#&gt; x             1.01      0.17     0.68     1.37 1.00     2813     2758</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Further Distributional Parameters:</span></span>
-<span><span class="co">#&gt;                       Estimate                 Est.Error l-95% CI</span></span>
-<span><span class="co">#&gt; shape 615520000648203337728.00 1066245201681847287848.00    13.10</span></span>
-<span><span class="co">#&gt;                        u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; shape 2462080000000000000000.00 2.48        5       NA</span></span>
+<span><span class="co">#&gt;       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
+<span><span class="co">#&gt; shape  1552.78  38299.61     2.70   604.84 1.00     1691     1540</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -609,10 +957,49 @@ treating <code>x</code> as continuous.</p>
 <span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame1.nb' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="8%">
+<col width="6%">
+<col width="8%">
+<col width="8%">
+<col width="16%">
+<col width="15%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.295</td>
+<td align="right">0.28</td>
+<td align="right">0.114</td>
+<td align="right">0.635</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 <p>Here is an example treating <code>x</code> as discrete.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ame2.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
@@ -620,10 +1007,49 @@ treating <code>x</code> as continuous.</p>
 <span>  at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame2.nb' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="5%">
+<col width="8%">
+<col width="16%">
+<col width="15%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.256</td>
+<td align="right">0.245</td>
+<td align="right">0.1</td>
+<td align="right">0.506</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="marginal-coefficients-2">Marginal Coefficients<a class="anchor" aria-label="anchor" href="#marginal-coefficients-2"></a>
@@ -633,15 +1059,29 @@ function in <code>R</code> so we just show the population averaged
 values from <code>brms</code>.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## calculate marginal coefficients</span></span>
-<span><span class="va">mc.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mnb</span>, CI <span class="op">=</span> <span class="fl">0.95</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span></code></pre></div>
+<span><span class="va">mc.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mnb</span>, CI <span class="op">=</span> <span class="fl">0.95</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span></code></pre></div>
 <p>View the results.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>  <span class="va">mc.nb</span><span class="op">$</span><span class="va">Summary</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span></span>
 <span>    MargCoef <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%0.3f"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">M</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    MargCoefCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">LL</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">UL</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'mc.nb' not found</span></span></code></pre></div>
+<span>    MargCoefCI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"[%0.3f, %0.3f]"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">LL</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">UL</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">MargCoef</th>
+<th align="left">MargCoefCI</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">-1.797</td>
+<td align="left">[-2.262, -1.266]</td>
+</tr>
+<tr class="even">
+<td align="left">0.923</td>
+<td align="left">[0.566, 1.266]</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section level2">
@@ -877,6 +1317,7 @@ random intercept, anyways.</p>
 <span><span class="va">mlogitcent</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">xw</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">xw</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"bernoulli"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></code></pre></div>
 <p>Now comes the new part. Based on how we coded our predictor,
@@ -989,15 +1430,105 @@ ID</strong>.</p>
 <span>  wat <span class="op">=</span> <span class="va">usewat</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME xw"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">20L</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">Summary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame.cent' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">Summary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="17%">
+<col width="16%">
+<col width="7%">
+<col width="10%">
+<col width="7%">
+<col width="5%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.122</td>
+<td align="right">0.119</td>
+<td align="right">0.058</td>
+<td align="right">0.218</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">0.232</td>
+<td align="right">0.229</td>
+<td align="right">0.124</td>
+<td align="right">0.367</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
 <p>Just as in other examples, we can get a summary of the contrast of
 these two values, our AME.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame.cent' not found</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="6%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="16%">
+<col width="14%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="9%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.11</td>
+<td align="right">0.108</td>
+<td align="right">0.047</td>
+<td align="right">0.188</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME xw</td>
+</tr></tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="interactions-and-marginal-effects">Interactions and Marginal Effects<a class="anchor" aria-label="anchor" href="#interactions-and-marginal-effects"></a>
@@ -1087,6 +1618,7 @@ The model can be fit as in the following code.</p>
 <code class="sourceCode R"><span><span class="va">mlogitcentint</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">xw</span> <span class="op">*</span> <span class="va">group</span> <span class="op">+</span> <span class="va">xb</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">xw</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"bernoulli"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></code></pre></div>
 <p>We will generate average marginal predicted probabilities for each
@@ -1193,10 +1725,47 @@ grid of values in <code>use.at</code> in the following table.</p>
 <span>  contrasts <span class="op">=</span> <span class="va">contr.mat</span>, CI <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.02</span>, <span class="fl">.02</span><span class="op">)</span>, MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.05</span>, <span class="fl">.05</span><span class="op">)</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">20L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.centint</span><span class="op">$</span><span class="va">Summary</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">M</span>, <span class="va">LL</span>, <span class="va">UL</span>, <span class="va">CI</span>, <span class="va">CIType</span><span class="op">)</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame.centint' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.centint</span><span class="op">$</span><span class="va">Summary</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">M</span>, <span class="va">LL</span>, <span class="va">UL</span>, <span class="va">CI</span>, <span class="va">CIType</span><span class="op">)</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.117</td>
+<td align="right">0.051</td>
+<td align="right">0.190</td>
+<td align="right">0.95</td>
+<td align="left">HDI</td>
+</tr>
+<tr class="even">
+<td align="right">0.144</td>
+<td align="right">0.074</td>
+<td align="right">0.221</td>
+<td align="right">0.95</td>
+<td align="left">HDI</td>
+</tr>
+<tr class="odd">
+<td align="right">0.045</td>
+<td align="right">0.017</td>
+<td align="right">0.080</td>
+<td align="right">0.95</td>
+<td align="left">HDI</td>
+</tr>
+<tr class="even">
+<td align="right">0.265</td>
+<td align="right">0.165</td>
+<td align="right">0.368</td>
+<td align="right">0.95</td>
+<td align="left">HDI</td>
+</tr>
+</tbody>
+</table>
 <p>Finally we can look at the contrast summary to answer our three
 questions of interest: the two simple AMEs of within person stressor
 exposure and the difference between intervention conditions in those
@@ -1228,8 +1797,76 @@ is associated with their sleep that night, and that the emotion
 regulation intervention moderates the association between within person
 stressor exposure and sleep.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.centint</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame.centint' not found</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.centint</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="9%">
+<col width="8%">
+<col width="4%">
+<col width="5%">
+<col width="11%">
+<col width="26%">
+<col width="11%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">-0.071</td>
+<td align="right">-0.068</td>
+<td align="right">-0.139</td>
+<td align="right">-0.012</td>
+<td align="right">3.475</td>
+<td align="right">73.375</td>
+<td align="right">0.95</td>
+<td align="left">HDI</td>
+<td align="left">[-0.02, 0.02]</td>
+<td align="left">[-Inf, -0.05] | [0.05, Inf]</td>
+<td align="left">AME xw: Grp 0</td>
+</tr>
+<tr class="even">
+<td align="right">0.122</td>
+<td align="right">0.120</td>
+<td align="right">0.038</td>
+<td align="right">0.209</td>
+<td align="right">0.825</td>
+<td align="right">95.350</td>
+<td align="right">0.95</td>
+<td align="left">HDI</td>
+<td align="left">[-0.02, 0.02]</td>
+<td align="left">[-Inf, -0.05] | [0.05, Inf]</td>
+<td align="left">AME xw: Grp 1</td>
+</tr>
+<tr class="odd">
+<td align="right">0.193</td>
+<td align="right">0.190</td>
+<td align="right">0.097</td>
+<td align="right">0.298</td>
+<td align="right">0.000</td>
+<td align="right">99.950</td>
+<td align="right">0.95</td>
+<td align="left">HDI</td>
+<td align="left">[-0.02, 0.02]</td>
+<td align="left">[-Inf, -0.05] | [0.05, Inf]</td>
+<td align="left">delta AME xw</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

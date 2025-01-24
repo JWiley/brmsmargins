@@ -266,6 +266,7 @@ using <code>brms</code>.</p>
 <span>  <span class="va">vs</span> <span class="op">~</span> <span class="va">am</span> <span class="op">+</span> <span class="va">mpg</span>, data <span class="op">=</span> <span class="va">mtcars</span>,</span>
 <span>  family <span class="op">=</span> <span class="st">"bernoulli"</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: rstan</span></span>
 <span><span class="co">#&gt; Loading required package: StanHeaders</span></span>
@@ -487,6 +488,7 @@ outcomes. We use a dataset drawn from: <a href="https://stats.oarc.ucla.edu/r/da
 <span>  <span class="va">num_awards</span> <span class="op">~</span> <span class="va">prog</span> <span class="op">+</span> <span class="va">math</span>, data <span class="op">=</span> <span class="va">d</span>,</span>
 <span>  family <span class="op">=</span> <span class="st">"poisson"</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">bayes.poisson</span><span class="op">)</span></span>
@@ -713,52 +715,35 @@ awards.</p>
 <h2 id="ames-for-negative-binomial-regression">AMEs for Negative Binomial Regression<a class="anchor" aria-label="anchor" href="#ames-for-negative-binomial-regression"></a>
 </h2>
 <p>Here is a short example for Negative Binomial regression used for
-count outcomes. We use the same setup as for the Poisson regression
-example.</p>
+count outcomes.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv"</span><span class="op">)</span></span>
-<span><span class="va">d</span><span class="op">$</span><span class="va">prog</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">prog</span>, levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"General"</span>, <span class="st">"Academic"</span>, <span class="st">"Vocational"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://stats.oarc.ucla.edu/stat/data/fish.csv"</span><span class="op">)</span></span>
+<span><span class="va">d</span><span class="op">[</span>, <span class="va">nofish</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">nofish</span>, levels <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no fish"</span>, <span class="st">"fish"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">bayes.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
-<span>  <span class="va">num_awards</span> <span class="op">~</span> <span class="va">prog</span> <span class="op">+</span> <span class="va">math</span>, data <span class="op">=</span> <span class="va">d</span>,</span>
+<span>  <span class="va">count</span> <span class="op">~</span> <span class="va">nofish</span> <span class="op">+</span> <span class="va">xb</span>, data <span class="op">=</span> <span class="va">d</span>,</span>
 <span>  family <span class="op">=</span> <span class="st">"negbinomial"</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 569 of 4000 (14.0%) transitions ended with a divergence.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
-<span><span class="co">#&gt; Warning: 3431 of 4000 (86.0%) transitions hit the maximum treedepth limit of 10.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
-<span><span class="co">#&gt; Warning: 2 of 4 chains have a NaN E-BFMI.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span></code></pre></div>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">bayes.nb</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Parts of the model have not converged (some Rhats are &gt; 1.05). Be</span></span>
-<span><span class="co">#&gt; careful when analysing the results! We recommend running more iterations and/or</span></span>
-<span><span class="co">#&gt; setting stronger priors.</span></span>
-<span><span class="co">#&gt; Warning: There were 569 divergent transitions after warmup. Increasing</span></span>
-<span><span class="co">#&gt; adapt_delta above 0.8 may help. See</span></span>
-<span><span class="co">#&gt; http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</span></span>
 <span><span class="co">#&gt;  Family: negbinomial </span></span>
 <span><span class="co">#&gt;   Links: mu = log; shape = identity </span></span>
-<span><span class="co">#&gt; Formula: num_awards ~ prog + math </span></span>
-<span><span class="co">#&gt;    Data: d (Number of observations: 200) </span></span>
+<span><span class="co">#&gt; Formula: count ~ nofish + xb </span></span>
+<span><span class="co">#&gt;    Data: d (Number of observations: 250) </span></span>
 <span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
 <span><span class="co">#&gt;          total post-warmup draws = 4000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
-<span><span class="co">#&gt;                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept         -7.43      2.17    -9.81    -5.00  Inf        4       NA</span></span>
-<span><span class="co">#&gt; progAcademic       2.68      2.02     0.67     5.96  Inf        4       NA</span></span>
-<span><span class="co">#&gt; progVocational    -0.49      1.26    -2.66     0.42  Inf        4       NA</span></span>
-<span><span class="co">#&gt; math               0.10      0.03     0.06     0.13  Inf        4       NA</span></span>
+<span><span class="co">#&gt;            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
+<span><span class="co">#&gt; Intercept     -1.38      0.21    -1.78    -0.97 1.00     2936     2491</span></span>
+<span><span class="co">#&gt; nofishfish    -0.08      0.25    -0.56     0.42 1.00     3667     2776</span></span>
+<span><span class="co">#&gt; xb             1.24      0.10     1.06     1.43 1.00     3223     3165</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Further Distributional Parameters:</span></span>
-<span><span class="co">#&gt;                                    Estimate</span></span>
-<span><span class="co">#&gt; shape 6464950012624176290022006848644662.00</span></span>
-<span><span class="co">#&gt;                                    Est.Error          l-95% CI</span></span>
-<span><span class="co">#&gt; shape 11199021826335432527262864286824266.00 21779500000000.00</span></span>
-<span><span class="co">#&gt;                                     u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; shape 25859800000000002248084824408282220.00  Inf        4       NA</span></span>
+<span><span class="co">#&gt;       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
+<span><span class="co">#&gt; shape     0.72      0.12     0.52     0.99 1.00     3464     2956</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -769,23 +754,23 @@ type.</p>
 <code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">.001</span></span>
 <span><span class="va">ame1.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
 <span>  <span class="va">bayes.nb</span>,</span>
-<span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>math <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span> <span class="op">+</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME math"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>xb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span> <span class="op">+</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME xb"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
 <col width="7%">
 <col width="7%">
 <col width="7%">
-<col width="7%">
+<col width="9%">
 <col width="15%">
 <col width="14%">
 <col width="6%">
 <col width="9%">
 <col width="6%">
 <col width="5%">
-<col width="11%">
+<col width="9%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">M</th>
@@ -801,42 +786,39 @@ type.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.641</td>
-<td align="right">0.189</td>
-<td align="right">0.042</td>
-<td align="right">2.145</td>
+<td align="right">5.623</td>
+<td align="right">5.296</td>
+<td align="right">2.654</td>
+<td align="right">11.735</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
 <td align="left">HDI</td>
 <td align="left">NA</td>
 <td align="left">NA</td>
-<td align="left">AME math</td>
+<td align="left">AME xb</td>
 </tr></tbody>
 </table>
 <p>AME for a categorical variable. Here we calculate pairwise contrasts
-for all three program types. These are the predicted number of
-awards.</p>
+for no fish versus fish. The estimate is how many are caught.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ame2.nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
 <span>  <span class="va">bayes.nb</span>,</span>
 <span>  at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    prog <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
-<span>                  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"General"</span>, <span class="st">"Academic"</span>, <span class="st">"Vocational"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    nofish <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">1</span>,</span>
+<span>                  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no fish"</span>, <span class="st">"fish"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
-<span>    <span class="st">"AME General v Academic"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>,</span>
-<span>    <span class="st">"AME General v Vocational"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>,</span>
-<span>    <span class="st">"AME Academic v Vocational"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="st">"AME No Fish v Fish"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>    </span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.nb</span><span class="op">$</span><span class="va">Summary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
 <col width="8%">
 <col width="8%">
 <col width="8%">
-<col width="10%">
+<col width="8%">
 <col width="17%">
-<col width="15%">
+<col width="16%">
 <col width="7%">
 <col width="10%">
 <col width="7%">
@@ -856,10 +838,10 @@ awards.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.210</td>
-<td align="right">0.218</td>
-<td align="right">0.061</td>
-<td align="right">0.345</td>
+<td align="right">4.523</td>
+<td align="right">4.367</td>
+<td align="right">2.485</td>
+<td align="right">7.975</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -868,22 +850,10 @@ awards.</p>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">7.051</td>
-<td align="right">2.021</td>
-<td align="right">0.676</td>
-<td align="right">23.486</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">0.99</td>
-<td align="left">HDI</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="right">0.209</td>
-<td align="right">0.195</td>
-<td align="right">0.015</td>
-<td align="right">0.432</td>
+<td align="right">4.274</td>
+<td align="right">4.043</td>
+<td align="right">1.695</td>
+<td align="right">8.816</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -895,19 +865,19 @@ awards.</p>
 </table>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="7%">
-<col width="7%">
-<col width="8%">
-<col width="7%">
-<col width="12%">
-<col width="11%">
 <col width="5%">
-<col width="7%">
+<col width="6%">
+<col width="8%">
+<col width="6%">
+<col width="13%">
+<col width="12%">
+<col width="5%">
+<col width="8%">
 <col width="5%">
 <col width="4%">
-<col width="26%">
+<col width="21%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">M</th>
@@ -922,47 +892,19 @@ awards.</p>
 <th align="left">MID</th>
 <th align="left">Label</th>
 </tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">-6.841</td>
-<td align="right">-1.803</td>
-<td align="right">-23.425</td>
-<td align="right">-0.331</td>
+<tbody><tr class="odd">
+<td align="right">0.25</td>
+<td align="right">0.343</td>
+<td align="right">-3.065</td>
+<td align="right">3.026</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
 <td align="left">HDI</td>
 <td align="left">NA</td>
 <td align="left">NA</td>
-<td align="left">AME General v Academic</td>
-</tr>
-<tr class="even">
-<td align="right">0.001</td>
-<td align="right">-0.045</td>
-<td align="right">-0.110</td>
-<td align="right">0.206</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">0.99</td>
-<td align="left">HDI</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">AME General v Vocational</td>
-</tr>
-<tr class="odd">
-<td align="right">6.842</td>
-<td align="right">1.851</td>
-<td align="right">0.244</td>
-<td align="right">23.421</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">0.99</td>
-<td align="left">HDI</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">AME Academic v Vocational</td>
-</tr>
-</tbody>
+<td align="left">AME No Fish v Fish</td>
+</tr></tbody>
 </table>
 </div>
 <div class="section level2">

@@ -135,6 +135,7 @@ model. We will simulate a dataset.</p>
 <span>  <span class="va">sigma</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">+</span> <span class="va">grp</span><span class="op">)</span>,</span>
 <span>  family <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: rstan</span></span>
@@ -421,7 +422,7 @@ fit the mixed effects location scale model.</p>
 <span>    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">nGroups</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="va">dmixed</span><span class="op">[</span><span class="va">ID</span> <span class="op">==</span> <span class="va">i</span>, <span class="va">y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span></span>
 <span>        n <span class="op">=</span> <span class="va">nObs</span>,</span>
-<span>        mean <span class="op">=</span> <span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">*</span> <span class="va">x</span>,</span>
+<span>        mean <span class="op">=</span>       <span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">*</span> <span class="va">x</span>,</span>
 <span>        sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">theta.location</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span>        <span class="op">]</span></span>
 <span>    <span class="op">}</span></span>
@@ -433,9 +434,18 @@ fit the mixed effects location scale model.</p>
 <span>  <span class="va">sigma</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  family <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">dmixed</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  prior <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="op">-</span><span class="fl">2.5</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"Intercept"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1.25</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"Intercept"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"x"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"Intercept"</span>, dpar <span class="op">=</span> <span class="st">"sigma"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"b"</span>, dpar <span class="op">=</span> <span class="st">"sigma"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1.25</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"Intercept"</span>, group <span class="op">=</span> <span class="st">"ID"</span>, dpar <span class="op">=</span> <span class="st">"sigma"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"x"</span>, group <span class="op">=</span> <span class="st">"ID"</span>, dpar <span class="op">=</span> <span class="st">"sigma"</span><span class="op">)</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 967 of 4000 (24.0%) transitions hit the maximum treedepth limit of 10.</span></span>
+<span><span class="co">#&gt; Warning: 326 of 4000 (8.0%) transitions hit the maximum treedepth limit of 10.</span></span>
 <span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span></code></pre></div>
 <p>Note that this model has not achieved good convergence, but as it
 already took about 6 minutes to run, for the sake of demonstration we
@@ -443,9 +453,6 @@ continue. In practice, one would want to make adjustments to ensure good
 convergence and an adequate effective sample size.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ls.me</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Parts of the model have not converged (some Rhats are &gt; 1.05). Be</span></span>
-<span><span class="co">#&gt; careful when analysing the results! We recommend running more iterations and/or</span></span>
-<span><span class="co">#&gt; setting stronger priors.</span></span>
 <span><span class="co">#&gt;  Family: gaussian </span></span>
 <span><span class="co">#&gt;   Links: mu = identity; sigma = log </span></span>
 <span><span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span></span>
@@ -457,26 +464,26 @@ convergence and an adequate effective sample size.</p>
 <span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)                    1.19      0.09     1.04     1.38 1.01      363</span></span>
-<span><span class="co">#&gt; sd(x)                            0.42      0.04     0.35     0.51 1.00      720</span></span>
-<span><span class="co">#&gt; sd(sigma_Intercept)              1.26      0.09     1.09     1.46 1.01      450</span></span>
-<span><span class="co">#&gt; sd(sigma_x)                      0.50      0.05     0.40     0.61 1.00     1256</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)                -0.40      0.12    -0.61    -0.16 1.00      724</span></span>
-<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.56    -0.13 1.00     1486</span></span>
+<span><span class="co">#&gt; sd(Intercept)                    1.19      0.09     1.03     1.38 1.04      179</span></span>
+<span><span class="co">#&gt; sd(x)                            0.43      0.04     0.35     0.52 1.00      653</span></span>
+<span><span class="co">#&gt; sd(sigma_Intercept)              1.27      0.10     1.10     1.47 1.01      326</span></span>
+<span><span class="co">#&gt; sd(sigma_x)                      0.50      0.06     0.40     0.62 1.00     1008</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)                -0.39      0.12    -0.61    -0.16 1.01      532</span></span>
+<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.56    -0.13 1.00     1294</span></span>
 <span><span class="co">#&gt;                              Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)                     765</span></span>
-<span><span class="co">#&gt; sd(x)                            1555</span></span>
-<span><span class="co">#&gt; sd(sigma_Intercept)               949</span></span>
-<span><span class="co">#&gt; sd(sigma_x)                      2447</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)                 1206</span></span>
-<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)     2235</span></span>
+<span><span class="co">#&gt; sd(Intercept)                     564</span></span>
+<span><span class="co">#&gt; sd(x)                            1330</span></span>
+<span><span class="co">#&gt; sd(sigma_Intercept)               890</span></span>
+<span><span class="co">#&gt; sd(sigma_x)                      1703</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)                 1174</span></span>
+<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)     2028</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept          -2.55      0.13    -2.83    -2.31 1.06       70      185</span></span>
-<span><span class="co">#&gt; sigma_Intercept    -1.47      0.13    -1.71    -1.22 1.01      242      491</span></span>
-<span><span class="co">#&gt; x                   0.94      0.06     0.82     1.05 1.01      605     1639</span></span>
-<span><span class="co">#&gt; sigma_x             0.97      0.06     0.85     1.10 1.00     1208     2288</span></span>
+<span><span class="co">#&gt; Intercept          -2.56      0.12    -2.80    -2.32 1.03       92      169</span></span>
+<span><span class="co">#&gt; sigma_Intercept    -1.48      0.12    -1.74    -1.25 1.02      180      516</span></span>
+<span><span class="co">#&gt; x                   0.94      0.06     0.83     1.05 1.00      512     1229</span></span>
+<span><span class="co">#&gt; sigma_x             0.97      0.06     0.85     1.09 1.00     1229     1765</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -525,10 +532,10 @@ the fixed effects for the AME for the scale parameter,
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.408</td>
 <td align="right">0.405</td>
-<td align="right">0.281</td>
-<td align="right">0.565</td>
+<td align="right">0.402</td>
+<td align="right">0.284</td>
+<td align="right">0.559</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -549,10 +556,49 @@ the AME.</p>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  dpar <span class="op">=</span> <span class="st">"sigma"</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_2[1,1], L_2[2,1], L_2[1,2], L_2[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame1b.lsme' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="16%">
+<col width="14%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.801</td>
+<td align="right">0.766</td>
+<td align="right">0.356</td>
+<td align="right">1.582</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 <p>Here is an example treating <code>x</code> as discrete, using only
 the fixed effects.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -564,10 +610,10 @@ the fixed effects.</p>
 <span>  effects <span class="op">=</span> <span class="st">"fixedonly"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2a.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
 <col width="11%">
-<col width="10%">
+<col width="11%">
 <col width="11%">
 <col width="11%">
 <col width="13%">
@@ -592,10 +638,10 @@ the fixed effects.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.3786418</td>
-<td align="right">0.376048</td>
-<td align="right">0.2635285</td>
-<td align="right">0.5200144</td>
+<td align="right">0.3751833</td>
+<td align="right">0.3732505</td>
+<td align="right">0.2614079</td>
+<td align="right">0.5074998</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -614,10 +660,49 @@ effects, likely the more appropriate estimate for most use cases.</p>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME x"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  dpar <span class="op">=</span> <span class="st">"sigma"</span>,</span>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `[.data.table`(data, , ..n): column(s) not found: [L_2[1,1], L_2[2,1], L_2[1,2], L_2[2,2]]</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'ame2b.lsme' not found</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="10%">
+<col width="13%">
+<col width="12%">
+<col width="5%">
+<col width="7%">
+<col width="5%">
+<col width="4%">
+<col width="6%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.7096137</td>
+<td align="right">0.6790394</td>
+<td align="right">0.3412707</td>
+<td align="right">1.410367</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME x</td>
+</tr></tbody>
+</table>
 <p>This also is relatively close calculating all the individual standard
 deviations and taking their differences, then averaging.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
