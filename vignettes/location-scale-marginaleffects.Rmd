@@ -16,17 +16,18 @@ vignette: >
 
 
 
-```r
+``` r
 library(knitr)
 library(data.table)
-#> data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com
+#> data.table 1.16.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
 #> Loading required package: Rcpp
-#> Loading 'brms' package (version 2.17.0). Useful instructions
+#> Loading 'brms' package (version 2.22.0). Useful instructions
 #> can be found by typing help('brms'). A more detailed introduction
 #> to the package is available through vignette('brms_overview').
 #> 
 #> Attaching package: 'brms'
+#> 
 #> The following object is masked from 'package:stats':
 #> 
 #>     ar
@@ -63,7 +64,7 @@ To start with, we will look at a fixed effects only location scale model.
 We will simulate a dataset.
 
 
-```r
+``` r
 d <- withr::with_seed(
   seed = 12345, code = {
     nObs <- 1000L
@@ -83,12 +84,23 @@ ls.fe <- brm(bf(
   data = d, seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Compiling Stan program...
+#> Loading required package: rstan
+#> Loading required package: StanHeaders
+#> 
+#> rstan version 2.32.6 (Stan version 2.32.2)
+#> For execution on a local, multicore CPU with excess RAM we recommend calling
+#> options(mc.cores = parallel::detectCores()).
+#> To avoid recompilation of unchanged Stan programs, we recommend calling
+#> rstan_options(auto_write = TRUE)
+#> For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,
+#> change `threads_per_chain` option:
+#> rstan_options(threads_per_chain = 1)
+#> Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file
 ```
 
 
 
-```r
+``` r
 summary(ls.fe)
 #>  Family: gaussian 
 #>   Links: mu = identity; sigma = log 
@@ -98,14 +110,14 @@ summary(ls.fe)
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
-#> Population-Level Effects: 
+#> Regression Coefficients:
 #>                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept          -0.09      0.12    -0.33     0.15 1.00     4829     3553
-#> sigma_Intercept     1.01      0.03     0.94     1.07 1.00     4696     3023
-#> x                   1.62      0.45     0.75     2.49 1.00     4470     2830
-#> grp                 1.02      0.35     0.34     1.69 1.00     2526     2684
-#> sigma_x             0.85      0.09     0.67     1.02 1.00     4878     3309
-#> sigma_grp           1.01      0.05     0.92     1.09 1.00     4425     2871
+#> Intercept          -0.09      0.13    -0.34     0.16 1.00     5154     3686
+#> sigma_Intercept     1.01      0.03     0.95     1.07 1.00     4915     2872
+#> x                   1.62      0.46     0.72     2.49 1.00     3944     2769
+#> grp                 1.02      0.34     0.34     1.67 1.00     3055     2998
+#> sigma_x             0.85      0.09     0.67     1.02 1.00     4847     2766
+#> sigma_grp           1.01      0.04     0.92     1.09 1.00     4862     2775
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -121,7 +133,7 @@ regression coefficients.
 Here is an example continuous AME.
 
 
-```r
+``` r
 h <- .001
 ame1 <- brmsmargins(
   ls.fe,
@@ -135,14 +147,16 @@ knitr::kable(ame1$ContrastSummary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 1.623| 1.631| 0.746| 2.492|          NA|         NA| 0.95|ETI    |NA   |NA  |AME x |
+|     M|   Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 1.619| 1.629| 0.717| 2.49|          NA|         NA| 0.95|ETI    |NA   |NA  |AME x |
+
+
 
 Here is an AME for discrete / categorical predictors.
 
 
-```r
+``` r
 ame2 <- brmsmargins(
   ls.fe,
   at = data.frame(grp = c(0, 1)),
@@ -155,9 +169,11 @@ knitr::kable(ame2$ContrastSummary, digits = 3)
 
 
 
-|     M|  Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
-|-----:|----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|:-------|
-| 1.016| 1.02| 0.343| 1.69|          NA|         NA| 0.95|ETI    |NA   |NA  |AME grp |
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-------|
+| 1.023| 1.033| 0.338| 1.672|          NA|         NA| 0.95|ETI    |NA   |NA  |AME grp |
+
+
 
 In `brms` the scale parameter for Gaussian models,
 `sigma` uses a log link function. Therefore when back
@@ -169,7 +185,7 @@ We specify that we want AMEs for `sigma` by setting:
 `dpar = "sigma"`. Here is a continuous example.
 
 
-```r
+``` r
 h <- .001
 ame3 <- brmsmargins(
   ls.fe,
@@ -185,12 +201,14 @@ knitr::kable(ame3$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 4.463| 4.456| 3.488| 5.442|          NA|         NA| 0.95|ETI    |NA   |NA  |AME x |
+| 4.473| 4.468| 3.491| 5.495|          NA|         NA| 0.95|ETI    |NA   |NA  |AME x |
+
+
 
 Here is a discrete / categorical example.
 
 
-```r
+``` r
 ame4 <- brmsmargins(
   ls.fe,
   at = data.frame(grp = c(0, 1)),
@@ -205,7 +223,9 @@ knitr::kable(ame4$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-------|
-| 4.907| 4.905| 4.409| 5.436|          NA|         NA| 0.95|ETI    |NA   |NA  |AME grp |
+| 4.905| 4.898| 4.391| 5.433|          NA|         NA| 0.95|ETI    |NA   |NA  |AME grp |
+
+
 
 These results are comparable to the mean difference in standard 
 deviation by `grp`. Note that in general, these may not closely 
@@ -214,7 +234,7 @@ to be uncorrelated, the simple unadjusted results match the
 regression results closely.
 
 
-```r
+``` r
 d[, .(SD = sd(y)), by = grp][, diff(SD)]
 ```
 
@@ -226,7 +246,7 @@ We will simulate some multilevel location scale data for model
 and fit the mixed effects location scale model.
 
 
-```r
+``` r
 dmixed <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -260,8 +280,7 @@ ls.me <- brm(bf(
   data = dmixed, seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Compiling Stan program...
-#> Warning: 102 of 4000 (3.0%) transitions hit the maximum treedepth limit of 10.
+#> Warning: 967 of 4000 (24.0%) transitions hit the maximum treedepth limit of 10.
 #> See https://mc-stan.org/misc/warnings for details.
 ```
 
@@ -272,8 +291,11 @@ one would want to make adjustments to ensure good convergence
 and an adequate effective sample size.
 
 
-```r
+``` r
 summary(ls.me)
+#> Warning: Parts of the model have not converged (some Rhats are > 1.05). Be
+#> careful when analysing the results! We recommend running more iterations and/or
+#> setting stronger priors.
 #>  Family: gaussian 
 #>   Links: mu = identity; sigma = log 
 #> Formula: y ~ 1 + x + (1 + x | ID) 
@@ -282,29 +304,29 @@ summary(ls.me)
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
-#> Group-Level Effects: 
+#> Multilevel Hyperparameters:
 #> ~ID (Number of levels: 100) 
 #>                              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-#> sd(Intercept)                    1.19      0.09     1.03     1.37 1.02      211
-#> sd(x)                            0.42      0.04     0.35     0.51 1.00      862
-#> sd(sigma_Intercept)              1.27      0.09     1.11     1.47 1.01      536
-#> sd(sigma_x)                      0.50      0.05     0.41     0.61 1.00     1569
-#> cor(Intercept,x)                -0.40      0.12    -0.61    -0.16 1.00      577
-#> cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.55    -0.13 1.00     1516
+#> sd(Intercept)                    1.19      0.09     1.04     1.38 1.01      363
+#> sd(x)                            0.42      0.04     0.35     0.51 1.00      720
+#> sd(sigma_Intercept)              1.26      0.09     1.09     1.46 1.01      450
+#> sd(sigma_x)                      0.50      0.05     0.40     0.61 1.00     1256
+#> cor(Intercept,x)                -0.40      0.12    -0.61    -0.16 1.00      724
+#> cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.56    -0.13 1.00     1486
 #>                              Tail_ESS
-#> sd(Intercept)                     519
-#> sd(x)                            1634
-#> sd(sigma_Intercept)               819
-#> sd(sigma_x)                      2418
-#> cor(Intercept,x)                 1159
-#> cor(sigma_Intercept,sigma_x)     2200
+#> sd(Intercept)                     765
+#> sd(x)                            1555
+#> sd(sigma_Intercept)               949
+#> sd(sigma_x)                      2447
+#> cor(Intercept,x)                 1206
+#> cor(sigma_Intercept,sigma_x)     2235
 #> 
-#> Population-Level Effects: 
+#> Regression Coefficients:
 #>                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept          -2.55      0.12    -2.77    -2.33 1.03      105      300
-#> sigma_Intercept    -1.48      0.13    -1.72    -1.22 1.02      217      388
-#> x                   0.94      0.06     0.83     1.06 1.00      572     1550
-#> sigma_x             0.97      0.06     0.85     1.09 1.00     1031     1892
+#> Intercept          -2.55      0.13    -2.83    -2.31 1.06       70      185
+#> sigma_Intercept    -1.47      0.13    -1.71    -1.22 1.01      242      491
+#> x                   0.94      0.06     0.82     1.05 1.01      605     1639
+#> sigma_x             0.97      0.06     0.85     1.10 1.00     1208     2288
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -319,7 +341,7 @@ Here is an example treating `x` as continuous using only the
 fixed effects for the AME for the scale parameter, `sigma`.
 
 
-```r
+``` r
 h <- .001
 ame1a.lsme <- brmsmargins(
   ls.me,
@@ -335,13 +357,15 @@ knitr::kable(ame1a.lsme$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.408| 0.404| 0.283| 0.555|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+| 0.408| 0.405| 0.281| 0.565|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+
 
 Here is the example again, this time integrating out the random effects,
 which results in a considerable difference in the estimate of the AME.
 
 
-```r
+``` r
 h <- .001
 ame1b.lsme <- brmsmargins(
   ls.me,
@@ -349,22 +373,18 @@ ame1b.lsme <- brmsmargins(
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
   dpar = "sigma",
   effects = "integrateoutRE", k = 100L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_2[1,1], L_2[2,1], L_2[1,2], L_2[2,2]]
 
 knitr::kable(ame1b.lsme$ContrastSummary, digits = 3)
+#> Error: object 'ame1b.lsme' not found
 ```
-
-
-
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.804| 0.766| 0.391| 1.575|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 Here is an example treating `x` as discrete, using only 
 the fixed effects.
 
 
 
-```r
+``` r
 ame2a.lsme <- brmsmargins(
   ls.me,
   at = data.frame(x = c(0, 1)),
@@ -377,37 +397,35 @@ knitr::kable(ame2a.lsme$ContrastSummary)
 
 
 
-|         M|       Mdn|        LL|       UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|---------:|---------:|---------:|--------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.3782473| 0.3750965| 0.2673526| 0.509232|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|         M|      Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|---------:|--------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.3786418| 0.376048| 0.2635285| 0.5200144|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+
+
 
 Here is the example again, this time integrating out the random effects,
 likely the more appropriate estimate for most use cases.
 
 
-```r
+``` r
 ame2b.lsme <- brmsmargins(
   ls.me,
   at = data.frame(x = c(0, 1)),
   contrasts = cbind("AME x" = c(-1, 1)),
   dpar = "sigma",
   effects = "integrateoutRE", k = 100L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_2[1,1], L_2[2,1], L_2[1,2], L_2[2,2]]
 
 knitr::kable(ame2b.lsme$ContrastSummary)
+#> Error: object 'ame2b.lsme' not found
 ```
-
-
-
-|         M|       Mdn|        LL|       UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|---------:|---------:|---------:|--------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.7127988| 0.6795497| 0.3513727| 1.382269|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 This also is relatively close calculating all the 
 individual standard deviations and taking their differences,
 then averaging.
 
 
-```r
+``` r
 dmixed[, .(SD = sd(y)), by = .(ID, x)
        ][, .(SDdiff = diff(SD)), by = ID][, mean(SDdiff)]
 #> [1] 0.6281889

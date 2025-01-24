@@ -16,17 +16,18 @@ vignette: >
 
 
 
-```r
+``` r
 library(knitr)
 library(data.table)
-#> data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com
+#> data.table 1.16.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
 #> Loading required package: Rcpp
-#> Loading 'brms' package (version 2.17.0). Useful instructions
+#> Loading 'brms' package (version 2.22.0). Useful instructions
 #> can be found by typing help('brms'). A more detailed introduction
 #> to the package is available through vignette('brms_overview').
 #> 
 #> Attaching package: 'brms'
+#> 
 #> The following object is masked from 'package:stats':
 #> 
 #>     ar
@@ -52,7 +53,7 @@ can look at a linear regression model of the association between
 for `mpg`.
 
 
-```r
+``` r
 m.linear <- lm(hp ~ am + mpg, data = mtcars)
 
 coef(m.linear)["mpg"]
@@ -68,7 +69,7 @@ predicted difference in the outcome for a one unit difference in `mpg`
 from 0 to 1, holding `am = 0`.
 
 
-```r
+``` r
 yhat <- predict(
   m.linear,
   newdata = data.frame(am = 0, mpg = c(0, 1)),
@@ -83,7 +84,7 @@ We can look at the same estimate but moving `mpg` from
 10 to 11 instead 0 to 1, holding `am = 1`.
 
 
-```r
+``` r
 yhat <- predict(
   m.linear,
   newdata = data.frame(am = 1, mpg = c(10, 11)),
@@ -106,7 +107,7 @@ probability scale. This is not convenient for interpretation,
 as the log odds scale is not the same scale as our outcome.
 
 
-```r
+``` r
 m.logistic <- glm(vs ~ am + mpg, data = mtcars, family = binomial())
 
 coef(m.logistic)["mpg"]
@@ -118,7 +119,7 @@ We can find predicted differences on the probability scale.
 Here moving `mpg` from 10 to 11 holding `am = 0`.
 
 
-```r
+``` r
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 0, mpg = c(10, 11)),
@@ -133,7 +134,7 @@ We can look at the same estimate but moving `mpg` from
 20 to 21 instead 10 to 11 again holding `am = 0`.
 
 
-```r
+``` r
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 0, mpg = c(20, 21)),
@@ -148,7 +149,7 @@ We can look at the same estimate moving `mpg` from
 20 to 21 as before, but this time holding `am = 1`.
 
 
-```r
+``` r
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 1, mpg = c(20, 21)),
@@ -182,7 +183,7 @@ on the probability scale for a one unit shift in the predictor, `mpg`,
 for each person. When we average all of these, we get the AME.
 
 
-```r
+``` r
 h <- .001
 
 nd.1 <- nd.0 <- model.frame(m.logistic)
@@ -208,7 +209,7 @@ predicted probabilities if everyone had `am = 0` and then
 again if everyone had `am = 1`.
 
 
-```r
+``` r
 nd.1 <- nd.0 <- model.frame(m.logistic)
 nd.0$am <- 0
 nd.1$am <- 1
@@ -240,17 +241,28 @@ example calculating AMEs for `mpg` and `am`. First we will fit the same
 logistic regression model using `brms`.
 
 
-```r
+``` r
 bayes.logistic <- brm(
   vs ~ am + mpg, data = mtcars,
   family = "bernoulli", seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Compiling Stan program...
+#> Loading required package: rstan
+#> Loading required package: StanHeaders
+#> 
+#> rstan version 2.32.6 (Stan version 2.32.2)
+#> For execution on a local, multicore CPU with excess RAM we recommend calling
+#> options(mc.cores = parallel::detectCores()).
+#> To avoid recompilation of unchanged Stan programs, we recommend calling
+#> rstan_options(auto_write = TRUE)
+#> For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,
+#> change `threads_per_chain` option:
+#> rstan_options(threads_per_chain = 1)
+#> Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file
 ```
 
 
-```r
+``` r
 summary(bayes.logistic)
 #>  Family: bernoulli 
 #>   Links: mu = logit 
@@ -259,11 +271,11 @@ summary(bayes.logistic)
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
-#> Population-Level Effects: 
+#> Regression Coefficients:
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept   -16.03      5.49   -28.79    -7.15 1.00     1797     1897
-#> am           -3.77      1.82    -7.87    -0.71 1.00     1689     1766
-#> mpg           0.86      0.30     0.38     1.57 1.00     1707     1842
+#> Intercept   -16.12      5.67   -28.84    -7.42 1.00     1379     1959
+#> am           -3.83      1.86    -7.97    -0.70 1.00     1568     1772
+#> mpg           0.87      0.31     0.40     1.56 1.00     1328     1711
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -282,7 +294,7 @@ summary of the posterior for the contrasts. Here we just have the
 one contrast, but multiple could have been specified.
 
 
-```r
+``` r
 h <- .001
 ame1 <- brmsmargins(
   bayes.logistic,
@@ -297,7 +309,9 @@ kable(ame1$ContrastSummary, digits = 3)
 
 |     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
 |-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-------|
-| 0.071| 0.07| 0.054| 0.091|          NA|         NA| 0.95|HDI    |NA   |NA  |AME MPG |
+| 0.071| 0.07| 0.054| 0.092|          NA|         NA| 0.95|HDI    |NA   |NA  |AME MPG |
+
+
 
 Now we can look at how we could calculate a discrete AME.
 This time we use the `at` argument instead of the `add` 
@@ -308,7 +322,7 @@ we also look at the summary of the posterior for the predictions.
 These predictions average across all values of `mpg`.
 
 
-```r
+``` r
 ame2 <- brmsmargins(
   bayes.logistic,
   at = data.frame(am = c(0, 1)),
@@ -322,19 +336,23 @@ kable(ame2$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.543| 0.544| 0.419| 0.653|          NA|         NA| 0.95|HDI    |NA   |NA  |
-| 0.284| 0.277| 0.180| 0.409|          NA|         NA| 0.95|HDI    |NA   |NA  |
+| 0.544| 0.547| 0.430| 0.662|          NA|         NA| 0.95|HDI    |NA   |NA  |
+| 0.283| 0.277| 0.175| 0.408|          NA|         NA| 0.95|HDI    |NA   |NA  |
 
 
-```r
+
+
+``` r
 kable(ame2$ContrastSummary)
 ```
 
 
 
-|         M|        Mdn|         LL|         UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
-|---------:|----------:|----------:|----------:|-----------:|----------:|----:|:------|:----|:---|:------|
-| -0.258856| -0.2648354| -0.4252779| -0.0862889|          NA|         NA| 0.95|HDI    |NA   |NA  |AME am |
+|          M|        Mdn|         LL|         UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
+|----------:|----------:|----------:|----------:|-----------:|----------:|----:|:------|:----|:---|:------|
+| -0.2607899| -0.2649507| -0.4289198| -0.0891496|          NA|         NA| 0.95|HDI    |NA   |NA  |AME am |
+
+
 
 Note that by default, `brmsmargins()` uses the model frame 
 from the model object as the dataset. This, however, can be overridden.
@@ -350,7 +368,7 @@ count outcomes. We use a dataset drawn from:
 https://stats.oarc.ucla.edu/r/dae/poisson-regression/
 
 
-```r
+``` r
 
 d <- fread("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
 d[, prog := factor(prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))]
@@ -360,11 +378,10 @@ bayes.poisson <- brm(
   family = "poisson", seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Compiling Stan program...
 ```
 
 
-```r
+``` r
 summary(bayes.poisson)
 #>  Family: poisson 
 #>   Links: mu = log 
@@ -373,12 +390,12 @@ summary(bayes.poisson)
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
-#> Population-Level Effects: 
+#> Regression Coefficients:
 #>                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept         -5.31      0.66    -6.66    -4.03 1.00     1933     2312
-#> progAcademic       1.15      0.38     0.46     1.97 1.00     2088     1947
-#> progVocational     0.39      0.47    -0.48     1.36 1.00     2174     2024
-#> math               0.07      0.01     0.05     0.09 1.00     2592     2120
+#> Intercept         -5.32      0.68    -6.68    -4.01 1.00     2444     2292
+#> progAcademic       1.15      0.38     0.48     1.92 1.00     1949     1571
+#> progVocational     0.39      0.47    -0.48     1.34 1.00     1808     1427
+#> math               0.07      0.01     0.05     0.09 1.00     2729     2349
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -388,7 +405,7 @@ summary(bayes.poisson)
 AME for a continuous variable, using default CI interval and type.
 
 
-```r
+``` r
 h <- .001
 ame1.p <- brmsmargins(
   bayes.poisson,
@@ -402,13 +419,15 @@ kable(ame1.p$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:--------|
-| 0.044| 0.044| 0.026| 0.065|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+| 0.044| 0.044| 0.025| 0.065|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+
+
 
 AME for a categorical variable. Here we calculate pairwise contrasts
 for all three program types. These are the predicted number of awards.
 
 
-```r
+``` r
 ame2.p <- brmsmargins(
   bayes.poisson,
   at = data.frame(
@@ -426,12 +445,14 @@ kable(ame2.p$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.263| 0.253| 0.076| 0.526|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.781| 0.779| 0.600| 0.988|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.380| 0.368| 0.126| 0.710|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.262| 0.253| 0.077| 0.522|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.780| 0.776| 0.575| 0.992|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.380| 0.368| 0.158| 0.707|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
-```r
+
+
+``` r
 kable(ame2.p$ContrastSummary, digits = 3)
 ```
 
@@ -439,9 +460,11 @@ kable(ame2.p$ContrastSummary, digits = 3)
 
 |      M|    Mdn|     LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label                     |
 |------:|------:|------:|------:|-----------:|----------:|----:|:------|:----|:---|:-------------------------|
-| -0.518| -0.524| -0.820| -0.176|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
-| -0.117| -0.111| -0.503|  0.280|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
-|  0.400|  0.406|  0.019|  0.726|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+| -0.518| -0.522| -0.806| -0.135|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
+| -0.118| -0.115| -0.510|  0.248|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
+|  0.400|  0.409|  0.011|  0.759|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+
+
 
 
 ## AMEs for Negative Binomial Regression
@@ -450,7 +473,7 @@ Here is a short example for Negative Binomial regression used for
 count outcomes. We use the same setup as for the Poisson regression example.
 
 
-```r
+``` r
 d <- read.csv("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
 d$prog <- factor(d$prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))
 
@@ -459,12 +482,23 @@ bayes.nb <- brm(
   family = "negbinomial", seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Compiling Stan program...
+#> Warning: 569 of 4000 (14.0%) transitions ended with a divergence.
+#> See https://mc-stan.org/misc/warnings for details.
+#> Warning: 3431 of 4000 (86.0%) transitions hit the maximum treedepth limit of 10.
+#> See https://mc-stan.org/misc/warnings for details.
+#> Warning: 2 of 4 chains have a NaN E-BFMI.
+#> See https://mc-stan.org/misc/warnings for details.
 ```
 
 
-```r
+``` r
 summary(bayes.nb)
+#> Warning: Parts of the model have not converged (some Rhats are > 1.05). Be
+#> careful when analysing the results! We recommend running more iterations and/or
+#> setting stronger priors.
+#> Warning: There were 569 divergent transitions after warmup. Increasing
+#> adapt_delta above 0.8 may help. See
+#> http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 #>  Family: negbinomial 
 #>   Links: mu = log; shape = identity 
 #> Formula: num_awards ~ prog + math 
@@ -472,16 +506,20 @@ summary(bayes.nb)
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
-#> Population-Level Effects: 
+#> Regression Coefficients:
 #>                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept         -5.39      0.70    -6.82    -4.06 1.00     2813     2387
-#> progAcademic       1.14      0.38     0.42     1.89 1.00     2187     2343
-#> progVocational     0.40      0.47    -0.49     1.32 1.00     2155     2093
-#> math               0.07      0.01     0.05     0.09 1.00     3139     2500
+#> Intercept         -7.43      2.17    -9.81    -5.00  Inf        4       NA
+#> progAcademic       2.68      2.02     0.67     5.96  Inf        4       NA
+#> progVocational    -0.49      1.26    -2.66     0.42  Inf        4       NA
+#> math               0.10      0.03     0.06     0.13  Inf        4       NA
 #> 
-#> Family Specific Parameters: 
-#>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> shape    19.82     35.82     1.91   112.92 1.00     2453     2214
+#> Further Distributional Parameters:
+#>                                    Estimate
+#> shape 6464950012624176290022006848644662.00
+#>                                    Est.Error          l-95% CI
+#> shape 11199021826335432527262864286824266.00 21779500000000.00
+#>                                     u-95% CI Rhat Bulk_ESS Tail_ESS
+#> shape 25859800000000002248084824408282220.00  Inf        4       NA
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -491,7 +529,7 @@ summary(bayes.nb)
 AME for a continuous variable, using default CI interval and type.
 
 
-```r
+``` r
 h <- .001
 ame1.nb <- brmsmargins(
   bayes.nb,
@@ -503,15 +541,17 @@ kable(ame1.nb$ContrastSummary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
-|-----:|-----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|:--------|
-| 0.045| 0.045| 0.022| 0.07|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:--------|
+| 0.641| 0.189| 0.042| 2.145|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+
+
 
 AME for a categorical variable. Here we calculate pairwise contrasts
 for all three program types. These are the predicted number of awards.
 
 
-```r
+``` r
 ame2.nb <- brmsmargins(
   bayes.nb,
   at = data.frame(
@@ -527,24 +567,28 @@ kable(ame2.nb$Summary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.264| 0.251| 0.072| 0.562|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.781| 0.778| 0.565| 1.010|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.388| 0.374| 0.146| 0.756|          NA|         NA| 0.99|HDI    |NA   |NA  |
+|     M|   Mdn|    LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|------:|-----------:|----------:|----:|:------|:----|:---|
+| 0.210| 0.218| 0.061|  0.345|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 7.051| 2.021| 0.676| 23.486|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.209| 0.195| 0.015|  0.432|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
-```r
+
+
+``` r
 kable(ame2.nb$ContrastSummary, digits = 3)
 ```
 
 
 
-|      M|    Mdn|     LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label                     |
-|------:|------:|------:|------:|-----------:|----------:|----:|:------|:----|:---|:-------------------------|
-| -0.517| -0.523| -0.840| -0.127|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
-| -0.124| -0.120| -0.532|  0.270|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
-|  0.392|  0.405| -0.024|  0.768|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+|      M|    Mdn|      LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label                     |
+|------:|------:|-------:|------:|-----------:|----------:|----:|:------|:----|:---|:-------------------------|
+| -6.841| -1.803| -23.425| -0.331|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
+|  0.001| -0.045|  -0.110|  0.206|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
+|  6.842|  1.851|   0.244| 23.421|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+
+
 
 ## References
 

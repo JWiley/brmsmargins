@@ -16,17 +16,18 @@ vignette: >
 
 
 
-```r
+``` r
 library(knitr)
 library(data.table)
-#> data.table 1.14.2 using 24 threads (see ?getDTthreads).  Latest news: r-datatable.com
+#> data.table 1.16.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
 #> Loading required package: Rcpp
-#> Loading 'brms' package (version 2.17.0). Useful instructions
+#> Loading 'brms' package (version 2.22.0). Useful instructions
 #> can be found by typing help('brms'). A more detailed introduction
 #> to the package is available through vignette('brms_overview').
 #> 
 #> Attaching package: 'brms'
+#> 
 #> The following object is masked from 'package:stats':
 #> 
 #>     ar
@@ -151,7 +152,7 @@ mixed effects logistic regression model with individual differences
 in both the intercept and slope.
 
 
-```r
+``` r
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -183,18 +184,29 @@ mlogit <- brms::brm(
   data = d, seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Compiling Stan program...
-#> Warning: 25 of 4000 (1.0%) transitions ended with a divergence.
+#> Warning: 4 of 4000 (0.0%) transitions ended with a divergence.
 #> See https://mc-stan.org/misc/warnings for details.
+#> Loading required package: rstan
+#> Loading required package: StanHeaders
+#> 
+#> rstan version 2.32.6 (Stan version 2.32.2)
+#> For execution on a local, multicore CPU with excess RAM we recommend calling
+#> options(mc.cores = parallel::detectCores()).
+#> To avoid recompilation of unchanged Stan programs, we recommend calling
+#> rstan_options(auto_write = TRUE)
+#> For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,
+#> change `threads_per_chain` option:
+#> rstan_options(threads_per_chain = 1)
+#> Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file
 ```
 
 
 
-```r
+``` r
 summary(mlogit)
-#> Warning: There were 25 divergent transitions after warmup. Increasing
-#> adapt_delta above may help. See http://mc-stan.org/misc/warnings.html#divergent-
-#> transitions-after-warmup
+#> Warning: There were 4 divergent transitions after warmup. Increasing
+#> adapt_delta above 0.8 may help. See
+#> http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 #>  Family: bernoulli 
 #>   Links: mu = logit 
 #> Formula: y ~ 1 + x + (1 + x | ID) 
@@ -202,17 +214,17 @@ summary(mlogit)
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
-#> Group-Level Effects: 
+#> Multilevel Hyperparameters:
 #> ~ID (Number of levels: 100) 
 #>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)        1.17      0.19     0.85     1.58 1.01     1038     1913
-#> sd(x)                0.53      0.28     0.03     1.11 1.03      223      409
-#> cor(Intercept,x)    -0.16      0.42    -0.81     0.82 1.01     1403     1047
+#> sd(Intercept)        1.18      0.18     0.85     1.57 1.01     1326     2085
+#> sd(x)                0.54      0.27     0.05     1.05 1.02      386      955
+#> cor(Intercept,x)    -0.18      0.40    -0.81     0.76 1.00     1778     1373
 #> 
-#> Population-Level Effects: 
+#> Regression Coefficients:
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept    -2.47      0.20    -2.89    -2.10 1.01     1116     1292
-#> x             0.95      0.18     0.59     1.34 1.00     2152     2024
+#> Intercept    -2.48      0.19    -2.88    -2.12 1.00     1722     2017
+#> x             0.95      0.19     0.59     1.34 1.00     3183     2542
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -229,22 +241,18 @@ here `k = 100L`, the default.
 More details are in: `?brmsmargins:::.predict`
 
 
-```r
+``` r
 h <- .001
 ame1 <- brmsmargins(
   mlogit,
   add = data.frame(x = c(0, h)),
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
   effects = "integrateoutRE", k = 100L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame1$ContrastSummary, digits = 3)
+#> Error: object 'ame1' not found
 ```
-
-
-
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.112| 0.112| 0.063| 0.169|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 We can follow a similar process getting discrete predictions at 
 x held at 0 or 1. In this instance, the summary of 
@@ -253,41 +261,31 @@ different values of `x`. They also agree quite closely with the
 average probability at different `x` values calculated in the data.
 
 
-```r
+``` r
 ame2 <- brmsmargins(
   mlogit,
   at = data.frame(x = c(0, 1)),
   contrasts = cbind("AME x" = c(-1, 1)),
   effects = "integrateoutRE", k = 100L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 ```
 
 Here is a summary of the predictions.
 
 
-```r
+``` r
 knitr::kable(ame2$Summary, digits = 3)
+#> Error: object 'ame2' not found
 ```
 
 
-
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.120| 0.118| 0.071| 0.174|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.231| 0.231| 0.157| 0.302|          NA|         NA| 0.99|HDI    |NA   |NA  |
-
-
-```r
+``` r
 knitr::kable(ame2$ContrastSummary, digits = 3)
+#> Error: object 'ame2' not found
 ```
 
 
-
-|     M|   Mdn|   LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.111| 0.111| 0.06| 0.169|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
-
-
-```r
+``` r
 knitr::kable(d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x])
 ```
 
@@ -297,6 +295,8 @@ knitr::kable(d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x])
 |--:|-----:|
 |  0| 0.117|
 |  1| 0.228|
+
+
 
 Note that when integrating out random effects, the random seed is
 quite important. If the `seed` argument is not specified,
@@ -315,22 +315,18 @@ Monte Carlo variation only, but with `k = 10L` the small error,
 when divided by `h = .001` becomes very large, impossibly so.
 
 
-```r
+``` r
 h <- .001
 ame.error <- brmsmargins(
   mlogit,
   add = data.frame(x = c(0, 0)),
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
   effects = "integrateoutRE", k = 10L, seed = c(1234, 54321))
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame.error$ContrastSummary, digits = 3)
+#> Error: object 'ame.error' not found
 ```
-
-
-
-|      M|   Mdn|       LL|      UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|------:|-----:|--------:|-------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| -0.703| -0.98| -162.906| 172.759|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 This disappears when we use the same seed for each row of the data 
 used for predictions. Here we get all zeros for the difference, as 
@@ -339,22 +335,18 @@ row of the data. You can specify one seed (or rely on `brmsmargins()` default),
 which will then be used for all rows of the data.
 
 
-```r
+``` r
 h <- .001
 ame.noerror <- brmsmargins(
   mlogit,
   add = data.frame(x = c(0, 0)),
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
   effects = "integrateoutRE", k = 10L, seed = c(1234, 1234))
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame.noerror$ContrastSummary, digits = 3)
+#> Error: object 'ame.noerror' not found
 ```
-
-
-
-|  M| Mdn| LL| UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|--:|---:|--:|--:|-----------:|----------:|----:|:------|:----|:---|:-----|
-|  0|   0|  0|  0|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 ### Marginal Coefficients
 
@@ -366,9 +358,10 @@ population averaged coefficients. The function to do this is
 logistic regression that ignores the clustering in the data.
 
 
-```r
+``` r
 ## calculate marginal coefficients
-mc.logit <- marginalcoef(mlogit, CI = 0.95)
+mc.logit <- marginalcoef(mlogit, CI = 0.95, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 ## calculate single level logistic regression
 glm.logit <- glm(y ~ 1 + x, family = "binomial", data = d)
@@ -379,7 +372,7 @@ glm.logit <- as.data.table(cbind(Est = coef(glm.logit), confint(glm.logit)))
 Now we can view and compare the results.
 
 
-```r
+``` r
 
 knitr::kable(cbind(
   mc.logit$Summary[, .(
@@ -388,14 +381,8 @@ knitr::kable(cbind(
   glm.logit[, .(
     GLMCoef = sprintf("%0.3f", round(Est, 3)),
     GLMCI = sprintf("[%0.3f, %0.3f]", round(`2.5 %`, 3), round(`97.5 %`, 3)))]))
+#> Error: object 'mc.logit' not found
 ```
-
-
-
-|MargCoef |MargCoefCI       |GLMCoef |GLMCI            |
-|:--------|:----------------|:-------|:----------------|
-|-2.010   |[-2.386, -1.666] |-2.021  |[-2.219, -1.833] |
-|0.800    |[0.520, 1.083]   |0.802   |[0.561, 1.047]   |
 
 ## Mixed Effects Poisson Regression
 
@@ -404,7 +391,7 @@ mixed effects poisson regression model with individual differences
 in both the intercept and slope.
 
 
-```r
+``` r
 dpoisson <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -435,11 +422,10 @@ mpois <- brms::brm(
   data = dpoisson, seed = 1234,
   chains = 4L, cores = 4L, backend = "cmdstanr",
   silent = 2, refresh = 0, adapt_delta = 0.99)
-#> Compiling Stan program...
 ```
 
 
-```r
+``` r
 summary(mpois)
 #>  Family: poisson 
 #>   Links: mu = log 
@@ -448,17 +434,17 @@ summary(mpois)
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
-#> Group-Level Effects: 
+#> Multilevel Hyperparameters:
 #> ~ID (Number of levels: 100) 
 #>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)        1.18      0.15     0.91     1.52 1.00     1353     2327
-#> sd(x)                0.36      0.20     0.02     0.75 1.01      308      949
-#> cor(Intercept,x)    -0.06      0.41    -0.75     0.85 1.00     1680     1536
+#> sd(Intercept)        1.18      0.15     0.92     1.52 1.01     1265     1683
+#> sd(x)                0.36      0.21     0.02     0.77 1.01      232      955
+#> cor(Intercept,x)    -0.05      0.42    -0.77     0.87 1.00     1382     1310
 #> 
-#> Population-Level Effects: 
+#> Regression Coefficients:
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept    -2.47      0.17    -2.82    -2.14 1.00     1777     2484
-#> x             0.97      0.15     0.68     1.27 1.00     3307     2893
+#> Intercept    -2.46      0.17    -2.83    -2.14 1.00     1375     1907
+#> x             0.97      0.15     0.68     1.27 1.00     2867     2782
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -471,41 +457,33 @@ We use `brmsmargins()` in the same way as for the mixed effects logistic regress
 Here is an example with a numeric derivative treating `x` as continuous.
 
 
-```r
+``` r
 h <- .001
 ame1.pois <- brmsmargins(
   mpois,
   add = data.frame(x = c(0, h)),
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
   effects = "integrateoutRE", k = 100L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame1.pois$ContrastSummary, digits = 3)
+#> Error: object 'ame1.pois' not found
 ```
-
-
-
-|     M|   Mdn|   LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.332| 0.312| 0.14| 0.731|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 Here is an example treating `x` as discrete.
 
 
-```r
+``` r
 ame2.pois <- brmsmargins(
   mpois,
   at = data.frame(x = c(0, 1)),
   contrasts = cbind("AME x" = c(-1, 1)),
   effects = "integrateoutRE", k = 100L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame2.pois$ContrastSummary)
+#> Error: object 'ame2.pois' not found
 ```
-
-
-
-|        M|       Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|--------:|---------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.294537| 0.2780058| 0.1076343| 0.5973478|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 ### Marginal Coefficients
 
@@ -517,9 +495,10 @@ Here is an example and comparison to results using a single level
 poisson regression that ignores the clustering in the data.
 
 
-```r
+``` r
 ## calculate marginal coefficients
-mc.pois <- marginalcoef(mpois, CI = 0.95)
+mc.pois <- marginalcoef(mpois, CI = 0.95, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 ## calculate single level logistic regression
 glm.pois <- glm(y ~ 1 + x, family = "poisson", data = d)
@@ -530,7 +509,7 @@ glm.pois <- as.data.table(cbind(Est = coef(glm.pois), confint(glm.pois)))
 Now we can view and compare the results.
 
 
-```r
+``` r
 
 knitr::kable(cbind(
   mc.pois$Summary[, .(
@@ -539,14 +518,8 @@ knitr::kable(cbind(
   glm.pois[, .(
     GLMCoef = sprintf("%0.3f", round(Est, 3)),
     GLMCI = sprintf("[%0.3f, %0.3f]", round(`2.5 %`, 3), round(`97.5 %`, 3)))]))
+#> Error: object 'mc.pois' not found
 ```
-
-
-
-|MargCoef |MargCoefCI       |GLMCoef |GLMCI            |
-|:--------|:----------------|:-------|:----------------|
-|-1.765   |[-2.218, -1.239] |-1.858  |[-2.019, -1.705] |
-|0.987    |[0.697, 1.279]   |0.983   |[0.802, 1.170]   |
 
 ## Mixed Effects Negative Binomial Regression
 
@@ -554,18 +527,29 @@ Negative binomial models work the same way as for poisson models.
 We use the same dataset, just for demonstration.
 
 
-```r
+``` r
 mnb <- brms::brm(
   y ~ 1 + x + (1 + x | ID), family = "negbinomial",
   data = dpoisson, seed = 1234,
   chains = 4L, cores = 4L, backend = "cmdstanr",
   silent = 2, refresh = 0, adapt_delta = 0.99)
-#> Compiling Stan program...
+#> Warning: 1638 of 4000 (41.0%) transitions ended with a divergence.
+#> See https://mc-stan.org/misc/warnings for details.
+#> Warning: 999 of 4000 (25.0%) transitions hit the maximum treedepth limit of 10.
+#> See https://mc-stan.org/misc/warnings for details.
+#> Warning: 1 of 4 chains have a NaN E-BFMI.
+#> See https://mc-stan.org/misc/warnings for details.
 ```
 
 
-```r
+``` r
 summary(mnb)
+#> Warning: Parts of the model have not converged (some Rhats are > 1.05). Be
+#> careful when analysing the results! We recommend running more iterations and/or
+#> setting stronger priors.
+#> Warning: There were 1638 divergent transitions after warmup. Increasing
+#> adapt_delta above 0.99 may help. See
+#> http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 #>  Family: negbinomial 
 #>   Links: mu = log; shape = identity 
 #> Formula: y ~ 1 + x + (1 + x | ID) 
@@ -573,21 +557,23 @@ summary(mnb)
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
 #>          total post-warmup draws = 4000
 #> 
-#> Group-Level Effects: 
+#> Multilevel Hyperparameters:
 #> ~ID (Number of levels: 100) 
 #>                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)        1.19      0.15     0.93     1.51 1.01      975     1816
-#> sd(x)                0.35      0.20     0.01     0.74 1.01      252      821
-#> cor(Intercept,x)    -0.07      0.41    -0.77     0.84 1.00     1432     1277
+#> sd(Intercept)        1.31      0.22     0.96     1.59 1.47        8       29
+#> sd(x)                0.42      0.35     0.00     0.85 2.33        5        4
+#> cor(Intercept,x)    -0.49      0.47    -1.00     0.68 2.02        5        4
 #> 
-#> Population-Level Effects: 
+#> Regression Coefficients:
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept    -2.46      0.18    -2.83    -2.14 1.00     1057     1993
-#> x             0.98      0.15     0.70     1.28 1.00     2711     2153
+#> Intercept    -2.62      0.24    -2.99    -2.22 1.62        7        6
+#> x             1.09      0.17     0.75     1.31 1.49        7       83
 #> 
-#> Family Specific Parameters: 
-#>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> shape    61.06     63.22     8.15   243.02 1.00     5885     2745
+#> Further Distributional Parameters:
+#>                       Estimate                 Est.Error l-95% CI
+#> shape 615520000648203337728.00 1066245201681847287848.00    13.10
+#>                        u-95% CI Rhat Bulk_ESS Tail_ESS
+#> shape 2462080000000000000000.00 2.48        5       NA
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -600,41 +586,33 @@ We use `brmsmargins()` in the same way as for the mixed effects poisson regressi
 Here is an example with a numeric derivative treating `x` as continuous.
 
 
-```r
+``` r
 h <- .001
 ame1.nb <- brmsmargins(
   mnb,
   add = data.frame(x = c(0, h)),
   contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
   effects = "integrateoutRE", k = 100L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame1.nb$ContrastSummary, digits = 3)
+#> Error: object 'ame1.nb' not found
 ```
-
-
-
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.335| 0.313| 0.141| 0.777|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 Here is an example treating `x` as discrete.
 
 
-```r
+``` r
 ame2.nb <- brmsmargins(
   mnb,
   at = data.frame(x = c(0, 1)),
   contrasts = cbind("AME x" = c(-1, 1)),
   effects = "integrateoutRE", k = 100L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame2.nb$ContrastSummary, digits = 3)
+#> Error: object 'ame2.nb' not found
 ```
-
-
-
-|     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.298| 0.28| 0.141| 0.662|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 ### Marginal Coefficients
 
@@ -642,27 +620,22 @@ Negative binomial models cannot be fit by the `glm()` function in `R`
 so we just show the population averaged values from `brms`.
 
 
-```r
+``` r
 ## calculate marginal coefficients
-mc.nb <- marginalcoef(mnb, CI = 0.95)
+mc.nb <- marginalcoef(mnb, CI = 0.95, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 ```
 
 View the results.
 
 
-```r
+``` r
 knitr::kable(
   mc.nb$Summary[, .(
     MargCoef = sprintf("%0.3f", round(M, 3)),
     MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))])
+#> Error: object 'mc.nb' not found
 ```
-
-
-
-|MargCoef |MargCoefCI       |
-|:--------|:----------------|
-|-1.759   |[-2.225, -1.234] |
-|0.988    |[0.725, 1.283]   |
 
 ## Centered Categorical Predictors
 
@@ -761,7 +734,7 @@ This is more easily shown than said. Here we simulate some multilevel data
 with a binary predictor, `x` and a binary outcome, `y`.
 
 
-```r
+``` r
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -796,7 +769,7 @@ so that variable is omitted. Any variation not explained by it will go into
 the random intercept, anyways.
 
 
-```r
+``` r
 ## within person centering binary predictor
 d[, xb := mean(x), by = ID]
 d[, xw := x - xb]
@@ -806,7 +779,6 @@ mlogitcent <- brms::brm(
   data = d, seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Compiling Stan program...
 ```
 
 Now comes the new part. Based on how we coded our predictor, `x`,
@@ -830,7 +802,7 @@ The list must have two elements at a minimum:
 The table shows a few examples of what the dataset looks like.
 
 
-```r
+``` r
 
 xwid <- melt(
   d[, .(a = 0 - na.omit(xb)[1],
@@ -854,6 +826,8 @@ knitr::kable(xwid[ID %in% c(1, 2, 4, 100)][order(ID)], digits = 2)
 |   4|b        |  0.00|
 | 100|a        | -0.15|
 | 100|b        |  0.85|
+
+
 
 This new dataset shows what values to use for moving from
 one category of `x` to another category of `x` looks like, 
@@ -879,37 +853,27 @@ for `xw = a` and `xw = b` which in our case refers to when
 **for that ID**.
 
 
-```r
+``` r
 ame.cent <- brmsmargins(
   object = mlogitcent,
   at = expand.grid(xw = c("a", "b")),
   wat = usewat,
   contrasts = cbind("AME xw" = c(-1, 1)),
   effects = "integrateoutRE", k = 20L)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame.cent$Summary, digits = 3)
+#> Error: object 'ame.cent' not found
 ```
-
-
-
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.122| 0.119| 0.051| 0.206|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.231| 0.228| 0.116| 0.345|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 Just as in other examples, we can get a summary of the
 contrast of these two values, our AME.
 
 
-```r
+``` r
 knitr::kable(ame.cent$ContrastSummary, digits = 3)
+#> Error: object 'ame.cent' not found
 ```
-
-
-
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:------|
-| 0.109| 0.109| 0.041| 0.184|          NA|         NA| 0.99|HDI    |NA   |NA  |AME xw |
 
 ## Interactions and Marginal Effects
 
@@ -945,7 +909,7 @@ To show this example, we first simulate a dataset, using a similar
 process as in previous examples.
 
 
-```r
+``` r
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -985,7 +949,7 @@ dataset with the within person hypothetical values for each person,
 `usewat`.
 
 
-```r
+``` r
 ## within person centering binary predictor
 d[, xb := mean(x), by = ID]
 d[, xw := x - xb]
@@ -1007,13 +971,12 @@ between people randomized to the waitlist control or the intervention.
 The model can be fit as in the following code.
 
 
-```r
+``` r
 mlogitcentint <- brms::brm(
   y ~ 1 + xw * group + xb + (1 + xw | ID), family = "bernoulli",
   data = d, seed = 1234,
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Compiling Stan program...
 ```
 
 We will generate average marginal predicted probabilities 
@@ -1022,7 +985,7 @@ none and any. The grid of possibilities is created and stored in
 `use.at` and shown in the following table.
 
 
-```r
+``` r
 use.at <- expand.grid(group = 0:1, xw = c("a", "b"))
 knitr::kable(use.at, digits = 0)
 ```
@@ -1035,6 +998,8 @@ knitr::kable(use.at, digits = 0)
 |     1|a  |
 |     0|b  |
 |     1|b  |
+
+
 
 From this grid, there are three contrasts of interest.
 
@@ -1056,7 +1021,7 @@ The code to do this and the resulting contrast matrix with labels
 is shown in the following code and table.
 
 
-```r
+``` r
 contr.mat <- cbind(xw = c(-1, 1)) %x% diag(2)
 contr.mat <- cbind(
   contr.mat,
@@ -1078,6 +1043,8 @@ knitr::kable(contr.mat, digits = 0)
 |             1|             0|           -1|
 |             0|             1|            1|
 
+
+
 Now we can use `brmsmargins()` with the model, 
 our grid of values to generate average marginal predictions,
 and our contrast matrix to generate the AMEs and answer our 
@@ -1088,7 +1055,7 @@ Once run, we can see the average marginal predictions for our grid
 of values in `use.at` in the following table.
 
 
-```r
+``` r
 ame.centint <- brmsmargins(
   object = mlogitcentint,
   at = use.at,
@@ -1096,18 +1063,11 @@ ame.centint <- brmsmargins(
   contrasts = contr.mat, CI = 0.95,
   ROPE = c(-.02, .02), MID = c(-.05, .05),
   effects = "integrateoutRE", k = 20L, seed = 1234)
+#> Error in `[.data.table`(data, , ..n): column(s) not found: [L_1[1,1], L_1[2,1], L_1[1,2], L_1[2,2]]
 
 knitr::kable(ame.centint$Summary[, .(M, LL, UL, CI, CIType)], digits = 3)
+#> Error: object 'ame.centint' not found
 ```
-
-
-
-|     M|    LL|    UL|   CI|CIType |
-|-----:|-----:|-----:|----:|:------|
-| 0.117| 0.053| 0.187| 0.95|HDI    |
-| 0.145| 0.073| 0.221| 0.95|HDI    |
-| 0.045| 0.016| 0.081| 0.95|HDI    |
-| 0.268| 0.168| 0.379| 0.95|HDI    |
 
 Finally we can look at the contrast summary to answer our three 
 questions of interest: the two simple AMEs of within person stressor 
@@ -1144,17 +1104,10 @@ with their sleep that night, and that the emotion regulation intervention
 moderates the association between within person stressor exposure and sleep.
 
 
-```r
+``` r
 knitr::kable(ame.centint$ContrastSummary, digits = 3)
+#> Error: object 'ame.centint' not found
 ```
-
-
-
-|      M|    Mdn|     LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE          |MID                              |Label         |
-|------:|------:|------:|------:|-----------:|----------:|----:|:------|:-------------|:--------------------------------|:-------------|
-| -0.071| -0.068| -0.138| -0.016|       3.150|     74.625| 0.95|HDI    |[-0.02, 0.02] |[-Inf, -0.05] &#124; [0.05, Inf] |AME xw: Grp 0 |
-|  0.124|  0.122|  0.038|  0.214|       0.875|     95.625| 0.95|HDI    |[-0.02, 0.02] |[-Inf, -0.05] &#124; [0.05, Inf] |AME xw: Grp 1 |
-|  0.195|  0.191|  0.100|  0.302|       0.000|     99.900| 0.95|HDI    |[-0.02, 0.02] |[-Inf, -0.05] &#124; [0.05, Inf] |delta AME xw  |
 
 ## References
 
