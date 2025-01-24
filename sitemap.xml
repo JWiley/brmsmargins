@@ -1,87 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/404.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/articles/fixed-effects-marginaleffects.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/articles/location-scale-marginaleffects.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/articles/mixed-effects-marginaleffects.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/index.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/assertall.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/brmsmargins.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/bsummary.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/builders.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/dot-averagePosterior.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/dot-checktab.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/dot-extractlink.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/dot-links.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/dot-percent.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/integratemvn.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/integratere.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/is.random.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/lmcpp.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/marginalcoef.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/prediction.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/rowBootMeans.html</loc>
-  </url>
-  <url>
-    <loc>https://joshuawiley.com/brmsmargins/reference/tab2mat.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://joshuawiley.com/brmsmargins/404.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/LICENSE-text.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/LICENSE.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/articles/fixed-effects-marginaleffects.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/articles/index.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/articles/location-scale-marginaleffects.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/articles/mixed-effects-marginaleffects.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/authors.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/index.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/news/index.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/assertall.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/brmsmargins.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/bsummary.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/builders.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/dot-averagePosterior.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/dot-checktab.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/dot-extractlink.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/dot-links.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/dot-percent.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/index.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/integratemvn.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/integratere.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/is.random.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/lmcpp.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/marginalcoef.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/prediction.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/rowBootMeans.html</loc></url>
+<url><loc>https://joshuawiley.com/brmsmargins/reference/tab2mat.html</loc></url>
 </urlset>
+
