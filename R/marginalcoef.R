@@ -24,7 +24,7 @@
 #'   the outcome variable was transformed prior to fitting the model.
 #' @param k An integer providing the number of random draws to use for
 #'   integrating out the random effects. Only relevant when `effects = "integrateoutRE"`.
-#' @param seed An \emph{optional} argument that controls whether (and if so what) random seed
+#' @param seed An *optional* argument that controls whether (and if so what) random seed
 #'   to use. This can help with reproducibility of results.
 #'   It is missing by default.
 #' @param ... Additional arguments passed to [bsummary()], 
@@ -33,7 +33,7 @@
 #'   Some of these may be `NULL` depending on the arguments used.
 #' @references
 #' Hedeker, D., du Toit, S. H., Demirtas, H. & Gibbons, R. D. (2018)
-#' [DOI: 10.1111/biom.12707](https://doi.org/10.1111/biom.12707).
+#' \doi{10.1111/biom.12707}.
 #' \dQuote{A note on marginalization of regression parameters from mixed models of binary outcomes}
 #' @importFrom data.table as.data.table
 #' @importFrom stats formula

@@ -60,6 +60,6 @@ generalized linear mixed model using the method proposed by Hedeker (2018).
 }
 \references{
 Hedeker, D., du Toit, S. H., Demirtas, H. & Gibbons, R. D. (2018)
-\href{https://doi.org/10.1111/biom.12707}{DOI: 10.1111/biom.12707}.
+\doi{10.1111/biom.12707}.
 \dQuote{A note on marginalization of regression parameters from mixed models of binary outcomes}
 }

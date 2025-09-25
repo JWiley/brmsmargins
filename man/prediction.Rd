@@ -114,7 +114,7 @@ the argument.
 }
 \references{
 Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
-\href{https://doi.org/10.1186/s12874-015-0046-6}{DOI: 10.1186/s12874-015-0046-6}.
+\doi{10.1186/s12874-015-0046-6}
 \dQuote{A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes}
 and
 Skrondal, A., & Rabe-Hesketh, S. (2009)

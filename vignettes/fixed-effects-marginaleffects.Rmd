@@ -19,10 +19,10 @@ vignette: >
 ``` r
 library(knitr)
 library(data.table)
-#> data.table 1.16.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com
+#> data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
 #> Loading required package: Rcpp
-#> Loading 'brms' package (version 2.22.0). Useful instructions
+#> Loading 'brms' package (version 2.23.0). Useful instructions
 #> can be found by typing help('brms'). A more detailed introduction
 #> to the package is available through vignette('brms_overview').
 #> 
@@ -248,18 +248,7 @@ bayes.logistic <- brm(
   silent = 2, refresh = 0,
   save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Loading required package: rstan
-#> Loading required package: StanHeaders
-#> 
-#> rstan version 2.32.6 (Stan version 2.32.2)
-#> For execution on a local, multicore CPU with excess RAM we recommend calling
-#> options(mc.cores = parallel::detectCores()).
-#> To avoid recompilation of unchanged Stan programs, we recommend calling
-#> rstan_options(auto_write = TRUE)
-#> For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,
-#> change `threads_per_chain` option:
-#> rstan_options(threads_per_chain = 1)
-#> Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file
+#> Loading required namespace: rstan
 ```
 
 
@@ -274,9 +263,9 @@ summary(bayes.logistic)
 #> 
 #> Regression Coefficients:
 #>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept   -16.12      5.67   -28.84    -7.42 1.00     1379     1959
-#> am           -3.83      1.86    -7.97    -0.70 1.00     1568     1772
-#> mpg           0.87      0.31     0.40     1.56 1.00     1328     1711
+#> Intercept   -16.46      5.73   -29.59    -7.48 1.00     1686     1892
+#> am           -3.88      1.89    -7.96    -0.62 1.00     1708     1687
+#> mpg           0.89      0.31     0.40     1.59 1.00     1620     1794
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -310,7 +299,7 @@ kable(ame1$ContrastSummary, digits = 3)
 
 |     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
 |-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-------|
-| 0.071| 0.07| 0.054| 0.092|          NA|         NA| 0.95|HDI    |NA   |NA  |AME MPG |
+| 0.071| 0.07| 0.052| 0.091|          NA|         NA| 0.95|HDI    |NA   |NA  |AME MPG |
 
 
 
@@ -335,10 +324,10 @@ kable(ame2$Summary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.544| 0.547| 0.430| 0.662|          NA|         NA| 0.95|HDI    |NA   |NA  |
-| 0.283| 0.277| 0.175| 0.408|          NA|         NA| 0.95|HDI    |NA   |NA  |
+|     M|   Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|
+| 0.543| 0.545| 0.419| 0.66|          NA|         NA| 0.95|HDI    |NA   |NA  |
+| 0.283| 0.274| 0.170| 0.41|          NA|         NA| 0.95|HDI    |NA   |NA  |
 
 
 
@@ -351,7 +340,7 @@ kable(ame2$ContrastSummary)
 
 |          M|        Mdn|         LL|         UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
 |----------:|----------:|----------:|----------:|-----------:|----------:|----:|:------|:----|:---|:------|
-| -0.2607899| -0.2649507| -0.4289198| -0.0891496|          NA|         NA| 0.95|HDI    |NA   |NA  |AME am |
+| -0.2599408| -0.2668172| -0.4330838| -0.0820307|          NA|         NA| 0.95|HDI    |NA   |NA  |AME am |
 
 
 
@@ -394,10 +383,10 @@ summary(bayes.poisson)
 #> 
 #> Regression Coefficients:
 #>                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept         -5.32      0.68    -6.68    -4.01 1.00     2444     2292
-#> progAcademic       1.15      0.38     0.48     1.92 1.00     1949     1571
-#> progVocational     0.39      0.47    -0.48     1.34 1.00     1808     1427
-#> math               0.07      0.01     0.05     0.09 1.00     2729     2349
+#> Intercept         -5.31      0.64    -6.62    -4.07 1.00     2429     2135
+#> progAcademic       1.13      0.36     0.46     1.87 1.00     2399     1890
+#> progVocational     0.37      0.45    -0.49     1.24 1.00     2442     2089
+#> math               0.07      0.01     0.05     0.09 1.00     2627     2257
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -421,7 +410,7 @@ kable(ame1.p$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:--------|
-| 0.044| 0.044| 0.025| 0.065|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+| 0.044| 0.044| 0.025| 0.064|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
 
 
 
@@ -447,9 +436,9 @@ kable(ame2.p$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.262| 0.253| 0.077| 0.522|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.780| 0.776| 0.575| 0.992|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.380| 0.368| 0.158| 0.707|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.265| 0.255| 0.093| 0.542|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.780| 0.777| 0.599| 0.991|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.379| 0.367| 0.152| 0.702|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
 
@@ -462,9 +451,9 @@ kable(ame2.p$ContrastSummary, digits = 3)
 
 |      M|    Mdn|     LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label                     |
 |------:|------:|------:|------:|-----------:|----------:|----:|:------|:----|:---|:-------------------------|
-| -0.518| -0.522| -0.806| -0.135|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
-| -0.118| -0.115| -0.510|  0.248|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
-|  0.400|  0.409|  0.011|  0.759|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+| -0.515| -0.521| -0.817| -0.185|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
+| -0.114| -0.110| -0.504|  0.258|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
+|  0.401|  0.408|  0.020|  0.758|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
 
 
 
@@ -491,7 +480,7 @@ bayes.nb <- brm(
 ``` r
 summary(bayes.nb)
 #>  Family: negbinomial 
-#>   Links: mu = log; shape = identity 
+#>   Links: mu = log 
 #> Formula: count ~ nofish + xb 
 #>    Data: d (Number of observations: 250) 
 #>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
@@ -499,13 +488,13 @@ summary(bayes.nb)
 #> 
 #> Regression Coefficients:
 #>            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept     -1.38      0.21    -1.78    -0.97 1.00     2936     2491
-#> nofishfish    -0.08      0.25    -0.56     0.42 1.00     3667     2776
-#> xb             1.24      0.10     1.06     1.43 1.00     3223     3165
+#> Intercept     -1.38      0.21    -1.81    -0.98 1.00     3239     2555
+#> nofishfish    -0.08      0.24    -0.55     0.40 1.00     3874     2770
+#> xb             1.24      0.10     1.05     1.44 1.00     3568     2874
 #> 
 #> Further Distributional Parameters:
 #>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> shape     0.72      0.12     0.52     0.99 1.00     3464     2956
+#> shape     0.72      0.12     0.51     0.98 1.00     3639     2740
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -529,7 +518,7 @@ kable(ame1.nb$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
 |-----:|-----:|-----:|------:|-----------:|----------:|----:|:------|:----|:---|:------|
-| 5.623| 5.296| 2.654| 11.735|          NA|         NA| 0.99|HDI    |NA   |NA  |AME xb |
+| 5.607| 5.282| 2.367| 11.234|          NA|         NA| 0.99|HDI    |NA   |NA  |AME xb |
 
 
 
@@ -553,8 +542,8 @@ kable(ame2.nb$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 4.523| 4.367| 2.485| 7.975|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 4.274| 4.043| 1.695| 8.816|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 4.512| 4.339| 2.528| 7.731|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 4.254| 3.971| 1.692| 9.248|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
 
@@ -565,9 +554,9 @@ kable(ame2.nb$ContrastSummary, digits = 3)
 
 
 
-|    M|   Mdn|     LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label              |
-|----:|-----:|------:|-----:|-----------:|----------:|----:|:------|:----|:---|:------------------|
-| 0.25| 0.343| -3.065| 3.026|          NA|         NA| 0.99|HDI    |NA   |NA  |AME No Fish v Fish |
+|     M|   Mdn|     LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label              |
+|-----:|-----:|------:|-----:|-----------:|----------:|----:|:------|:----|:---|:------------------|
+| 0.258| 0.364| -3.213| 2.957|          NA|         NA| 0.99|HDI    |NA   |NA  |AME No Fish v Fish |
 
 
 

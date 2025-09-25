@@ -66,6 +66,6 @@ bsummary(rnorm(1000), ROPE = c(-.5, .5), MID = c(-1, 1))
 }
 \references{
 Kruschke, J. K. (2018).
-\href{https://doi.org/10.1177/2515245918771304}{DOI: 10.1177/2515245918771304}
+\doi{10.1177/2515245918771304}
 \dQuote{Rejecting or accepting parameter values in Bayesian estimation}
 }

@@ -270,14 +270,14 @@ if (FALSE) {
 }
 \references{
 Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
-\href{https://doi.org/10.1186/s12874-015-0046-6}{DOI: 10.1186/s12874-015-0046-6}
+\doi{10.1186/s12874-015-0046-6}
 \dQuote{A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes}
 and
 Skrondal, A., & Rabe-Hesketh, S. (2009)
-\href{https://doi.org/10.1111/j.1467-985X.2009.00587.x}{DOI: 10.1111/j.1467-985X.2009.00587.x}
+\doi{10.1111/j.1467-985X.2009.00587.x}
 \dQuote{Prediction in multilevel generalized linear models}
 and
 Norton EC, Dowd BE, Maciejewski ML. (2019)
-\href{https://doi.org/10.1001/jama.2019.1954}{DOI: 10.1001/jama.2019.1954}
+\doi{10.1001/jama.2019.1954}
 \dQuote{Marginal Effects—Quantifying the Effect of Changes in Risk Factors in Logistic Regression Models}
 }

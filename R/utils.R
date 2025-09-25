@@ -99,7 +99,7 @@
 #' @importFrom extraoperators %gele%
 #' @references
 #' Kruschke, J. K. (2018).
-#' [DOI: 10.1177/2515245918771304](https://doi.org/10.1177/2515245918771304)
+#' \doi{10.1177/2515245918771304}
 #' \dQuote{Rejecting or accepting parameter values in Bayesian estimation}
 #' @examples
 #'
