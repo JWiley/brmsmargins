@@ -71,7 +71,7 @@ generalized linear mixed model using the method proposed by Hedeker (2018).</p>
 
 
 <dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
-<dd><p>A fitted brms model object that includes random effects. Required.</p></dd>
+<dd><p>A fitted <code>brms</code> model object that includes random effects. Required.</p></dd>
 
 
 <dt id="arg-summarize">summarize<a class="anchor" aria-label="anchor" href="#arg-summarize"></a></dt>
@@ -96,18 +96,17 @@ posterior draws.</p></dd>
 <dt id="arg-backtrans">backtrans<a class="anchor" aria-label="anchor" href="#arg-backtrans"></a></dt>
 <dd><p>A character string indicating the type of
 back transformation to be applied. Can be one of
-“response” meaning to use the response scale,
-“linear” or “identity” meaning to use the linear predictor scale,
+"response" meaning to use the response scale,
+"linear" or "identity" meaning to use the linear predictor scale,
 or a specific back transformation desired, from a possible list of
-“invlogit”, “exp”, “square”, or “inverse”.
+"invlogit", "exp", "square", or "inverse".
 Custom back transformations should only be needed if, for example,
 the outcome variable was transformed prior to fitting the model.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
 <dd><p>An integer providing the number of random draws to use for
-integrating out the random effects. Only relevant when <code>effects</code>
-is “integrateoutRE”.</p></dd>
+integrating out the random effects. Only relevant when <code>effects = "integrateoutRE"</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -129,8 +128,7 @@ Some of these may be <code>NULL</code> depending on the arguments used.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Hedeker, D., du Toit, S. H., Demirtas, H. &amp; Gibbons, R. D. (2018)
-<a href="https://doi.org/10.1111/biom.12707" class="external-link">doi:10.1111/biom.12707</a>
-
+<a href="https://doi.org/10.1111/biom.12707" class="external-link">DOI: 10.1111/biom.12707</a>.
 “A note on marginalization of regression parameters from mixed models of binary outcomes”</p>
     </div>
 
@@ -143,7 +141,7 @@ Some of these may be <code>NULL</code> depending on the arguments used.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

@@ -105,7 +105,7 @@ predictions. This is intended for AMEs from categorical variables.</p></dd>
 
 <dt id="arg-wat">wat<a class="anchor" aria-label="anchor" href="#arg-wat"></a></dt>
 <dd><p>An <em>optional</em> list with named elements including one element named,
-“ID” with a single character string, the name of the variable
+"ID" with a single character string, the name of the variable
 in the model frame that is the ID variable. Additionally,
 there should be one or more named elements, named after variables
 in the model (and specified in the <code>at</code> argument), that
@@ -140,8 +140,8 @@ with greater acknowledgment of uncertainty or larger sample sizes (ideally).</p>
 <dt id="arg-citype">CIType<a class="anchor" aria-label="anchor" href="#arg-citype"></a></dt>
 <dd><p>An <em>optional</em> argument, a character string specifying the
 type of credible interval (e.g., highest density interval). It is passed down to
-<code><a href="bsummary.html">bsummary</a></code> which in turn passes it to
-<code><a href="https://easystats.github.io/bayestestR/reference/ci.html" class="external-link">ci</a></code>. Defaults to “HDI”.</p></dd>
+<code><a href="bsummary.html">bsummary()</a></code> which in turn passes it to
+<code><a href="https://easystats.github.io/bayestestR/reference/ci.html" class="external-link">bayestestR::ci()</a></code>. Defaults to "HDI".</p></dd>
 
 
 <dt id="arg-contrasts">contrasts<a class="anchor" aria-label="anchor" href="#arg-contrasts"></a></dt>
@@ -216,7 +216,7 @@ more verbose messages. Defaults to <code>FALSE</code> which is quieter. Set to
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>An <em>optional</em> argument, additional arguments passed on to
-<code><a href="prediction.html">prediction</a></code>. In particular, the <code>effects</code> argument of <code><a href="prediction.html">prediction()</a></code>
+<code><a href="prediction.html">prediction()</a></code>. In particular, the <code>effects</code> argument of <code><a href="prediction.html">prediction()</a></code>
 is important for mixed effects models to control how random effects
 are treated in the predictions, which subsequently changes the
 marginal effect estimates.</p></dd>
@@ -224,10 +224,11 @@ marginal effect estimates.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with four elements.</p><ul><li><p><code>Posterior</code>Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to <code><a href="prediction.html">prediction()</a></code> they can include random effects or be predictions integrating out random effects.</p></li>
-<li><p><code>Summary</code>A summary of the predictions.</p></li>
-<li><p><code>Contrasts</code>Posterior distribution of all contrasts, if a contrast matrix was specified.</p></li>
-<li><p><code>ContrastSummary</code>A summary of the posterior distribution of all contrasts, if specified</p></li>
+    <p>A list with four elements.</p><ul><li><p><code>Posterior</code> Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to
+<code><a href="prediction.html">prediction()</a></code> they can include random effects or be predictions integrating out random effects.</p></li>
+<li><p><code>Summary</code> A summary of the predictions.</p></li>
+<li><p><code>Contrasts</code> Posterior distribution of all contrasts, if a contrast matrix was specified.</p></li>
+<li><p><code>ContrastSummary</code> A summary of the posterior distribution of all contrasts, if specified</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -241,14 +242,14 @@ add the values from the first row of <code>add</code> or replace the values
 using the first row of <code>at</code>. Only variables specified in
 <code>at</code> or <code>add</code> are modified. Other variables are left as is.</p></li>
 <li><p>Use the <code><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted()</a></code> function to generate predictions based on
-this modified dataset. If <code>effects</code> is set to “fixedonly”
+this modified dataset. If <code>effects</code> is set to "fixedonly"
 (meaning only generate predictions using fixed effects)
-or to “includeRE”
+or to "includeRE"
 (meaning generate predictions using fixed and random effects),
 then predictions are generated entirely using the <code><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted()</a></code>
 function and are, typically back transformed to the response scale.
 For mixed effects models with fixed and random effects where
-<code>effects</code> is set to “integrateoutRE”, then <code><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted()</a></code>
+<code>effects</code> is set to "integrateoutRE", then <code><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted()</a></code>
 is only used to generate predictions using the fixed effects on the linear
 scale. For each prediction generated, the random effects are integrated out
 by drawing <code>k</code> random samples from the model assumed random effect(s)
@@ -284,18 +285,15 @@ averaged or weighting results in specific ways are also possible.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Pavlou, M., Ambler, G., Seaman, S., &amp; Omar, R. Z. (2015)
-<a href="https://doi.org/10.1186/s12874-015-0046-6" class="external-link">doi:10.1186/s12874-015-0046-6</a>
-
+<a href="https://doi.org/10.1186/s12874-015-0046-6" class="external-link">DOI: 10.1186/s12874-015-0046-6</a>
 “A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes”
 and
 Skrondal, A., &amp; Rabe-Hesketh, S. (2009)
-<a href="https://doi.org/10.1111/j.1467-985X.2009.00587.x" class="external-link">doi:10.1111/j.1467-985X.2009.00587.x</a>
-
+<a href="https://doi.org/10.1111/j.1467-985X.2009.00587.x" class="external-link">DOI: 10.1111/j.1467-985X.2009.00587.x</a>
 “Prediction in multilevel generalized linear models”
 and
 Norton EC, Dowd BE, Maciejewski ML. (2019)
-<a href="https://doi.org/10.1001/jama.2019.1954" class="external-link">doi:10.1001/jama.2019.1954</a>
-
+<a href="https://doi.org/10.1001/jama.2019.1954" class="external-link">DOI: 10.1001/jama.2019.1954</a>
 “Marginal Effects—Quantifying the Effect of Changes in Risk Factors in Logistic Regression Models”</p>
     </div>
 
@@ -317,7 +315,7 @@ Norton EC, Dowd BE, Maciejewski ML. (2019)
 <span class="r-in"><span><span class="co">## now check AME for Tx</span></span></span>
 <span class="r-in"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu">brmsmargins</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  object <span class="op">=</span> <span class="va">mbin</span>,</span></span>
-<span class="r-in"><span>  at <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Tx <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  at <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Tx <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.05</span>, <span class="op">+</span><span class="fl">.05</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.10</span>, <span class="op">+</span><span class="fl">.10</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -329,7 +327,7 @@ Norton EC, Dowd BE, Maciejewski ML. (2019)
 <span class="r-in"><span><span class="co">## now check AME for Tx with bootstrapping the AME population</span></span></span>
 <span class="r-in"><span><span class="va">tmpalt</span> <span class="op">&lt;-</span> <span class="fu">brmsmargins</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  object <span class="op">=</span> <span class="va">mbin</span>,</span></span>
-<span class="r-in"><span>  at <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Tx <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  at <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Tx <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.05</span>, <span class="op">+</span><span class="fl">.05</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.10</span>, <span class="op">+</span><span class="fl">.10</span><span class="op">)</span>,</span></span>
@@ -343,7 +341,7 @@ Norton EC, Dowd BE, Maciejewski ML. (2019)
 <span class="r-in"><span><span class="co">## 1 / .01 in the contrast matrix to get back to a one unit change metric</span></span></span>
 <span class="r-in"><span><span class="va">tmp2</span> <span class="op">&lt;-</span> <span class="fu">brmsmargins</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  object <span class="op">=</span> <span class="va">mbin</span>,</span></span>
-<span class="r-in"><span>  add <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.01</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  add <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.01</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">.01</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">.01</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.05</span>, <span class="op">+</span><span class="fl">.05</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.10</span>, <span class="op">+</span><span class="fl">.10</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -361,7 +359,7 @@ Norton EC, Dowd BE, Maciejewski ML. (2019)
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu">brmsmargins</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    object <span class="op">=</span> <span class="va">fit</span>,</span></span>
-<span class="r-in"><span>    at <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Days <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    at <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>Days <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    ROPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.05</span>, <span class="op">+</span><span class="fl">.05</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    MID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.10</span>, <span class="op">+</span><span class="fl">.10</span><span class="op">)</span>, CIType <span class="op">=</span> <span class="st">"ETI"</span>, effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">5L</span><span class="op">)</span></span></span>
@@ -381,7 +379,7 @@ Norton EC, Dowd BE, Maciejewski ML. (2019)
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
