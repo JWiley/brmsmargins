@@ -78,10 +78,10 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; data.table 1.16.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
+<span><span class="co">#&gt; data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: Rcpp</span></span>
-<span><span class="co">#&gt; Loading 'brms' package (version 2.22.0). Useful instructions</span></span>
+<span><span class="co">#&gt; Loading 'brms' package (version 2.23.0). Useful instructions</span></span>
 <span><span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span></span>
 <span><span class="co">#&gt; to the package is available through vignette('brms_overview').</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -138,18 +138,7 @@ model. We will simulate a dataset.</p>
 <span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: rstan</span></span>
-<span><span class="co">#&gt; Loading required package: StanHeaders</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; rstan version 2.32.6 (Stan version 2.32.2)</span></span>
-<span><span class="co">#&gt; For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
-<span><span class="co">#&gt; options(mc.cores = parallel::detectCores()).</span></span>
-<span><span class="co">#&gt; To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
-<span><span class="co">#&gt; rstan_options(auto_write = TRUE)</span></span>
-<span><span class="co">#&gt; For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
-<span><span class="co">#&gt; change `threads_per_chain` option:</span></span>
-<span><span class="co">#&gt; rstan_options(threads_per_chain = 1)</span></span>
-<span><span class="co">#&gt; Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file</span></span></code></pre></div>
+<span><span class="co">#&gt; Loading required namespace: rstan</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ls.fe</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Family: gaussian </span></span>
@@ -162,12 +151,12 @@ model. We will simulate a dataset.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept          -0.09      0.13    -0.34     0.16 1.00     5154     3686</span></span>
-<span><span class="co">#&gt; sigma_Intercept     1.01      0.03     0.95     1.07 1.00     4915     2872</span></span>
-<span><span class="co">#&gt; x                   1.62      0.46     0.72     2.49 1.00     3944     2769</span></span>
-<span><span class="co">#&gt; grp                 1.02      0.34     0.34     1.67 1.00     3055     2998</span></span>
-<span><span class="co">#&gt; sigma_x             0.85      0.09     0.67     1.02 1.00     4847     2766</span></span>
-<span><span class="co">#&gt; sigma_grp           1.01      0.04     0.92     1.09 1.00     4862     2775</span></span>
+<span><span class="co">#&gt; Intercept          -0.09      0.13    -0.33     0.15 1.00     4631     3198</span></span>
+<span><span class="co">#&gt; sigma_Intercept     1.01      0.03     0.95     1.07 1.00     5701     2972</span></span>
+<span><span class="co">#&gt; x                   1.63      0.43     0.77     2.48 1.00     4872     3001</span></span>
+<span><span class="co">#&gt; grp                 1.02      0.33     0.37     1.67 1.00     3008     3006</span></span>
+<span><span class="co">#&gt; sigma_x             0.85      0.09     0.67     1.02 1.00     5074     2576</span></span>
+<span><span class="co">#&gt; sigma_grp           1.01      0.04     0.92     1.10 1.00     5409     2984</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -190,9 +179,9 @@ the regression coefficients.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="8%">
-<col width="8%">
-<col width="8%">
 <col width="6%">
+<col width="8%">
+<col width="8%">
 <col width="16%">
 <col width="15%">
 <col width="6%">
@@ -215,10 +204,10 @@ the regression coefficients.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">1.619</td>
-<td align="right">1.629</td>
-<td align="right">0.717</td>
-<td align="right">2.49</td>
+<td align="right">1.632</td>
+<td align="right">1.63</td>
+<td align="right">0.775</td>
+<td align="right">2.482</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -267,9 +256,9 @@ the regression coefficients.</p>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">1.023</td>
-<td align="right">1.033</td>
-<td align="right">0.338</td>
-<td align="right">1.672</td>
+<td align="right">1.024</td>
+<td align="right">0.371</td>
+<td align="right">1.673</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -324,10 +313,10 @@ transformed).</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">4.473</td>
-<td align="right">4.468</td>
-<td align="right">3.491</td>
-<td align="right">5.495</td>
+<td align="right">4.469</td>
+<td align="right">4.462</td>
+<td align="right">3.521</td>
+<td align="right">5.436</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -376,9 +365,9 @@ transformed).</p>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">4.905</td>
-<td align="right">4.898</td>
-<td align="right">4.391</td>
-<td align="right">5.433</td>
+<td align="right">4.899</td>
+<td align="right">4.405</td>
+<td align="right">5.452</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -445,7 +434,7 @@ fit the mixed effects location scale model.</p>
 <span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 326 of 4000 (8.0%) transitions hit the maximum treedepth limit of 10.</span></span>
+<span><span class="co">#&gt; Warning: 19 of 4000 (0.0%) transitions hit the maximum treedepth limit of 10.</span></span>
 <span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span></code></pre></div>
 <p>Note that this model has not achieved good convergence, but as it
 already took about 6 minutes to run, for the sake of demonstration we
@@ -464,26 +453,26 @@ convergence and an adequate effective sample size.</p>
 <span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)                    1.19      0.09     1.03     1.38 1.04      179</span></span>
-<span><span class="co">#&gt; sd(x)                            0.43      0.04     0.35     0.52 1.00      653</span></span>
-<span><span class="co">#&gt; sd(sigma_Intercept)              1.27      0.10     1.10     1.47 1.01      326</span></span>
-<span><span class="co">#&gt; sd(sigma_x)                      0.50      0.06     0.40     0.62 1.00     1008</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)                -0.39      0.12    -0.61    -0.16 1.01      532</span></span>
-<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.56    -0.13 1.00     1294</span></span>
+<span><span class="co">#&gt; sd(Intercept)                    1.20      0.10     1.03     1.41 1.03      194</span></span>
+<span><span class="co">#&gt; sd(x)                            0.43      0.04     0.36     0.52 1.00      552</span></span>
+<span><span class="co">#&gt; sd(sigma_Intercept)              1.27      0.10     1.10     1.47 1.01      428</span></span>
+<span><span class="co">#&gt; sd(sigma_x)                      0.50      0.05     0.40     0.61 1.00     1419</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)                -0.40      0.12    -0.61    -0.14 1.00      577</span></span>
+<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)    -0.35      0.11    -0.55    -0.12 1.00     1399</span></span>
 <span><span class="co">#&gt;                              Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)                     564</span></span>
-<span><span class="co">#&gt; sd(x)                            1330</span></span>
-<span><span class="co">#&gt; sd(sigma_Intercept)               890</span></span>
-<span><span class="co">#&gt; sd(sigma_x)                      1703</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)                 1174</span></span>
-<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)     2028</span></span>
+<span><span class="co">#&gt; sd(Intercept)                     320</span></span>
+<span><span class="co">#&gt; sd(x)                            1083</span></span>
+<span><span class="co">#&gt; sd(sigma_Intercept)              1015</span></span>
+<span><span class="co">#&gt; sd(sigma_x)                      2107</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)                  960</span></span>
+<span><span class="co">#&gt; cor(sigma_Intercept,sigma_x)     2360</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept          -2.56      0.12    -2.80    -2.32 1.03       92      169</span></span>
-<span><span class="co">#&gt; sigma_Intercept    -1.48      0.12    -1.74    -1.25 1.02      180      516</span></span>
-<span><span class="co">#&gt; x                   0.94      0.06     0.83     1.05 1.00      512     1229</span></span>
-<span><span class="co">#&gt; sigma_x             0.97      0.06     0.85     1.09 1.00     1229     1765</span></span>
+<span><span class="co">#&gt; Intercept          -2.56      0.11    -2.78    -2.33 1.03      116      265</span></span>
+<span><span class="co">#&gt; sigma_Intercept    -1.50      0.14    -1.78    -1.23 1.04      120      276</span></span>
+<span><span class="co">#&gt; x                   0.94      0.06     0.83     1.05 1.01      430     1302</span></span>
+<span><span class="co">#&gt; sigma_x             0.97      0.06     0.85     1.09 1.00      860     1944</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -532,10 +521,10 @@ the fixed effects for the AME for the scale parameter,
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.405</td>
-<td align="right">0.402</td>
-<td align="right">0.284</td>
-<td align="right">0.559</td>
+<td align="right">0.401</td>
+<td align="right">0.397</td>
+<td align="right">0.272</td>
+<td align="right">0.554</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -558,14 +547,14 @@ the AME.</p>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1b.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
 <col width="8%">
-<col width="8%">
+<col width="6%">
 <col width="8%">
 <col width="8%">
 <col width="16%">
-<col width="14%">
+<col width="15%">
 <col width="6%">
 <col width="9%">
 <col width="6%">
@@ -586,10 +575,10 @@ the AME.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.801</td>
-<td align="right">0.766</td>
-<td align="right">0.356</td>
-<td align="right">1.582</td>
+<td align="right">0.791</td>
+<td align="right">0.75</td>
+<td align="right">0.357</td>
+<td align="right">1.596</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -610,10 +599,10 @@ the fixed effects.</p>
 <span>  effects <span class="op">=</span> <span class="st">"fixedonly"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2a.lsme</span><span class="op">$</span><span class="va">ContrastSummary</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
 <col width="11%">
-<col width="11%">
+<col width="10%">
 <col width="11%">
 <col width="11%">
 <col width="13%">
@@ -638,10 +627,10 @@ the fixed effects.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.3751833</td>
-<td align="right">0.3732505</td>
-<td align="right">0.2614079</td>
-<td align="right">0.5074998</td>
+<td align="right">0.3713619</td>
+<td align="right">0.368748</td>
+<td align="right">0.2533034</td>
+<td align="right">0.5077644</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -690,10 +679,10 @@ effects, likely the more appropriate estimate for most use cases.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.7096137</td>
-<td align="right">0.6790394</td>
-<td align="right">0.3412707</td>
-<td align="right">1.410367</td>
+<td align="right">0.7016545</td>
+<td align="right">0.6668309</td>
+<td align="right">0.3358997</td>
+<td align="right">1.416038</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>

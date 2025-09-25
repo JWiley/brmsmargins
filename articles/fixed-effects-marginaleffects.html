@@ -78,10 +78,10 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; data.table 1.16.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
+<span><span class="co">#&gt; data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: Rcpp</span></span>
-<span><span class="co">#&gt; Loading 'brms' package (version 2.22.0). Useful instructions</span></span>
+<span><span class="co">#&gt; Loading 'brms' package (version 2.23.0). Useful instructions</span></span>
 <span><span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span></span>
 <span><span class="co">#&gt; to the package is available through vignette('brms_overview').</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -268,18 +268,7 @@ using <code>brms</code>.</p>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: rstan</span></span>
-<span><span class="co">#&gt; Loading required package: StanHeaders</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; rstan version 2.32.6 (Stan version 2.32.2)</span></span>
-<span><span class="co">#&gt; For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
-<span><span class="co">#&gt; options(mc.cores = parallel::detectCores()).</span></span>
-<span><span class="co">#&gt; To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
-<span><span class="co">#&gt; rstan_options(auto_write = TRUE)</span></span>
-<span><span class="co">#&gt; For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
-<span><span class="co">#&gt; change `threads_per_chain` option:</span></span>
-<span><span class="co">#&gt; rstan_options(threads_per_chain = 1)</span></span>
-<span><span class="co">#&gt; Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file</span></span></code></pre></div>
+<span><span class="co">#&gt; Loading required namespace: rstan</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">bayes.logistic</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Family: bernoulli </span></span>
@@ -291,9 +280,9 @@ using <code>brms</code>.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept   -16.12      5.67   -28.84    -7.42 1.00     1379     1959</span></span>
-<span><span class="co">#&gt; am           -3.83      1.86    -7.97    -0.70 1.00     1568     1772</span></span>
-<span><span class="co">#&gt; mpg           0.87      0.31     0.40     1.56 1.00     1328     1711</span></span>
+<span><span class="co">#&gt; Intercept   -16.46      5.73   -29.59    -7.48 1.00     1686     1892</span></span>
+<span><span class="co">#&gt; am           -3.88      1.89    -7.96    -0.62 1.00     1708     1687</span></span>
+<span><span class="co">#&gt; mpg           0.89      0.31     0.40     1.59 1.00     1620     1794</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -347,8 +336,8 @@ multiple could have been specified.</p>
 <tbody><tr class="odd">
 <td align="right">0.071</td>
 <td align="right">0.07</td>
-<td align="right">0.054</td>
-<td align="right">0.092</td>
+<td align="right">0.052</td>
+<td align="right">0.091</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -378,7 +367,7 @@ values of <code>mpg</code>.</p>
 <col width="8%">
 <col width="8%">
 <col width="8%">
-<col width="8%">
+<col width="7%">
 <col width="17%">
 <col width="16%">
 <col width="7%">
@@ -400,10 +389,10 @@ values of <code>mpg</code>.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.544</td>
-<td align="right">0.547</td>
-<td align="right">0.430</td>
-<td align="right">0.662</td>
+<td align="right">0.543</td>
+<td align="right">0.545</td>
+<td align="right">0.419</td>
+<td align="right">0.66</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -413,9 +402,9 @@ values of <code>mpg</code>.</p>
 </tr>
 <tr class="even">
 <td align="right">0.283</td>
-<td align="right">0.277</td>
-<td align="right">0.175</td>
-<td align="right">0.408</td>
+<td align="right">0.274</td>
+<td align="right">0.170</td>
+<td align="right">0.41</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -455,10 +444,10 @@ values of <code>mpg</code>.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">-0.2607899</td>
-<td align="right">-0.2649507</td>
-<td align="right">-0.4289198</td>
-<td align="right">-0.0891496</td>
+<td align="right">-0.2599408</td>
+<td align="right">-0.2668172</td>
+<td align="right">-0.4330838</td>
+<td align="right">-0.0820307</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.95</td>
@@ -501,10 +490,10 @@ outcomes. We use a dataset drawn from: <a href="https://stats.oarc.ucla.edu/r/da
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept         -5.32      0.68    -6.68    -4.01 1.00     2444     2292</span></span>
-<span><span class="co">#&gt; progAcademic       1.15      0.38     0.48     1.92 1.00     1949     1571</span></span>
-<span><span class="co">#&gt; progVocational     0.39      0.47    -0.48     1.34 1.00     1808     1427</span></span>
-<span><span class="co">#&gt; math               0.07      0.01     0.05     0.09 1.00     2729     2349</span></span>
+<span><span class="co">#&gt; Intercept         -5.31      0.64    -6.62    -4.07 1.00     2429     2135</span></span>
+<span><span class="co">#&gt; progAcademic       1.13      0.36     0.46     1.87 1.00     2399     1890</span></span>
+<span><span class="co">#&gt; progVocational     0.37      0.45    -0.49     1.24 1.00     2442     2089</span></span>
+<span><span class="co">#&gt; math               0.07      0.01     0.05     0.09 1.00     2627     2257</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -550,7 +539,7 @@ type.</p>
 <td align="right">0.044</td>
 <td align="right">0.044</td>
 <td align="right">0.025</td>
-<td align="right">0.065</td>
+<td align="right">0.064</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -602,10 +591,10 @@ awards.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.262</td>
-<td align="right">0.253</td>
-<td align="right">0.077</td>
-<td align="right">0.522</td>
+<td align="right">0.265</td>
+<td align="right">0.255</td>
+<td align="right">0.093</td>
+<td align="right">0.542</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -615,9 +604,9 @@ awards.</p>
 </tr>
 <tr class="even">
 <td align="right">0.780</td>
-<td align="right">0.776</td>
-<td align="right">0.575</td>
-<td align="right">0.992</td>
+<td align="right">0.777</td>
+<td align="right">0.599</td>
+<td align="right">0.991</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -626,10 +615,10 @@ awards.</p>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">0.380</td>
-<td align="right">0.368</td>
-<td align="right">0.158</td>
-<td align="right">0.707</td>
+<td align="right">0.379</td>
+<td align="right">0.367</td>
+<td align="right">0.152</td>
+<td align="right">0.702</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -670,10 +659,10 @@ awards.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.518</td>
-<td align="right">-0.522</td>
-<td align="right">-0.806</td>
-<td align="right">-0.135</td>
+<td align="right">-0.515</td>
+<td align="right">-0.521</td>
+<td align="right">-0.817</td>
+<td align="right">-0.185</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -683,10 +672,10 @@ awards.</p>
 <td align="left">AME General v Academic</td>
 </tr>
 <tr class="even">
-<td align="right">-0.118</td>
-<td align="right">-0.115</td>
-<td align="right">-0.510</td>
-<td align="right">0.248</td>
+<td align="right">-0.114</td>
+<td align="right">-0.110</td>
+<td align="right">-0.504</td>
+<td align="right">0.258</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -696,10 +685,10 @@ awards.</p>
 <td align="left">AME General v Vocational</td>
 </tr>
 <tr class="odd">
-<td align="right">0.400</td>
-<td align="right">0.409</td>
-<td align="right">0.011</td>
-<td align="right">0.759</td>
+<td align="right">0.401</td>
+<td align="right">0.408</td>
+<td align="right">0.020</td>
+<td align="right">0.758</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -729,7 +718,7 @@ count outcomes.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">bayes.nb</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Family: negbinomial </span></span>
-<span><span class="co">#&gt;   Links: mu = log; shape = identity </span></span>
+<span><span class="co">#&gt;   Links: mu = log </span></span>
 <span><span class="co">#&gt; Formula: count ~ nofish + xb </span></span>
 <span><span class="co">#&gt;    Data: d (Number of observations: 250) </span></span>
 <span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
@@ -737,13 +726,13 @@ count outcomes.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept     -1.38      0.21    -1.78    -0.97 1.00     2936     2491</span></span>
-<span><span class="co">#&gt; nofishfish    -0.08      0.25    -0.56     0.42 1.00     3667     2776</span></span>
-<span><span class="co">#&gt; xb             1.24      0.10     1.06     1.43 1.00     3223     3165</span></span>
+<span><span class="co">#&gt; Intercept     -1.38      0.21    -1.81    -0.98 1.00     3239     2555</span></span>
+<span><span class="co">#&gt; nofishfish    -0.08      0.24    -0.55     0.40 1.00     3874     2770</span></span>
+<span><span class="co">#&gt; xb             1.24      0.10     1.05     1.44 1.00     3568     2874</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Further Distributional Parameters:</span></span>
 <span><span class="co">#&gt;       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; shape     0.72      0.12     0.52     0.99 1.00     3464     2956</span></span>
+<span><span class="co">#&gt; shape     0.72      0.12     0.51     0.98 1.00     3639     2740</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -786,10 +775,10 @@ type.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">5.623</td>
-<td align="right">5.296</td>
-<td align="right">2.654</td>
-<td align="right">11.735</td>
+<td align="right">5.607</td>
+<td align="right">5.282</td>
+<td align="right">2.367</td>
+<td align="right">11.234</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -838,10 +827,10 @@ for no fish versus fish. The estimate is how many are caught.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">4.523</td>
-<td align="right">4.367</td>
-<td align="right">2.485</td>
-<td align="right">7.975</td>
+<td align="right">4.512</td>
+<td align="right">4.339</td>
+<td align="right">2.528</td>
+<td align="right">7.731</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -850,10 +839,10 @@ for no fish versus fish. The estimate is how many are caught.</p>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">4.274</td>
-<td align="right">4.043</td>
-<td align="right">1.695</td>
-<td align="right">8.816</td>
+<td align="right">4.254</td>
+<td align="right">3.971</td>
+<td align="right">1.692</td>
+<td align="right">9.248</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -867,14 +856,14 @@ for no fish versus fish. The estimate is how many are caught.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
-<col width="5%">
 <col width="6%">
-<col width="8%">
+<col width="6%">
+<col width="7%">
 <col width="6%">
 <col width="13%">
 <col width="12%">
 <col width="5%">
-<col width="8%">
+<col width="7%">
 <col width="5%">
 <col width="4%">
 <col width="21%">
@@ -893,10 +882,10 @@ for no fish versus fish. The estimate is how many are caught.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.25</td>
-<td align="right">0.343</td>
-<td align="right">-3.065</td>
-<td align="right">3.026</td>
+<td align="right">0.258</td>
+<td align="right">0.364</td>
+<td align="right">-3.213</td>
+<td align="right">2.957</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>

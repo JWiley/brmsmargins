@@ -78,10 +78,10 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; data.table 1.16.4 using 16 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
+<span><span class="co">#&gt; data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: Rcpp</span></span>
-<span><span class="co">#&gt; Loading 'brms' package (version 2.22.0). Useful instructions</span></span>
+<span><span class="co">#&gt; Loading 'brms' package (version 2.23.0). Useful instructions</span></span>
 <span><span class="co">#&gt; can be found by typing help('brms'). A more detailed introduction</span></span>
 <span><span class="co">#&gt; to the package is available through vignette('brms_overview').</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -252,23 +252,12 @@ intercept and slope.</p>
 <span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"x"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 3 of 4000 (0.0%) transitions ended with a divergence.</span></span>
+<span><span class="co">#&gt; Warning: 24 of 4000 (1.0%) transitions ended with a divergence.</span></span>
 <span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
-<span><span class="co">#&gt; Loading required package: rstan</span></span>
-<span><span class="co">#&gt; Loading required package: StanHeaders</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; rstan version 2.32.6 (Stan version 2.32.2)</span></span>
-<span><span class="co">#&gt; For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
-<span><span class="co">#&gt; options(mc.cores = parallel::detectCores()).</span></span>
-<span><span class="co">#&gt; To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
-<span><span class="co">#&gt; rstan_options(auto_write = TRUE)</span></span>
-<span><span class="co">#&gt; For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
-<span><span class="co">#&gt; change `threads_per_chain` option:</span></span>
-<span><span class="co">#&gt; rstan_options(threads_per_chain = 1)</span></span>
-<span><span class="co">#&gt; Do not specify '-march=native' in 'LOCAL_CPPFLAGS' or a Makevars file</span></span></code></pre></div>
+<span><span class="co">#&gt; Loading required namespace: rstan</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mlogit</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: There were 3 divergent transitions after warmup. Increasing</span></span>
+<span><span class="co">#&gt; Warning: There were 24 divergent transitions after warmup. Increasing</span></span>
 <span><span class="co">#&gt; adapt_delta above 0.8 may help. See</span></span>
 <span><span class="co">#&gt; http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</span></span>
 <span><span class="co">#&gt;  Family: bernoulli </span></span>
@@ -281,14 +270,14 @@ intercept and slope.</p>
 <span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)        1.19      0.18     0.86     1.57 1.00      889     1096</span></span>
-<span><span class="co">#&gt; sd(x)                0.53      0.25     0.06     1.03 1.01      389      799</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)    -0.19      0.39    -0.80     0.74 1.00     1142     1032</span></span>
+<span><span class="co">#&gt; sd(Intercept)        1.19      0.18     0.87     1.56 1.00     1130     1850</span></span>
+<span><span class="co">#&gt; sd(x)                0.54      0.25     0.06     1.00 1.02      279      506</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)    -0.20      0.39    -0.78     0.77 1.00     1625     1284</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept    -2.49      0.19    -2.87    -2.15 1.00     1123     1540</span></span>
-<span><span class="co">#&gt; x             0.96      0.17     0.63     1.31 1.00     1785     1306</span></span>
+<span><span class="co">#&gt; Intercept    -2.49      0.19    -2.88    -2.14 1.00     1270     2120</span></span>
+<span><span class="co">#&gt; x             0.96      0.17     0.63     1.30 1.00     2403     2217</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -314,11 +303,11 @@ numerical integration are set via the argument, <code>k</code>, here
 <table class="table">
 <colgroup>
 <col width="8%">
-<col width="8%">
-<col width="8%">
+<col width="6%">
+<col width="6%">
 <col width="8%">
 <col width="16%">
-<col width="14%">
+<col width="15%">
 <col width="6%">
 <col width="9%">
 <col width="6%">
@@ -340,9 +329,9 @@ numerical integration are set via the argument, <code>k</code>, here
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">0.111</td>
-<td align="right">0.111</td>
-<td align="right">0.064</td>
-<td align="right">0.162</td>
+<td align="right">0.11</td>
+<td align="right">0.06</td>
+<td align="right">0.163</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -394,10 +383,10 @@ data.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.119</td>
+<td align="right">0.118</td>
 <td align="right">0.117</td>
-<td align="right">0.074</td>
-<td align="right">0.173</td>
+<td align="right">0.075</td>
+<td align="right">0.175</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -406,10 +395,10 @@ data.</p>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">0.229</td>
 <td align="right">0.228</td>
-<td align="right">0.166</td>
-<td align="right">0.304</td>
+<td align="right">0.228</td>
+<td align="right">0.161</td>
+<td align="right">0.305</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -421,11 +410,11 @@ data.</p>
 </table>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
-<col width="8%">
 <col width="6%">
 <col width="8%">
+<col width="6%">
 <col width="8%">
 <col width="16%">
 <col width="15%">
@@ -449,10 +438,10 @@ data.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.111</td>
 <td align="right">0.11</td>
-<td align="right">0.064</td>
-<td align="right">0.165</td>
+<td align="right">0.109</td>
+<td align="right">0.06</td>
+<td align="right">0.166</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -508,8 +497,8 @@ difference is due to Monte Carlo variation only, but with
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="8%">
-<col width="7%">
-<col width="11%">
+<col width="8%">
+<col width="9%">
 <col width="9%">
 <col width="14%">
 <col width="13%">
@@ -533,10 +522,10 @@ difference is due to Monte Carlo variation only, but with
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">-0.599</td>
-<td align="right">0.033</td>
-<td align="right">-165.279</td>
-<td align="right">179.439</td>
+<td align="right">-0.717</td>
+<td align="right">-0.371</td>
+<td align="right">-167.14</td>
+<td align="right">174.157</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -640,14 +629,14 @@ the data.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">-2.018</td>
-<td align="left">[-2.351, -1.646]</td>
+<td align="left">-2.022</td>
+<td align="left">[-2.389, -1.666]</td>
 <td align="left">-2.021</td>
 <td align="left">[-2.219, -1.833]</td>
 </tr>
 <tr class="even">
-<td align="left">0.799</td>
-<td align="left">[0.541, 1.074]</td>
+<td align="left">0.798</td>
+<td align="left">[0.536, 1.075]</td>
 <td align="left">0.802</td>
 <td align="left">[0.561, 1.047]</td>
 </tr>
@@ -709,14 +698,14 @@ intercept and slope.</p>
 <span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)        1.19      0.15     0.92     1.51 1.00     1394     1980</span></span>
-<span><span class="co">#&gt; sd(x)                0.39      0.19     0.04     0.75 1.00      426      784</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)    -0.07      0.39    -0.74     0.79 1.00     1347     1293</span></span>
+<span><span class="co">#&gt; sd(Intercept)        1.19      0.15     0.92     1.51 1.00     1370     2517</span></span>
+<span><span class="co">#&gt; sd(x)                0.38      0.19     0.03     0.75 1.01      355      891</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)    -0.07      0.40    -0.73     0.83 1.00     1614     1003</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept    -2.48      0.18    -2.86    -2.15 1.00     1221     2069</span></span>
-<span><span class="co">#&gt; x             0.97      0.15     0.69     1.28 1.00     2885     3135</span></span>
+<span><span class="co">#&gt; Intercept    -2.47      0.18    -2.84    -2.13 1.00     1860     2334</span></span>
+<span><span class="co">#&gt; x             0.97      0.15     0.68     1.28 1.00     4302     3080</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -764,10 +753,10 @@ derivative treating <code>x</code> as continuous.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.332</td>
+<td align="right">0.333</td>
 <td align="right">0.312</td>
-<td align="right">0.137</td>
-<td align="right">0.694</td>
+<td align="right">0.141</td>
+<td align="right">0.729</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -814,10 +803,10 @@ derivative treating <code>x</code> as continuous.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.2934257</td>
-<td align="right">0.2766797</td>
-<td align="right">0.1317953</td>
-<td align="right">0.5968962</td>
+<td align="right">0.2942814</td>
+<td align="right">0.2782104</td>
+<td align="right">0.1138293</td>
+<td align="right">0.6221603</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -863,14 +852,14 @@ level poisson regression that ignores the clustering in the data.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">-1.782</td>
-<td align="left">[-2.243, -1.257]</td>
+<td align="left">-1.778</td>
+<td align="left">[-2.261, -1.265]</td>
 <td align="left">-1.858</td>
 <td align="left">[-2.019, -1.705]</td>
 </tr>
 <tr class="even">
-<td align="left">0.991</td>
-<td align="left">[0.684, 1.271]</td>
+<td align="left">0.989</td>
+<td align="left">[0.705, 1.282]</td>
 <td align="left">0.983</td>
 <td align="left">[0.802, 1.170]</td>
 </tr>
@@ -919,7 +908,7 @@ use the same dataset, just for demonstration.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mnb</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Family: negbinomial </span></span>
-<span><span class="co">#&gt;   Links: mu = log; shape = identity </span></span>
+<span><span class="co">#&gt;   Links: mu = log </span></span>
 <span><span class="co">#&gt; Formula: y ~ 1 + x + (1 + x | ID) </span></span>
 <span><span class="co">#&gt;    Data: dnb (Number of observations: 2000) </span></span>
 <span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
@@ -928,18 +917,18 @@ use the same dataset, just for demonstration.</p>
 <span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
 <span><span class="co">#&gt; ~ID (Number of levels: 100) </span></span>
 <span><span class="co">#&gt;                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)        1.19      0.17     0.90     1.57 1.00     1342     2468</span></span>
-<span><span class="co">#&gt; sd(x)                0.52      0.21     0.07     0.91 1.00      415      539</span></span>
-<span><span class="co">#&gt; cor(Intercept,x)    -0.30      0.33    -0.78     0.48 1.00     1810     1077</span></span>
+<span><span class="co">#&gt; sd(Intercept)        1.19      0.17     0.89     1.56 1.01     1038     2109</span></span>
+<span><span class="co">#&gt; sd(x)                0.52      0.21     0.06     0.92 1.02      350      436</span></span>
+<span><span class="co">#&gt; cor(Intercept,x)    -0.30      0.31    -0.78     0.45 1.01     1496     1350</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Regression Coefficients:</span></span>
 <span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept    -2.50      0.19    -2.90    -2.15 1.00     1605     2152</span></span>
-<span><span class="co">#&gt; x             1.01      0.17     0.68     1.37 1.00     2813     2758</span></span>
+<span><span class="co">#&gt; Intercept    -2.51      0.19    -2.92    -2.15 1.00     1619     1933</span></span>
+<span><span class="co">#&gt; x             1.01      0.17     0.69     1.38 1.00     2231     2341</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Further Distributional Parameters:</span></span>
 <span><span class="co">#&gt;       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; shape  1552.78  38299.61     2.70   604.84 1.00     1691     1540</span></span>
+<span><span class="co">#&gt; shape  1969.21  48049.95     2.72  1417.87 1.00     1580      767</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
 <span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
@@ -959,12 +948,12 @@ treating <code>x</code> as continuous.</p>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
+<table class="table">
 <colgroup>
 <col width="8%">
 <col width="6%">
 <col width="8%">
-<col width="8%">
+<col width="6%">
 <col width="16%">
 <col width="15%">
 <col width="6%">
@@ -987,10 +976,10 @@ treating <code>x</code> as continuous.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.295</td>
+<td align="right">0.297</td>
 <td align="right">0.28</td>
-<td align="right">0.114</td>
-<td align="right">0.635</td>
+<td align="right">0.125</td>
+<td align="right">0.65</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1009,11 +998,11 @@ treating <code>x</code> as continuous.</p>
 <span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.nb</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
 <col width="8%">
 <col width="8%">
-<col width="5%">
+<col width="6%">
 <col width="8%">
 <col width="16%">
 <col width="15%">
@@ -1037,10 +1026,10 @@ treating <code>x</code> as continuous.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.256</td>
+<td align="right">0.258</td>
 <td align="right">0.245</td>
-<td align="right">0.1</td>
-<td align="right">0.506</td>
+<td align="right">0.11</td>
+<td align="right">0.552</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1073,12 +1062,12 @@ values from <code>brms</code>.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">-1.797</td>
-<td align="left">[-2.262, -1.266]</td>
+<td align="left">-1.805</td>
+<td align="left">[-2.296, -1.264]</td>
 </tr>
 <tr class="even">
-<td align="left">0.923</td>
-<td align="left">[0.566, 1.266]</td>
+<td align="left">0.929</td>
+<td align="left">[0.590, 1.301]</td>
 </tr>
 </tbody>
 </table>
@@ -1461,8 +1450,8 @@ ID</strong>.</p>
 <tr class="odd">
 <td align="right">0.122</td>
 <td align="right">0.119</td>
-<td align="right">0.058</td>
-<td align="right">0.218</td>
+<td align="right">0.052</td>
+<td align="right">0.214</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1471,10 +1460,10 @@ ID</strong>.</p>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="right">0.232</td>
-<td align="right">0.229</td>
-<td align="right">0.124</td>
-<td align="right">0.367</td>
+<td align="right">0.231</td>
+<td align="right">0.228</td>
+<td align="right">0.128</td>
+<td align="right">0.357</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1490,7 +1479,7 @@ these two values, our AME.</p>
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="6%">
+<col width="8%">
 <col width="8%">
 <col width="8%">
 <col width="8%">
@@ -1516,10 +1505,10 @@ these two values, our AME.</p>
 <th align="left">Label</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">0.11</td>
-<td align="right">0.108</td>
-<td align="right">0.047</td>
-<td align="right">0.188</td>
+<td align="right">0.109</td>
+<td align="right">0.107</td>
+<td align="right">0.043</td>
+<td align="right">0.179</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1737,30 +1726,30 @@ grid of values in <code>use.at</code> in the following table.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.117</td>
-<td align="right">0.051</td>
-<td align="right">0.190</td>
+<td align="right">0.116</td>
+<td align="right">0.054</td>
+<td align="right">0.187</td>
 <td align="right">0.95</td>
 <td align="left">HDI</td>
 </tr>
 <tr class="even">
-<td align="right">0.144</td>
-<td align="right">0.074</td>
-<td align="right">0.221</td>
+<td align="right">0.143</td>
+<td align="right">0.070</td>
+<td align="right">0.213</td>
 <td align="right">0.95</td>
 <td align="left">HDI</td>
 </tr>
 <tr class="odd">
 <td align="right">0.045</td>
 <td align="right">0.017</td>
-<td align="right">0.080</td>
+<td align="right">0.079</td>
 <td align="right">0.95</td>
 <td align="left">HDI</td>
 </tr>
 <tr class="even">
-<td align="right">0.265</td>
-<td align="right">0.165</td>
-<td align="right">0.368</td>
+<td align="right">0.267</td>
+<td align="right">0.170</td>
+<td align="right">0.379</td>
 <td align="right">0.95</td>
 <td align="left">HDI</td>
 </tr>
@@ -1827,12 +1816,12 @@ stressor exposure and sleep.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.071</td>
-<td align="right">-0.068</td>
-<td align="right">-0.139</td>
+<td align="right">-0.072</td>
+<td align="right">-0.069</td>
+<td align="right">-0.134</td>
 <td align="right">-0.012</td>
-<td align="right">3.475</td>
-<td align="right">73.375</td>
+<td align="right">3.175</td>
+<td align="right">73.675</td>
 <td align="right">0.95</td>
 <td align="left">HDI</td>
 <td align="left">[-0.02, 0.02]</td>
@@ -1840,12 +1829,12 @@ stressor exposure and sleep.</p>
 <td align="left">AME xw: Grp 0</td>
 </tr>
 <tr class="even">
+<td align="right">0.123</td>
 <td align="right">0.122</td>
-<td align="right">0.120</td>
-<td align="right">0.038</td>
-<td align="right">0.209</td>
-<td align="right">0.825</td>
-<td align="right">95.350</td>
+<td align="right">0.039</td>
+<td align="right">0.211</td>
+<td align="right">0.775</td>
+<td align="right">96.100</td>
 <td align="right">0.95</td>
 <td align="left">HDI</td>
 <td align="left">[-0.02, 0.02]</td>
@@ -1853,12 +1842,12 @@ stressor exposure and sleep.</p>
 <td align="left">AME xw: Grp 1</td>
 </tr>
 <tr class="odd">
-<td align="right">0.193</td>
-<td align="right">0.190</td>
-<td align="right">0.097</td>
-<td align="right">0.298</td>
-<td align="right">0.000</td>
-<td align="right">99.950</td>
+<td align="right">0.195</td>
+<td align="right">0.192</td>
+<td align="right">0.096</td>
+<td align="right">0.297</td>
+<td align="right">0.025</td>
+<td align="right">99.850</td>
 <td align="right">0.95</td>
 <td align="left">HDI</td>
 <td align="left">[-0.02, 0.02]</td>
