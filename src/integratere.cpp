@@ -68,14 +68,12 @@ arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int
     for (int nsamp = 0; nsamp < k; nsamp++) {
       Zall.col(nsamp) = Zall.col(nsamp) + yhat.row(i).t();
     }
-    if (backtrans == 0) {
-      Zall = 1 / (1 + exp(-Zall));
-    } else if (backtrans == 1) {
-      Zall = exp(Zall);
-    } else if (backtrans == 2) {
-      Zall = pow(Zall, 2);
-    } else if (backtrans == 3) {
-      Zall = 1 / Zall;
+    switch (backtrans) {
+      case 0: Zall = 1.0 / (1.0 + arma::exp(-Zall)); break;
+      case 1: Zall = arma::exp(Zall); break;
+      case 2: Zall %= Zall; break;
+      case 3: Zall = 1.0 / Zall; break;
+      default: break;
     }
     arma::colvec zm = arma::mean(Zall, 1);
     yhat2.row(i) = zm.t();

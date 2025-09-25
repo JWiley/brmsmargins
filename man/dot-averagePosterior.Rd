@@ -14,7 +14,7 @@ draws are on different rows.}
 \item{resample}{An integer indicating the number of
 bootstrap resamples of the posterior predictions to
 use when calculating summaries. Defaults to \code{0L}.
-See the details section for more informations as its implementation
+See the details section for more information as its implementation
 is experimental and it may not operate as one would expect.}
 
 \item{seed}{A seed for random number generation. Defaults to \code{FALSE},

@@ -25,7 +25,7 @@ prediction(
 \code{brms} model object.}
 
 \item{data}{A \emph{required} argument specifying a data frame or
-data table passed to \code{fitted()} as the new data to be used
+data table passed to \code{\link[=fitted]{fitted()}} as the new data to be used
 for predictions.}
 
 \item{summarize}{An \emph{optional} argument, a logical value, whether
@@ -42,7 +42,7 @@ posterior draws to be used in the calculations. If omitted,
 defaults to all posterior draws.}
 
 \item{dpar}{An \emph{optional} argument, the parameter passed on to the
-\code{dpar} argument of \code{fitted()} in brms. Defaults to \code{NULL}
+\code{dpar} argument of \code{\link[=fitted]{fitted()}} in brms. Defaults to \code{NULL}
 indicating the mean or location parameter typically.}
 
 \item{resample}{An \emph{optional} argument, an integer indicating the
@@ -59,28 +59,28 @@ This should be considered experimental.}
 
 \item{effects}{An \emph{optional} argument, a character string indicating
 the type of prediction to be made. Can be one of
-\dQuote{fixedonly} meaning only use fixed effects,
-\dQuote{includeRE} meaning that random effects should be
+"fixedonly" meaning only use fixed effects,
+"includeRE" meaning that random effects should be
 included in the predictions, or
-\dQuote{integrateoutRE} meaning that random effects should be
+"integrateoutRE" meaning that random effects should be
 integrated out / over in the predictions.
-It defaults to \dQuote{fixedonly} so is not typically required for
+It defaults to "fixedonly" so is not typically required for
 a user to specify it.}
 
 \item{backtrans}{An \emph{optional} argument, a character string indicating
 the type of back transformation to be applied. Can be one of
-\dQuote{response} meaning to use the response scale,
-\dQuote{linear} or \dQuote{identity} meaning to use the linear predictor scale,
+"response" meaning to use the response scale,
+"linear" or "identity" meaning to use the linear predictor scale,
 or a specific back transformation desired, from a possible list of
-\dQuote{invlogit}, \dQuote{exp}, \dQuote{square}, or \dQuote{inverse}.
+"invlogit", "exp", "square", or "inverse".
 Custom back transformations should only be needed if, for example,
 the outcome variable was transformed prior to fitting the model.
-It defaults to \dQuote{response} so is not typically required for
+It defaults to "response" so is not typically required for
 a user to specify it.}
 
 \item{k}{An \emph{optional} argument, an integer providing the number of
 random draws to use for integrating out the random effects.
-Only relevant when \code{effects} is \dQuote{integrateoutRE}.
+Only relevant when \code{effects = "integrateoutRE"}.
 It defaults to \code{100L}, a rather arbitrary number attempting to
 balance the increased precision that comes from a larger value,
 with the increased computational cost of more Monte Carlo simulations
@@ -114,7 +114,7 @@ the argument.
 }
 \references{
 Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
-\doi{10.1186/s12874-015-0046-6}
+\href{https://doi.org/10.1186/s12874-015-0046-6}{DOI: 10.1186/s12874-015-0046-6}.
 \dQuote{A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes}
 and
 Skrondal, A., & Rabe-Hesketh, S. (2009)

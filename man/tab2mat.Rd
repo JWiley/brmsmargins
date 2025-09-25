@@ -23,7 +23,7 @@ Not intended to be called directly by most users.
 }
 \section{Functions}{
 \itemize{
-\item \code{tab2matR()}: Pure \code{R} implementation of \code{tab2mat}
+\item \code{tab2matR()}: Pure \code{R} implementation of \code{\link[=tab2mat]{tab2mat()}}.
 
 }}
 \examples{

@@ -7,7 +7,7 @@
 \alias{.assertfamily}
 \alias{.assertdpar}
 \alias{.assertlink}
-\title{Check Assertions about a \code{brmsfit} Model Object}
+\title{Check Assertions about a \link[brms:brmsfit-class]{brms::brmsfit} class Model Object}
 \usage{
 .assertbrmsfit(object)
 
@@ -20,10 +20,10 @@
 .assertlink(object, dpar)
 }
 \arguments{
-\item{object}{A \code{brmsfit} model object to be evaluated.}
+\item{object}{A \link[brms:brmsfit-class]{brms::brmsfit} model object to be evaluated.}
 
-\item{dpar}{Required for \code{.assertdpar} which checks this is valid.
-Optional for \code{.assertlink} which will use \code{NULL} if not
+\item{dpar}{Required for \code{\link[=.assertdpar]{.assertdpar()}} which checks this is valid.
+Optional for \code{\link[=.assertlink]{.assertlink()}} which will use \code{NULL} if not
 specified. If specified, this should be \code{NULL} or
 a character string.}
 }
@@ -38,14 +38,14 @@ Instead, they are intended to be called in circumstances
 where the expected result is \code{TRUE}.
 All of them are designed to try to give informative error
 messages if the assertion is not met.
-All of them result in a \code{stop()} error if the assertion is not met.
+All of them result in a \code{stop} error if the assertion is not met.
 }
 \details{
 \itemize{
-\item{\code{.assertbrmsfit}}{asserts that the object should be of class \code{brmsfit}.}
-\item{\code{.assertgaussian}}{asserts that all random effects are Gaussian.}
-\item{\code{.assertfamily}}{asserts that the distribution (family) of the outcome is a currently supported family. Only applies when integrating out random effects.}
-\item{\code{.assertlink}}{asserts that the link function is a currently supported link function. Only applies when integrating out random effects.}
+\item \code{.assertbrmsfit}: asserts that the object should be \link[brms:brmsfit-class]{brms::brmsfit}.
+\item \code{.assertgaussian}: asserts that all random effects are Gaussian.
+\item \code{.assertfamily}: asserts that the distribution (family) of the outcome is a currently supported family. Only applies when integrating out random effects.
+\item \code{.assertlink}: asserts that the link function is a currently supported link function. Only applies when integrating out random effects.
 }
 }
 \keyword{internal}

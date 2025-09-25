@@ -1,4 +1,4 @@
-#' @describeIn integratemvn Pure \code{R} implementation of \code{integratemvn}
+#' @describeIn integratemvn Pure `R` implementation of [integratemvn()].
 #' @importFrom stats rnorm
 integratemvnR <- function(X, k, sd, chol) {
   n <- length(sd)
@@ -12,14 +12,14 @@ integratemvnR <- function(X, k, sd, chol) {
   X %*% t(Z)
 }
 
-#' @describeIn tab2mat Pure \code{R} implementation of \code{tab2mat}
+#' @describeIn tab2mat Pure `R` implementation of [tab2mat()].
 tab2matR <- function(X) {
   X <- as.vector(X)
   dims <- sqrt(length(X))
   matrix(X, dims, dims, byrow = TRUE)
 }
 
-#' @describeIn integratere Pure \code{R} implementation of \code{integratere}
+#' @describeIn integratere Pure `R` implementation of [integratere()].
 integratereR <- function(d, sd, L, k, yhat, backtrans) {
   M <- nrow(yhat)
   N <- ncol(yhat)

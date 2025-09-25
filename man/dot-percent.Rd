@@ -28,6 +28,6 @@ the Region of Practical Equivalence (ROPE) or
 at or beyond a Minimally Important Difference (MID).
 It is designed to fail gracefully if no window given, and to
 give some useful labels about the windows / range used.
-Intended for use internally as part of \code{\link{brmsmargins}}.
+Intended for use internally as part of \code{\link[=brmsmargins]{brmsmargins()}}.
 }
 \keyword{internal}

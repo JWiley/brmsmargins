@@ -11,7 +11,7 @@
 )
 }
 \arguments{
-\item{link}{The link named in a \code{brmsfit} object}
+\item{link}{The link named in a \link[brms:brmsfit-class]{brms::brmsfit} object}
 
 \item{effects}{A character string, the type of effect desired}
 
@@ -19,11 +19,11 @@
 }
 \value{
 A list with eight elements.
-\describe{
-\item{scale}{A character string giving the argument to be passed to \code{\link[=fitted]{fitted()}}.}
-\item{ilink}{A character string giving the name of the inverse link function.}
-\item{ifun}{Inverse link function as an \code{R} function.}
-\item{ilinknum}{An integer giving the inverse link / transformation to be applied in \code{\link[=integratere]{integratere()}}, needed as this is a C++ function and cannot use the \code{R} based inverse link function.}
+\itemize{
+\item scale A character string giving the argument to be passed to \code{\link[=fitted]{fitted()}}.
+\item ilink A character string giving the name of the inverse link function.
+\item ifun Inverse link function as an \code{R} function.
+\item ilinknum An integer giving the inverse link / transformation to be applied in \code{\link[=integratere]{integratere()}}, needed as this is a C++ function and cannot use the \code{R} based inverse link function.
 }
 }
 \description{

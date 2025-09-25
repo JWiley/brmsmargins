@@ -31,7 +31,7 @@ the values to hold specific variables at when calculating average
 predictions. This is intended for AMEs from categorical variables.}
 
 \item{wat}{An \emph{optional} list with named elements including one element named,
-\dQuote{ID} with a single character string, the name of the variable
+"ID" with a single character string, the name of the variable
 in the model frame that is the ID variable. Additionally,
 there should be one or more named elements, named after variables
 in the model (and specified in the \code{at} argument), that
@@ -58,8 +58,8 @@ with greater acknowledgment of uncertainty or larger sample sizes (ideally).}
 
 \item{CIType}{An \emph{optional} argument, a character string specifying the
 type of credible interval (e.g., highest density interval). It is passed down to
-\code{\link{bsummary}} which in turn passes it to
-\code{\link[bayestestR]{ci}}. Defaults to \dQuote{HDI}.}
+\code{\link[=bsummary]{bsummary()}} which in turn passes it to
+\code{\link[bayestestR:ci]{bayestestR::ci()}}. Defaults to "HDI".}
 
 \item{contrasts}{An \emph{optional} argument specifying a contrast matrix.
 The posterior predictions matrix
@@ -87,7 +87,7 @@ valid \code{R} expression used to subset the dataset passed in \code{newdata},
 prior to analysis. Defaults to \code{NULL}.}
 
 \item{dpar}{An \emph{optional} argument giving the parameter passed on to the \code{dpar}
-argument of \code{fitted()} in brms. Defaults to \code{NULL},
+argument of \code{\link[=fitted]{fitted()}} in brms. Defaults to \code{NULL},
 indicating the mean or location parameter typically.}
 
 \item{seed}{An \emph{optional} argument that controls whether (and if so what) random seed
@@ -118,7 +118,7 @@ more verbose messages. Defaults to \code{FALSE} which is quieter. Set to
 \code{TRUE} for more messages to be printed where relevant.}
 
 \item{...}{An \emph{optional} argument, additional arguments passed on to
-\code{\link{prediction}}. In particular, the \code{effects} argument of \code{\link[=prediction]{prediction()}}
+\code{\link[=prediction]{prediction()}}. In particular, the \code{effects} argument of \code{\link[=prediction]{prediction()}}
 is important for mixed effects models to control how random effects
 are treated in the predictions, which subsequently changes the
 marginal effect estimates.}
@@ -126,10 +126,11 @@ marginal effect estimates.}
 \value{
 A list with four elements.
 \itemize{
-\item{\code{Posterior}}{Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to \code{\link[=prediction]{prediction()}} they can include random effects or be predictions integrating out random effects.}
-\item{\code{Summary}}{A summary of the predictions.}
-\item{\code{Contrasts}}{Posterior distribution of all contrasts, if a contrast matrix was specified.}
-\item{\code{ContrastSummary}}{A summary of the posterior distribution of all contrasts, if specified}
+\item \code{Posterior} Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to
+\code{\link[=prediction]{prediction()}} they can include random effects or be predictions integrating out random effects.
+\item \code{Summary} A summary of the predictions.
+\item \code{Contrasts} Posterior distribution of all contrasts, if a contrast matrix was specified.
+\item \code{ContrastSummary} A summary of the posterior distribution of all contrasts, if specified
 }
 }
 \description{
@@ -153,15 +154,15 @@ The steps are as follows:
 add the values from the first row of \code{add} or replace the values
 using the first row of \code{at}. Only variables specified in
 \code{at} or \code{add} are modified. Other variables are left as is.
-\item Use the \code{fitted()} function to generate predictions based on
-this modified dataset. If \code{effects} is set to \dQuote{fixedonly}
+\item Use the \code{\link[=fitted]{fitted()}} function to generate predictions based on
+this modified dataset. If \code{effects} is set to "fixedonly"
 (meaning only generate predictions using fixed effects)
-or to \dQuote{includeRE}
+or to "includeRE"
 (meaning generate predictions using fixed and random effects),
-then predictions are generated entirely using the \code{fitted()}
+then predictions are generated entirely using the \code{\link[=fitted]{fitted()}}
 function and are, typically back transformed to the response scale.
 For mixed effects models with fixed and random effects where
-\code{effects} is set to \dQuote{integrateoutRE}, then \code{fitted()}
+\code{effects} is set to "integrateoutRE", then \code{\link[=fitted]{fitted()}}
 is only used to generate predictions using the fixed effects on the linear
 scale. For each prediction generated, the random effects are integrated out
 by drawing \code{k} random samples from the model assumed random effect(s)
@@ -189,7 +190,7 @@ for a given predictor(s).
 summarized.
 }
 
-Although \code{brmsmargins()} is focused on helping to calculate
+Although \code{\link[=brmsmargins]{brmsmargins()}} is focused on helping to calculate
 marginal effects, it can also be used to generate marginal predictions,
 and indeed these marginal predictions are the foundation of any
 marginal effect estimates. Through manipulating the input data,
@@ -269,14 +270,14 @@ if (FALSE) {
 }
 \references{
 Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
-\doi{10.1186/s12874-015-0046-6}
+\href{https://doi.org/10.1186/s12874-015-0046-6}{DOI: 10.1186/s12874-015-0046-6}
 \dQuote{A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes}
 and
 Skrondal, A., & Rabe-Hesketh, S. (2009)
-\doi{10.1111/j.1467-985X.2009.00587.x}
+\href{https://doi.org/10.1111/j.1467-985X.2009.00587.x}{DOI: 10.1111/j.1467-985X.2009.00587.x}
 \dQuote{Prediction in multilevel generalized linear models}
 and
 Norton EC, Dowd BE, Maciejewski ML. (2019)
-\doi{10.1001/jama.2019.1954}
+\href{https://doi.org/10.1001/jama.2019.1954}{DOI: 10.1001/jama.2019.1954}
 \dQuote{Marginal Effects—Quantifying the Effect of Changes in Risk Factors in Logistic Regression Models}
 }

@@ -39,7 +39,7 @@ Not intended to be called directly by most users.
 }
 \section{Functions}{
 \itemize{
-\item \code{integratereR()}: Pure \code{R} implementation of \code{integratere}
+\item \code{integratereR()}: Pure \code{R} implementation of \code{\link[=integratere]{integratere()}}.
 
 }}
 \examples{

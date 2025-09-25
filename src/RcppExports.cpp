@@ -53,6 +53,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// lmcpp_alt
+arma::mat lmcpp_alt(const arma::mat& X, const arma::mat& y);
+RcppExport SEXP _brmsmargins_lmcpp_alt(SEXP XSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(lmcpp_alt(X, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rowBootMeans
 NumericVector rowBootMeans(NumericMatrix x);
 RcppExport SEXP _brmsmargins_rowBootMeans(SEXP xSEXP) {
@@ -80,6 +92,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_brmsmargins_integratemvn", (DL_FUNC) &_brmsmargins_integratemvn, 4},
     {"_brmsmargins_integratere", (DL_FUNC) &_brmsmargins_integratere, 6},
     {"_brmsmargins_lmcpp", (DL_FUNC) &_brmsmargins_lmcpp, 2},
+    {"_brmsmargins_lmcpp_alt", (DL_FUNC) &_brmsmargins_lmcpp_alt, 2},
     {"_brmsmargins_rowBootMeans", (DL_FUNC) &_brmsmargins_rowBootMeans, 1},
     {"_brmsmargins_tab2mat", (DL_FUNC) &_brmsmargins_tab2mat, 1},
     {NULL, NULL, 0}

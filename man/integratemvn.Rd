@@ -31,7 +31,7 @@ Not intended to be called directly by most users.
 }
 \section{Functions}{
 \itemize{
-\item \code{integratemvnR()}: Pure \code{R} implementation of \code{integratemvn}
+\item \code{integratemvnR()}: Pure \code{R} implementation of \code{\link[=integratemvn]{integratemvn()}}.
 
 }}
 \examples{

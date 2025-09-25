@@ -1,83 +1,83 @@
 #' Marginal Posterior Predictions from a 'brms' Model
 #'
-#' Calculate marginal predictions from a \code{brms} model.
+#' Calculate marginal predictions from a `brms` model.
 #' Marginal predictions average over the input data for each posterior draw.
 #' Marginal predictions for models with random effects will integrate
 #' over random effects.
-#' Arguments are labeled as \emph{required} when it is required that the
+#' Arguments are labeled as *required* when it is required that the
 #' user directly specify the argument. Arguments are labeled as
-#' \emph{optional} when either the argument is optional or there are
+#' *optional* when either the argument is optional or there are
 #' sensible default values so that users do not typically need to specify
 #' the argument.
 #'
-#' @param object A \emph{required} argument specifying a fitted
-#'   \code{brms} model object.
-#' @param data A \emph{required} argument specifying a data frame or
-#'   data table passed to \code{fitted()} as the new data to be used
+#' @param object A *required* argument specifying a fitted
+#'   `brms` model object.
+#' @param data A *required* argument specifying a data frame or
+#'   data table passed to [fitted()] as the new data to be used
 #'   for predictions.
-#' @param summarize An \emph{optional} argument, a logical value, whether
+#' @param summarize An *optional* argument, a logical value, whether
 #'   or not to calculate summaries of the posterior predictions.
-#'   Defaults to \code{TRUE}.
-#' @param posterior An \emph{optional} argument, a logical value whether
+#'   Defaults to `TRUE`.
+#' @param posterior An *optional* argument, a logical value whether
 #'   or not to save and return the posterior samples. Defaults
-#'   to \code{FALSE} as the assumption is a typical
+#'   to `FALSE` as the assumption is a typical
 #'   use case is to return the summaries only.
-#' @param index An \emph{optional} argument, an integer vector, giving the
+#' @param index An *optional* argument, an integer vector, giving the
 #'   posterior draws to be used in the calculations. If omitted,
 #'   defaults to all posterior draws.
-#' @param dpar An \emph{optional} argument, the parameter passed on to the
-#'   \code{dpar} argument of \code{fitted()} in brms. Defaults to \code{NULL}
+#' @param dpar An *optional* argument, the parameter passed on to the
+#'   `dpar` argument of [fitted()] in brms. Defaults to `NULL`
 #'   indicating the mean or location parameter typically.
-#' @param resample An \emph{optional} argument, an integer indicating the
+#' @param resample An *optional* argument, an integer indicating the
 #'   number of bootstrap resamples of the posterior predictions to
-#'   use when calculating summaries. Defaults to \code{0L}.
+#'   use when calculating summaries. Defaults to `0L`.
 #'   See documentation from [.averagePosterior()] for more details.
 #'   This should be considered experimental.
-#' @param resampleseed An \emph{optional} argument, a seed for random number
-#'   generation. Defaults to \code{FALSE}, which means no seed is set.
-#'   Only used if \code{resample} is a positive, non-zero integer.
+#' @param resampleseed An *optional* argument, a seed for random number
+#'   generation. Defaults to `FALSE`, which means no seed is set.
+#'   Only used if `resample` is a positive, non-zero integer.
 #'   See documentation from [.averagePosterior()] for more details.
 #'   This should be considered experimental.
-#' @param effects An \emph{optional} argument, a character string indicating
+#' @param effects An *optional* argument, a character string indicating
 #'   the type of prediction to be made. Can be one of
-#'   \dQuote{fixedonly} meaning only use fixed effects,
-#'   \dQuote{includeRE} meaning that random effects should be
+#'   "fixedonly" meaning only use fixed effects,
+#'   "includeRE" meaning that random effects should be
 #'   included in the predictions, or
-#'   \dQuote{integrateoutRE} meaning that random effects should be
+#'   "integrateoutRE" meaning that random effects should be
 #'    integrated out / over in the predictions.
-#'   It defaults to \dQuote{fixedonly} so is not typically required for
+#'   It defaults to "fixedonly" so is not typically required for
 #'   a user to specify it.
-#' @param backtrans An \emph{optional} argument, a character string indicating
+#' @param backtrans An *optional* argument, a character string indicating
 #'   the type of back transformation to be applied. Can be one of
-#'   \dQuote{response} meaning to use the response scale,
-#'   \dQuote{linear} or \dQuote{identity} meaning to use the linear predictor scale,
+#'   "response" meaning to use the response scale,
+#'   "linear" or "identity" meaning to use the linear predictor scale,
 #'   or a specific back transformation desired, from a possible list of
-#'   \dQuote{invlogit}, \dQuote{exp}, \dQuote{square}, or \dQuote{inverse}.
+#'   "invlogit", "exp", "square", or "inverse".
 #'   Custom back transformations should only be needed if, for example,
 #'   the outcome variable was transformed prior to fitting the model.
-#'   It defaults to \dQuote{response} so is not typically required for
+#'   It defaults to "response" so is not typically required for
 #'   a user to specify it.
-#' @param k An \emph{optional} argument, an integer providing the number of
+#' @param k An *optional* argument, an integer providing the number of
 #'   random draws to use for integrating out the random effects.
-#'   Only relevant when \code{effects} is \dQuote{integrateoutRE}.
-#'   It defaults to \code{100L}, a rather arbitrary number attempting to
+#'   Only relevant when `effects = "integrateoutRE"`.
+#'   It defaults to `100L`, a rather arbitrary number attempting to
 #'   balance the increased precision that comes from a larger value,
 #'   with the increased computational cost of more Monte Carlo simulations
 #'   when integrating out random effects.
-#' @param raw An \emph{optional} argument, a logical value indicating whether to
+#' @param raw An *optional* argument, a logical value indicating whether to
 #'   return the raw output or to average over the Monte Carlo samples.
-#'   Defaults to \code{FALSE}.
-#'   Setting it to \code{TRUE} can be useful if you want not only the
-#'   full posterior distribution but also the \code{k} Monte Carlo samples
+#'   Defaults to `FALSE`.
+#'   Setting it to `TRUE` can be useful if you want not only the
+#'   full posterior distribution but also the `k` Monte Carlo samples
 #'   used for the numerical integration. This cannot be used with
-#'   \code{summarize = TRUE}.
-#' @param ... Additional arguments passed to \code{bsummary()},
-#'   and only relevant if \code{summarize} is \code{TRUE}.
-#' @return A list with \code{Summary} and \code{Posterior}.
-#'   Some of these may be \code{NULL} depending on the arguments used.
+#'   `summarize = TRUE`.
+#' @param ... Additional arguments passed to `bsummary()`,
+#'   and only relevant if `summarize` is `TRUE`.
+#' @return A list with `Summary` and `Posterior`.
+#'   Some of these may be `NULL` depending on the arguments used.
 #' @references
 #' Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
-#' \doi{10.1186/s12874-015-0046-6}
+#' [DOI: 10.1186/s12874-015-0046-6](https://doi.org/10.1186/s12874-015-0046-6).
 #' \dQuote{A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes}
 #' and
 #' Skrondal, A., & Rabe-Hesketh, S. (2009)

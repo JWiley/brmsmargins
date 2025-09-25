@@ -10,12 +10,12 @@
 #'   draws are on different rows.
 #' @param resample An integer indicating the number of
 #'   bootstrap resamples of the posterior predictions to
-#'   use when calculating summaries. Defaults to \code{0L}.
-#'   See the details section for more informations as its implementation
+#'   use when calculating summaries. Defaults to `0L`.
+#'   See the details section for more information as its implementation
 #'   is experimental and it may not operate as one would expect.
-#' @param seed A seed for random number generation. Defaults to \code{FALSE},
+#' @param seed A seed for random number generation. Defaults to `FALSE`,
 #'   which means no seed is set.
-#'   Only used if \code{resample} is a positive, non-zero integer.
+#'   Only used if `resample` is a positive, non-zero integer.
 #' @return A vector of the averaged posterior.
 #' @keywords internal
 .averagePosterior <- function(posterior, resample = 0L, seed = FALSE) {

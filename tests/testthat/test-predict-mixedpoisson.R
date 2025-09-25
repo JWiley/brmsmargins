@@ -47,7 +47,7 @@ suppressWarnings(
     silent = 2, refresh = 0)
 )
 
-preddat <- data.frame(y = c(0, 0), x = c(0, 1), ID = 999)
+preddat <- data.frame(y = c(1, 1), x = c(0, 1), ID = 999)
 
 res.integrate <- withr::with_seed(
   seed = 1234, {

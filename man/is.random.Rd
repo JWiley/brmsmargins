@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{is.random}
 \alias{is.random}
-\title{Check a \code{brmsfit} Object has Random Effects}
+\title{Check a \link[brms:brmsfit-class]{brms::brmsfit} Object has Random Effects}
 \usage{
 is.random(object)
 }
@@ -14,7 +14,7 @@ is.random(object)
 \code{FALSE} if no random effects present.
 }
 \description{
-Internal utility function to check whether a \code{brmsfit}
+Internal utility function to check whether a \link[brms:brmsfit-class]{brms::brmsfit}
 object has any random effects or not.
 }
 \keyword{internal}

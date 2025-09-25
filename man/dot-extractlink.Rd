@@ -7,7 +7,7 @@
 .extractlink(object, dpar)
 }
 \arguments{
-\item{object}{A \code{brmsfit} class model object.}
+\item{object}{A \link[brms:brmsfit-class]{brms::brmsfit} model object.}
 
 \item{dpar}{The dpar for which the link should be extracted.}
 }
@@ -15,7 +15,7 @@
 A character string, the link.
 }
 \description{
-Internal utility function to take a \code{brmsfit} object
-and extract the link for a specific \code{dpar}.
+Internal utility function to take a \link[brms:brmsfit-class]{brms::brmsfit} object
+and extract the link for a specific brms \code{dpar}.
 }
 \keyword{internal}

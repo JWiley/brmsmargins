@@ -4,149 +4,147 @@ utils::globalVariables(c("Label", "variable"))
 #' Calculate Marginal Effects from 'brms' Models
 #'
 #' This function is designed to help calculate marginal effects
-#' including average marginal effects (AMEs) from \code{brms} models.
-#' Arguments are labeled as \emph{required} when it is required that the
+#' including average marginal effects (AMEs) from `brms` models.
+#' Arguments are labeled as *required* when it is required that the
 #' user directly specify the argument. Arguments are labeled as
-#' \emph{optional} when either the argument is optional or there are
+#' *optional* when either the argument is optional or there are
 #' sensible default values so that users do not typically need to specify
 #' the argument.
 #'
 #' The main parts required for the function are a fitted model object,
-#' (via the \code{object} argument) a dataset to be used for prediction,
-#' (via the \code{newdata} argument which defaults to the model frame),
-#' and a dataset passed to either \code{at} or \code{add}.
+#' (via the `object` argument) a dataset to be used for prediction,
+#' (via the `newdata` argument which defaults to the model frame),
+#' and a dataset passed to either `at` or `add`.
 #' The steps are as follows:
-#' \enumerate{
-#'   \item Check that the function inputs (model object, data, etc.) are valid.
-#'   \item Take the dataset from the \code{newdata} argument and either
-#'     add the values from the first row of \code{add} or replace the values
-#'     using the first row of \code{at}. Only variables specified in
-#'     \code{at} or \code{add} are modified. Other variables are left as is.
-#'   \item Use the \code{fitted()} function to generate predictions based on
-#'     this modified dataset. If \code{effects} is set to \dQuote{fixedonly}
+#' 1.  Check that the function inputs (model object, data, etc.) are valid.
+#' 2.  Take the dataset from the `newdata` argument and either
+#'     add the values from the first row of `add` or replace the values
+#'     using the first row of `at`. Only variables specified in
+#'     `at` or `add` are modified. Other variables are left as is.
+#' 3.  Use the [fitted()] function to generate predictions based on
+#'     this modified dataset. If `effects` is set to "fixedonly"
 #'     (meaning only generate predictions using fixed effects)
-#'     or to \dQuote{includeRE}
+#'     or to "includeRE"
 #'     (meaning generate predictions using fixed and random effects),
-#'     then predictions are generated entirely using the \code{fitted()}
+#'     then predictions are generated entirely using the [fitted()]
 #'     function and are, typically back transformed to the response scale.
 #'     For mixed effects models with fixed and random effects where
-#'     \code{effects} is set to \dQuote{integrateoutRE}, then \code{fitted()}
+#'     `effects` is set to "integrateoutRE", then [fitted()]
 #'     is only used to generate predictions using the fixed effects on the linear
 #'     scale. For each prediction generated, the random effects are integrated out
-#'     by drawing \code{k} random samples from the model assumed random effect(s)
+#'     by drawing `k` random samples from the model assumed random effect(s)
 #'     distribution. These are added to the fixed effects predictions,
-#'     back transformed, and then averaged over all \code{k} random samples to
+#'     back transformed, and then averaged over all `k` random samples to
 #'     perform numerical Monte Carlo integration.
-#'   \item All the predictions for each posterior draw, after any back transformation
+#' 4.  All the predictions for each posterior draw, after any back transformation
 #'     has been applied, are averaged, resulting in one, marginal value for each
 #'     posterior draw. These are marginal predictions. They are average marginal
 #'     predictions if averaging over the sample dataset, or may be marginal predictions
 #'     at the means, if the initial input dataset used mean values, etc.
-#'   \item Steps two to four are repeated for each row of \code{at} or \code{add}.
+#' 5.  Steps two to four are repeated for each row of `at` or `add`.
 #'     Results are combined into a matrix where the columns are different
-#'     rows from \code{at} or \code{add} and the rows are different posterior
+#'     rows from `at` or `add` and the rows are different posterior
 #'     draws.
-#'   \item If contrasts were specified, using a contrast matrix, the
+#' 6.  If contrasts were specified, using a contrast matrix, the
 #'     marginal prediction matrix is post multiplied by the contrast matrix.
-#'     Depending on the choice(s) of \code{add} or \code{at} and the
+#'     Depending on the choice(s) of `add` or `at` and the
 #'     values in the contrast matrix, these can then be
 #'     average marginal effects (AMEs) by using numerical integration
-#'     (\code{add} with 0 and a very close to 0 value) or
-#'     discrete difference (\code{at} with say 0 and 1 as values)
+#'     (`add` with 0 and a very close to 0 value) or
+#'     discrete difference (`at` with say 0 and 1 as values)
 #'     for a given predictor(s).
-#'   \item The marginal predictions and the contrasts, if specified are
+#' 7.  The marginal predictions and the contrasts, if specified are
 #'     summarized.
-#' }
 #'
-#' Although \code{brmsmargins()} is focused on helping to calculate
+#' Although [brmsmargins()] is focused on helping to calculate
 #' marginal effects, it can also be used to generate marginal predictions,
 #' and indeed these marginal predictions are the foundation of any
 #' marginal effect estimates. Through manipulating the input data,
-#' \code{at} or \code{add} and the contrast matrix, other types of estimates
+#' `at` or `add` and the contrast matrix, other types of estimates
 #' averaged or weighting results in specific ways are also possible.
 #'
-#' @param object A \emph{required} argument specifying a fitted \code{brms} model object.
-#' @param at An \emph{optional} argument (but note, either \code{at} or \code{add} are
-#'   \emph{required}) specifying an object inheriting from data frame indicating
+#' @param object A *required* argument specifying a fitted `brms` model object.
+#' @param at An *optional* argument (but note, either `at` or `add` are
+#'   *required*) specifying an object inheriting from data frame indicating
 #'   the values to hold specific variables at when calculating average
 #'   predictions. This is intended for AMEs from categorical variables.
-#' @param wat An \emph{optional} list with named elements including one element named,
-#'   \dQuote{ID} with a single character string, the name of the variable
+#' @param wat An *optional* list with named elements including one element named,
+#'   "ID" with a single character string, the name of the variable
 #'   in the model frame that is the ID variable. Additionally,
 #'   there should be one or more named elements, named after variables
-#'   in the model (and specified in the \code{at} argument), that
-#'   contain a \code{data.table} or \code{data.frame} with three
+#'   in the model (and specified in the `at` argument), that
+#'   contain a `data.table` or `data.frame` with three
 #'   variables: (1) the ID variable giving IDs, (2) the values
-#'   specified for the variable in the \code{at} argument, and
+#'   specified for the variable in the `at` argument, and
 #'   (3) the actual values to be substituted for each ID.
-#'   \code{wat} cannot be non null unless \code{at} also is non null.
-#' @param add An \emph{optional} argument (but note, either \code{at} or \code{add} are
-#'   \emph{required}) specifying an object inheriting from data frame indicating
+#'   `wat` cannot be non null unless `at` also is non null.
+#' @param add An *optional* argument (but note, either `at` or `add` are
+#'   *required*) specifying an object inheriting from data frame indicating
 #'   the values to add to specific variables at when calculating average
 #'   predictions. This is intended for AMEs for continuous variables.
-#' @param newdata An \emph{optional} argument specifying an object inheriting
+#' @param newdata An *optional* argument specifying an object inheriting
 #'   from data frame indicating the baseline values to use for predictions and AMEs.
-#'   It uses a sensible default: the model frame from the \code{brms}
-#'   model object passed on the \code{object} argument.
-#' @param CI An \emph{optional} argument with a numeric value specifying the width
-#'   of the credible interval. Defaults to \code{0.99}. This default is arbitrary,
-#'   but is purposefully higher than the common \code{0.95} to encourage science
+#'   It uses a sensible default: the model frame from the `brms`
+#'   model object passed on the `object` argument.
+#' @param CI An *optional* argument with a numeric value specifying the width
+#'   of the credible interval. Defaults to `0.99`. This default is arbitrary,
+#'   but is purposefully higher than the common `0.95` to encourage science
 #'   with greater acknowledgment of uncertainty or larger sample sizes (ideally).
-#' @param CIType An \emph{optional} argument, a character string specifying the
+#' @param CIType An *optional* argument, a character string specifying the
 #'   type of credible interval (e.g., highest density interval). It is passed down to
-#'   \code{\link{bsummary}} which in turn passes it to
-#'   \code{\link[bayestestR]{ci}}. Defaults to \dQuote{HDI}.
-#' @param contrasts An \emph{optional} argument specifying a contrast matrix.
+#'   [bsummary()] which in turn passes it to
+#'   [bayestestR::ci()]. Defaults to "HDI".
+#' @param contrasts An *optional* argument specifying a contrast matrix.
 #'   The posterior predictions matrix
 #'   is post multiplied by the contrast matrix, so they must be conformable.
 #'   The posterior predictions matrix has a separate column for each row in the
-#'   \code{at} or \code{add} object, so the contrast matrix should have the same
+#'   `at` or `add` object, so the contrast matrix should have the same
 #'   number of rows. It can have multiple columns, if you desire multiple specific
 #'   contrasts.
-#' @param ROPE An \emph{optional} argument, that can either be left as \code{NULL},
+#' @param ROPE An *optional* argument, that can either be left as `NULL`,
 #'   the default, or a numeric vector of length 2, specifying the
 #'   lower and upper thresholds for the
 #'   Region of Practical Equivalence (ROPE).
-#' @param MID An \emph{optional} argument, that can either left as \code{NULL},
+#' @param MID An *optional* argument, that can either left as `NULL`,
 #'   the default, or a numeric vector of length 2, specifying the
 #'   lower and upper thresholds for a
 #'   Minimally Important Difference (MID). Unlike the ROPE, percentages for
 #'   the MID are calculated as at or exceeding the bounds specified by this
 #'   argument, whereas the ROPE is the percentage of the posterior at or inside
 #'   the bounds specified.
-#' @param subset An \emph{optional} argument, a character string that is a
-#'   valid \code{R} expression used to subset the dataset passed in \code{newdata},
-#'   prior to analysis. Defaults to \code{NULL}.
-#' @param dpar An \emph{optional} argument giving the parameter passed on to the \code{dpar}
-#'   argument of \code{fitted()} in brms. Defaults to \code{NULL},
+#' @param subset An *optional* argument, a character string that is a
+#'   valid `R` expression used to subset the dataset passed in `newdata`,
+#'   prior to analysis. Defaults to `NULL`.
+#' @param dpar An *optional* argument giving the parameter passed on to the `dpar`
+#'   argument of [fitted()] in brms. Defaults to `NULL`,
 #'   indicating the mean or location parameter typically.
-#' @param seed An \emph{optional} argument that controls whether (and if so what) random seed
+#' @param seed An *optional* argument that controls whether (and if so what) random seed
 #'   to use. This does not matter when using fixed effects only. However,
 #'   when using Monte Carlo integration to integrate out random effects from
 #'   mixed effects models, it is critical if you are looking at a continuous
 #'   marginal effect with some small offset value as otherwise the
 #'   Monte Carlo error from one set of predictions to another may exceed
 #'   the true predicted difference.
-#'   If \code{seed} is left missing, the default, than a single, random integer
+#'   If `seed` is left missing, the default, than a single, random integer
 #'   between +\- 1e7 is chosen and used to set the seed before each
 #'   prediction. If manually chosen (recommended for reproducibility),
 #'   the seed should either be a single value, in which case this single
 #'   value is used to set the seed before each prediction.
 #'   Alternately, it can be a vector of seeds with either the same length
-#'   as the number of rows in \code{at} or \code{add}, whichever was specified.
+#'   as the number of rows in `at` or `add`, whichever was specified.
 #'   This is probably generally not what you want, as it means that even for
 #'   the same input data, you would get slightly different predictions
 #'   (when integrating out random effects) due to Monte Carlo variation.
 #'   Finally, rather than being missing, you can explicitly set
-#'   \code{seed = NULL}, if you do not want any seed to be set.
+#'   `seed = NULL`, if you do not want any seed to be set.
 #'   This would be fine, for instance, when only using fixed effects,
 #'   or if you know what you are doing and intend that behavior when
 #'   integrating out random effects.
-#' @param verbose An \emph{optional} argument, a logical value whether to print
-#'   more verbose messages. Defaults to \code{FALSE} which is quieter. Set to
-#'   \code{TRUE} for more messages to be printed where relevant.
-#' @param ... An \emph{optional} argument, additional arguments passed on to
-#'   \code{\link{prediction}}. In particular, the \code{effects} argument of [prediction()]
+#' @param verbose An *optional* argument, a logical value whether to print
+#'   more verbose messages. Defaults to `FALSE` which is quieter. Set to
+#'   `TRUE` for more messages to be printed where relevant.
+#' @param ... An *optional* argument, additional arguments passed on to
+#'   [prediction()]. In particular, the `effects` argument of [prediction()]
 #'   is important for mixed effects models to control how random effects
 #'   are treated in the predictions, which subsequently changes the
 #'   marginal effect estimates.
@@ -154,24 +152,23 @@ utils::globalVariables(c("Label", "variable"))
 #' @importFrom data.table as.data.table is.data.table copy :=
 #' @importFrom extraoperators %gele% %nin%
 #' @return A list with four elements.
-#' \itemize{
-#'   \item{\code{Posterior}}{Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to [prediction()] they can include random effects or be predictions integrating out random effects.}
-#'   \item{\code{Summary}}{A summary of the predictions.}
-#'   \item{\code{Contrasts}}{Posterior distribution of all contrasts, if a contrast matrix was specified.}
-#'   \item{\code{ContrastSummary}}{A summary of the posterior distribution of all contrasts, if specified}
-#' }
+#'   - `Posterior` Posterior distribution of all predictions. These predictions default to fixed effects only, but by specifying options to
+#'     [prediction()] they can include random effects or be predictions integrating out random effects.
+#'   - `Summary` A summary of the predictions.
+#'   - `Contrasts` Posterior distribution of all contrasts, if a contrast matrix was specified.
+#'   - `ContrastSummary` A summary of the posterior distribution of all contrasts, if specified
 #' @export
 #' @references
 #' Pavlou, M., Ambler, G., Seaman, S., & Omar, R. Z. (2015)
-#' \doi{10.1186/s12874-015-0046-6}
+#' [DOI: 10.1186/s12874-015-0046-6](https://doi.org/10.1186/s12874-015-0046-6)
 #' \dQuote{A note on obtaining correct marginal predictions from a random intercepts model for binary outcomes}
 #' and
 #' Skrondal, A., & Rabe-Hesketh, S. (2009)
-#' \doi{10.1111/j.1467-985X.2009.00587.x}
+#' [DOI: 10.1111/j.1467-985X.2009.00587.x](https://doi.org/10.1111/j.1467-985X.2009.00587.x)
 #' \dQuote{Prediction in multilevel generalized linear models}
 #' and
 #' Norton EC, Dowd BE, Maciejewski ML. (2019)
-#' \doi{10.1001/jama.2019.1954}
+#' [DOI: 10.1001/jama.2019.1954](https://doi.org/10.1001/jama.2019.1954)
 #' \dQuote{Marginal Effects—Quantifying the Effect of Changes in Risk Factors in Logistic Regression Models}
 #' @examples
 #' \dontrun{

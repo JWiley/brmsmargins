@@ -16,7 +16,7 @@ marginalcoef(
 )
 }
 \arguments{
-\item{object}{A fitted brms model object that includes random effects. Required.}
+\item{object}{A fitted \code{brms} model object that includes random effects. Required.}
 
 \item{summarize}{A logical value, whether or not to
 calculate summaries of the posterior predictions.
@@ -33,22 +33,21 @@ posterior draws.}
 
 \item{backtrans}{A character string indicating the type of
 back transformation to be applied. Can be one of
-\dQuote{response} meaning to use the response scale,
-\dQuote{linear} or \dQuote{identity} meaning to use the linear predictor scale,
+"response" meaning to use the response scale,
+"linear" or "identity" meaning to use the linear predictor scale,
 or a specific back transformation desired, from a possible list of
-\dQuote{invlogit}, \dQuote{exp}, \dQuote{square}, or \dQuote{inverse}.
+"invlogit", "exp", "square", or "inverse".
 Custom back transformations should only be needed if, for example,
 the outcome variable was transformed prior to fitting the model.}
 
 \item{k}{An integer providing the number of random draws to use for
-integrating out the random effects. Only relevant when \code{effects}
-is \dQuote{integrateoutRE}.}
+integrating out the random effects. Only relevant when \code{effects = "integrateoutRE"}.}
 
 \item{seed}{An \emph{optional} argument that controls whether (and if so what) random seed
 to use. This can help with reproducibility of results.
 It is missing by default.}
 
-\item{...}{Additional arguments passed to \code{bsummary()},
+\item{...}{Additional arguments passed to \code{\link[=bsummary]{bsummary()}},
 and only relevant if \code{summarize} is \code{TRUE}.}
 }
 \value{
@@ -61,6 +60,6 @@ generalized linear mixed model using the method proposed by Hedeker (2018).
 }
 \references{
 Hedeker, D., du Toit, S. H., Demirtas, H. & Gibbons, R. D. (2018)
-\doi{10.1111/biom.12707}
+\href{https://doi.org/10.1111/biom.12707}{DOI: 10.1111/biom.12707}.
 \dQuote{A note on marginalization of regression parameters from mixed models of binary outcomes}
 }
