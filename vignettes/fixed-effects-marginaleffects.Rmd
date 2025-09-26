@@ -1,0 +1,568 @@
+---
+title: "Marginal Effects for Fixed Effects Models"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Marginal Effects for Fixed Effects Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+
+``` r
+library(knitr)
+library(data.table)
+#> data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
+library(brms)
+#> Loading required package: Rcpp
+#> Loading 'brms' package (version 2.23.0). Useful instructions
+#> can be found by typing help('brms'). A more detailed introduction
+#> to the package is available through vignette('brms_overview').
+#> 
+#> Attaching package: 'brms'
+#> 
+#> The following object is masked from 'package:stats':
+#> 
+#>     ar
+library(brmsmargins)
+```
+
+This vignette provides a brief overview of how to calculate 
+marginal effects for Bayesian regression models involving 
+only fixed effects and fit using the `brms` package.
+
+## What are marginal effects?
+
+Marginal effects can be used to describe how an outcome is 
+predicted to change with a change in a predictor (or predictors).
+It is a derivative. For convenience, typically calculated numerically
+rather than analytically.
+
+To motivate marginal effects, we can look at some regression 
+models fit in a frequentist framework for simplicity and speed.
+Here we use the `mtcars` dataset built into `R`. First, we 
+can look at a linear regression model of the association between
+`mpg` and `hp`. Here we can see the estimated regression coefficient 
+for `mpg`.
+
+
+``` r
+m.linear <- lm(hp ~ am + mpg, data = mtcars)
+
+coef(m.linear)["mpg"]
+#>       mpg 
+#> -11.19988
+```
+
+In linear models with no interactions, no (non linear) transformations,
+and a linear link function, the regression coefficient is the 
+predicted change in the outcome for a one unit change in the predictor,
+regardless of any other values. For example, here we can look at the 
+predicted difference in the outcome for a one unit difference in `mpg`
+from 0 to 1, holding `am = 0`.
+
+
+``` r
+yhat <- predict(
+  m.linear,
+  newdata = data.frame(am = 0, mpg = c(0, 1)),
+  type = "response")
+
+diff(yhat)
+#>         2 
+#> -11.19988
+```
+
+We can look at the same estimate but moving `mpg` from 
+10 to 11 instead 0 to 1, holding `am = 1`.
+
+
+``` r
+yhat <- predict(
+  m.linear,
+  newdata = data.frame(am = 1, mpg = c(10, 11)),
+  type = "response")
+
+diff(yhat)
+#>         2 
+#> -11.19988
+```
+
+All of these quantities are identical. In this case, the regression 
+coefficient can be interpreted as a marginal effect: the expected change
+in the outcome for a one unit shift in `mpg`, regardless of the 
+value of `am` and regardless of the values where `mpg` is evaluated.
+
+This convenient property does not hold for many types of models.
+Next consider a logistic regression model. The regression 
+coefficient, shown below, is on the log odds scale, not the 
+probability scale. This is not convenient for interpretation,
+as the log odds scale is not the same scale as our outcome.
+
+
+``` r
+m.logistic <- glm(vs ~ am + mpg, data = mtcars, family = binomial())
+
+coef(m.logistic)["mpg"]
+#>       mpg 
+#> 0.6809205
+```
+
+We can find predicted differences on the probability scale.
+Here moving `mpg` from 10 to 11 holding `am = 0`.
+
+
+``` r
+yhat <- predict(
+  m.logistic,
+  newdata = data.frame(am = 0, mpg = c(10, 11)),
+  type = "response")
+
+diff(yhat)
+#>           2 
+#> 0.002661989
+```
+
+We can look at the same estimate but moving `mpg` from 
+20 to 21 instead 10 to 11 again holding `am = 0`.
+
+
+``` r
+yhat <- predict(
+  m.logistic,
+  newdata = data.frame(am = 0, mpg = c(20, 21)),
+  type = "response")
+
+diff(yhat)
+#>         2 
+#> 0.1175344
+```
+
+We can look at the same estimate moving `mpg` from 
+20 to 21 as before, but this time holding `am = 1`.
+
+
+``` r
+yhat <- predict(
+  m.logistic,
+  newdata = data.frame(am = 1, mpg = c(20, 21)),
+  type = "response")
+
+diff(yhat)
+#>          2 
+#> 0.08606869
+```
+
+All the estimates in this case differ. The association between `mpg` and 
+**probability** of `vs` is not linear.
+Marginal effects provide a way to get results on the response scale, 
+which can aid interpretation. 
+
+A common type of marginal effect is an average marginal effect (AME).
+To calculate an AME numerically, we can get predicted probabilities 
+from a model for every observation in the dataset. For continuous variables,
+we might use a very small difference to approximate the derivative.
+For categorical variables, we might calculate a discrete difference.
+
+### Average Marginal Effect (AME)
+
+Here is an example of a continuous AME.
+`h` is a value near to zero used for the numerical 
+derivative. We take all the values observed in the dataset
+for the first set of predicted probabilities. Then we take the
+observed values + `h` and calculate new predicted probabilities.
+The difference, divided by `h` is the "instantaneous" (i.e., derivative)
+on the probability scale for a one unit shift in the predictor, `mpg`,
+for each person. When we average all of these, we get the AME.
+
+
+``` r
+h <- .001
+
+nd.1 <- nd.0 <- model.frame(m.logistic)
+nd.1$mpg <- nd.1$mpg + h
+
+yhat.0 <- predict(
+  m.logistic,
+  newdata = nd.0,
+  type = "response")
+
+yhat.1 <- predict(
+  m.logistic,
+  newdata = nd.1,
+  type = "response")
+
+mean((yhat.1 - yhat.0) / h)
+#> [1] 0.06922997
+```
+
+Here is an example of a discrete AME. The variable,
+`am` only takes two values: 0 or 1. So we calculate 
+predicted probabilities if everyone had `am = 0` and then
+again if everyone had `am = 1`.
+
+
+``` r
+nd.1 <- nd.0 <- model.frame(m.logistic)
+nd.0$am <- 0
+nd.1$am <- 1
+
+yhat.0 <- predict(
+  m.logistic,
+  newdata = nd.0,
+  type = "response")
+
+yhat.1 <- predict(
+  m.logistic,
+  newdata = nd.1,
+  type = "response")
+
+mean((yhat.1 - yhat.0))
+#> [1] -0.2618203
+```
+
+In both these examples, we are averaging across the different values 
+observed in the dataset. In a frequentist framework, additional details
+are needed to calculate uncertainty intervals. In a Bayesian framework,
+uncertainty intervals can be calculated readily by summarizing the 
+posterior.
+
+## AMEs for Logistic Regression
+
+The main function for users to use is `brmsmargins()`. Here is an 
+example calculating AMEs for `mpg` and `am`. First we will fit the same
+logistic regression model using `brms`.
+
+
+``` r
+bayes.logistic <- brm(
+  vs ~ am + mpg, data = mtcars,
+  family = "bernoulli", seed = 1234,
+  silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+#> Loading required namespace: rstan
+```
+
+
+``` r
+summary(bayes.logistic)
+#>  Family: bernoulli 
+#>   Links: mu = logit 
+#> Formula: vs ~ am + mpg 
+#>    Data: mtcars (Number of observations: 32) 
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Regression Coefficients:
+#>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept   -16.46      5.73   -29.59    -7.48 1.00     1686     1892
+#> am           -3.88      1.89    -7.96    -0.62 1.00     1708     1687
+#> mpg           0.89      0.31     0.40     1.59 1.00     1620     1794
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+Now we can use `brmsmargins()`. We give it the model object,
+a `data.frame` of the values to be added, first 0, then (0 + h),
+and a contrast matrix. The default is a 99 percent credible interval,
+which we override here to 0.95. We use highest density intervals, 
+which are the default. We also could have selected "ETI" for 
+equal tail intervals. `brmsmargins()` will return a list
+with the posterior of each prediction, a summary of the posterior 
+for the predictions, the posterior for the contrasts, and a 
+summary of the posterior for the contrasts. Here we just have the 
+one contrast, but multiple could have been specified.
+
+
+``` r
+h <- .001
+ame1 <- brmsmargins(
+  bayes.logistic,
+  add = data.frame(mpg = c(0, 0 + h)),
+  contrasts = cbind("AME MPG" = c(-1 / h, 1 / h)),
+  CI = 0.95, CIType = "HDI")
+
+kable(ame1$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
+|-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-------|
+| 0.071| 0.07| 0.052| 0.091|          NA|         NA| 0.95|HDI    |NA   |NA  |AME MPG |
+
+
+
+Now we can look at how we could calculate a discrete AME.
+This time we use the `at` argument instead of the `add` 
+argument as we want to hold `am` at specific values, 
+not add 0 and 1 to the observed `am` values.
+Because 0 and 1 are meaningful values of `am`,
+we also look at the summary of the posterior for the predictions.
+These predictions average across all values of `mpg`.
+
+
+``` r
+ame2 <- brmsmargins(
+  bayes.logistic,
+  at = data.frame(am = c(0, 1)),
+  contrasts = cbind("AME am" = c(-1, 1)),
+  CI = 0.95, CIType = "HDI")
+
+kable(ame2$Summary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|
+| 0.543| 0.545| 0.419| 0.66|          NA|         NA| 0.95|HDI    |NA   |NA  |
+| 0.283| 0.274| 0.170| 0.41|          NA|         NA| 0.95|HDI    |NA   |NA  |
+
+
+
+
+``` r
+kable(ame2$ContrastSummary)
+```
+
+
+
+|          M|        Mdn|         LL|         UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
+|----------:|----------:|----------:|----------:|-----------:|----------:|----:|:------|:----|:---|:------|
+| -0.2599408| -0.2668172| -0.4330838| -0.0820307|          NA|         NA| 0.95|HDI    |NA   |NA  |AME am |
+
+
+
+Note that by default, `brmsmargins()` uses the model frame 
+from the model object as the dataset. This, however, can be overridden.
+You can give it any (valid) dataset and it will add or override the chosen
+values and average across the predictions from the different rows of 
+the dataset.
+
+
+## AMEs for Poisson Regression
+
+Here is a short example for Poisson regression used for 
+count outcomes. We use a dataset drawn from:
+https://stats.oarc.ucla.edu/r/dae/poisson-regression/
+
+
+``` r
+
+d <- fread("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
+d[, prog := factor(prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))]
+
+bayes.poisson <- brm(
+  num_awards ~ prog + math, data = d,
+  family = "poisson", seed = 1234,
+  silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+```
+
+
+``` r
+summary(bayes.poisson)
+#>  Family: poisson 
+#>   Links: mu = log 
+#> Formula: num_awards ~ prog + math 
+#>    Data: d (Number of observations: 200) 
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Regression Coefficients:
+#>                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept         -5.31      0.64    -6.62    -4.07 1.00     2429     2135
+#> progAcademic       1.13      0.36     0.46     1.87 1.00     2399     1890
+#> progVocational     0.37      0.45    -0.49     1.24 1.00     2442     2089
+#> math               0.07      0.01     0.05     0.09 1.00     2627     2257
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+AME for a continuous variable, using default CI interval and type.
+
+
+``` r
+h <- .001
+ame1.p <- brmsmargins(
+  bayes.poisson,
+  add = data.frame(math = c(0, 0 + h)),
+  contrasts = cbind("AME math" = c(-1 / h, 1 / h)))
+
+kable(ame1.p$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label    |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:--------|
+| 0.044| 0.044| 0.025| 0.064|          NA|         NA| 0.99|HDI    |NA   |NA  |AME math |
+
+
+
+AME for a categorical variable. Here we calculate pairwise contrasts
+for all three program types. These are the predicted number of awards.
+
+
+``` r
+ame2.p <- brmsmargins(
+  bayes.poisson,
+  at = data.frame(
+    prog = factor(1:3,
+                  labels = c("General", "Academic", "Vocational"))),
+  contrasts = cbind(
+    "AME General v Academic" = c(1, -1, 0),
+    "AME General v Vocational" = c(1, 0, -1),
+    "AME Academic v Vocational" = c(0, 1, -1)))
+    
+kable(ame2.p$Summary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
+| 0.265| 0.255| 0.093| 0.542|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.780| 0.777| 0.599| 0.991|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.379| 0.367| 0.152| 0.702|          NA|         NA| 0.99|HDI    |NA   |NA  |
+
+
+
+
+``` r
+kable(ame2.p$ContrastSummary, digits = 3)
+```
+
+
+
+|      M|    Mdn|     LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label                     |
+|------:|------:|------:|------:|-----------:|----------:|----:|:------|:----|:---|:-------------------------|
+| -0.515| -0.521| -0.817| -0.185|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Academic    |
+| -0.114| -0.110| -0.504|  0.258|          NA|         NA| 0.99|HDI    |NA   |NA  |AME General v Vocational  |
+|  0.401|  0.408|  0.020|  0.758|          NA|         NA| 0.99|HDI    |NA   |NA  |AME Academic v Vocational |
+
+
+
+
+## AMEs for Negative Binomial Regression
+
+Here is a short example for Negative Binomial regression used for 
+count outcomes.
+
+
+``` r
+d <- fread("https://stats.oarc.ucla.edu/stat/data/fish.csv")
+d[, nofish := factor(nofish, levels = 0:1, labels = c("no fish", "fish"))]
+
+bayes.nb <- brm(
+  count ~ nofish + xb, data = d,
+  family = "negbinomial", seed = 1234,
+  silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+```
+
+
+``` r
+summary(bayes.nb)
+#>  Family: negbinomial 
+#>   Links: mu = log 
+#> Formula: count ~ nofish + xb 
+#>    Data: d (Number of observations: 250) 
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Regression Coefficients:
+#>            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept     -1.38      0.21    -1.81    -0.98 1.00     3239     2555
+#> nofishfish    -0.08      0.24    -0.55     0.40 1.00     3874     2770
+#> xb             1.24      0.10     1.05     1.44 1.00     3568     2874
+#> 
+#> Further Distributional Parameters:
+#>       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> shape     0.72      0.12     0.51     0.98 1.00     3639     2740
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+AME for a continuous variable, using default CI interval and type.
+
+
+``` r
+h <- .001
+ame1.nb <- brmsmargins(
+  bayes.nb,
+  add = data.frame(xb = c(0, 0 + h)),
+  contrasts = cbind("AME xb" = c(-1 / h, 1 / h)))
+
+kable(ame1.nb$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
+|-----:|-----:|-----:|------:|-----------:|----------:|----:|:------|:----|:---|:------|
+| 5.607| 5.282| 2.367| 11.234|          NA|         NA| 0.99|HDI    |NA   |NA  |AME xb |
+
+
+
+AME for a categorical variable. Here we calculate pairwise contrasts
+for no fish versus fish. The estimate is how many are caught.
+
+
+``` r
+ame2.nb <- brmsmargins(
+  bayes.nb,
+  at = data.frame(
+    nofish = factor(0:1,
+                  labels = c("no fish", "fish"))),
+  contrasts = cbind(
+    "AME No Fish v Fish" = c(1, -1)))
+    
+kable(ame2.nb$Summary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
+| 4.512| 4.339| 2.528| 7.731|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 4.254| 3.971| 1.692| 9.248|          NA|         NA| 0.99|HDI    |NA   |NA  |
+
+
+
+
+``` r
+kable(ame2.nb$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|   Mdn|     LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label              |
+|-----:|-----:|------:|-----:|-----------:|----------:|----:|:------|:----|:---|:------------------|
+| 0.258| 0.364| -3.213| 2.957|          NA|         NA| 0.99|HDI    |NA   |NA  |AME No Fish v Fish |
+
+
+
+## References
+
+These references may be useful.
+
+- Norton, E. C., Dowd, B. E., & Maciejewski, M. L. (2019). Marginal effects—quantifying the effect of changes in risk factors in logistic regression models. *JAMA, 321*(13), 1304-1305.
+- Mize, T. D., Doan, L., & Long, J. S. (2019). A general framework for comparing predictions and marginal effects across models. *Sociological Methodology, 49*(1), 152-189.
