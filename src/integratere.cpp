@@ -52,7 +52,11 @@ arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int
       arma::mat dmat = d[re];
 
       NumericMatrix sdmat = sd[re];
-      NumericVector sdvec = sdmat(i, _);
+      NumericVector sdvec_nv = sdmat(i, _);
+
+      // convert to arma::vec
+      arma::rowvec sdvec(sdvec_nv.begin(), sdvec_nv.size(),
+                      /*copy_aux_mem=*/false, /*strict=*/true);
 
       Z[re] = integratemvn(dmat, k, sdvec, cholmat);
     }
@@ -61,13 +65,13 @@ arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int
     arma::mat Zall = Z[0];
     if (J > 0) {
       for (int re = 1; re < J; re++) {
-	arma::mat tmp = Z[re];
-	Zall += tmp;
+      	arma::mat tmp = Z[re];
+      	Zall += tmp;
       }
     }
-    for (int nsamp = 0; nsamp < k; nsamp++) {
-      Zall.col(nsamp) = Zall.col(nsamp) + yhat.row(i).t();
-    }
+
+    Zall.each_col() += yhat.row(i).t();
+
     switch (backtrans) {
       case 0: Zall = 1.0 / (1.0 + arma::exp(-Zall)); break;
       case 1: Zall = arma::exp(Zall); break;

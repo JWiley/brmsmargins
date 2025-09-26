@@ -27,15 +27,10 @@ using namespace Rcpp;
 //' 
 //' integratemvn(matrix(1, 1, 1), 100L, c(5), matrix(1))
 // [[Rcpp::export]]
-arma::mat integratemvn(const arma::mat& X, const int k, const Rcpp::NumericVector& sd, const arma::mat& chol) {
-  int n = sd.length();
-  arma::mat Z = arma::randn(k, n);
-  if (n > 1) {
-    Z = Z * chol;
-  }
-  for (int i = 0; i < n; i++) {
-    Z.col(i) *= sd(i);
-  }
-  arma::mat out = X * Z.t();  
-  return(out);
+arma::mat integratemvn(const arma::mat& X, const arma::uword& k, const arma::rowvec& sd, const arma::mat& chol) {
+  const arma::uword n = sd.size();
+  arma::mat Z(k, n, arma::fill::randn);
+  Z *= chol;
+  Z.each_row() %= sd;
+  return X * Z.t();
 }
