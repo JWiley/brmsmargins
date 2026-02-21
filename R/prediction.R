@@ -185,6 +185,19 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
     }
   }
 
+  if (identical(family(object)$family, "binomial")) {
+    trials <- standata(object)$trials
+    if (length(trials) > 0L) {
+      if (identical(length(trials), ncol(yhat))) {
+        yhat <- sweep(yhat, 2, trials, "*")
+      } else {
+        stop("trials is not the same length as the number of columns in yhat")
+      }
+    } else {
+      stop("trials is not present in the data used to fit the model")
+    }
+  }
+
   if (isTRUE(raw)) {
     if (isTRUE(summarize)) {
       message("summarize cannot be TRUE when raw = TRUE, setting to FALSE")

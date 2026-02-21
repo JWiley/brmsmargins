@@ -76,7 +76,8 @@ NULL
   }
 
   fams <- c("gaussian",
-            "bernoulli", "beta",
+            "bernoulli", "binomial",
+            "beta",
             "gamma",
             "poisson", "negbinomial")
   validtype <- family %in% fams

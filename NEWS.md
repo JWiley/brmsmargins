@@ -1,3 +1,6 @@
+# brmsmargins 0.2.2
+* added preliminary support for binomial family
+
 # brmsmargins 0.2.1
 
 * Added `seed` argument to `marginalcoef()` to allow for reproducible results.
