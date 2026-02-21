@@ -1,0 +1,215 @@
+## Overview
+
+This package has functions to calculate marginal effects from `brms`
+models ( <http://paul-buerkner.github.io/brms/> ). A central motivator
+is to calculate average marginal effects (AMEs) for continuous and
+discrete predictors in fixed effects only and mixed effects regression
+models including location scale models.
+
+This table shows an overview of currently supported models / features
+where “X” indicates a specific model / feature is currently supported.
+The column ‘Fixed’ means fixed effects only models. The column ‘Mixed’
+means mixed effects models.
+
+| Distribution / Feature                         | Fixed | Mixed |
+|------------------------------------------------|-------|-------|
+| Gaussian / Normal                              | ✔️    | ✔️    |
+| Bernoulli (logistic)                           | ✔️    | ✔️    |
+| Poisson                                        | ✔️    | ✔️    |
+| Negative Binomial                              | ✔️    | ✔️    |
+| Gamma                                          | ✔️    | ✔️    |
+| Beta                                           | ✔️    | ✔️    |
+| Multinomial logistic                           | ❌    | ❌    |
+| Multivariate models                            | ❌    | ❌    |
+| Gaussian location scale models                 | ✔️    | ✔️    |
+| Natural log / square root transformed outcomes | ✔️    | ✔️    |
+| Monotonic predictors                           | ✔️    | ✔️    |
+| Custom outcome transformations                 | ❌    | ❌    |
+
+In general, any distribution supported by `brms` that generates one and
+only one predicted value (e.g., not multinomial logistic regression
+models) should be supported for fixed effects only models. Also note
+that currently, only Gaussian random effects are supported. This is not
+too limiting as even for Bernoulli, Poisson, etc. outcomes, the random
+effects are commonly assumed to have a Gaussian distribution.
+
+Here is a quick syntax overview of how to use the main function,
+[`brmsmargins()`](https://joshuawiley.com/brmsmargins/reference/brmsmargins.md).
+
+#### Fixed effects, continuous predictor.
+
+``` r
+h <- .001
+ames <- brmsmargins(
+  object = model,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "fixedonly")
+  
+ames$ContrastSummary
+```
+
+#### Fixed effects, discrete predictor.
+
+``` r
+ames <- brmsmargins(
+  object = model,
+  add = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "fixedonly")
+
+ames$Summary
+ames$ContrastSummary
+```
+
+#### Mixed effects, continuous predictor.
+
+``` r
+h <- .001
+ames <- brmsmargins(
+  object = model,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE")
+  
+ames$ContrastSummary
+```
+
+#### Mixed effects, discrete predictor.
+
+``` r
+ames <- brmsmargins(
+  object = model,
+  add = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  effects = "integrateoutRE")
+
+ames$Summary
+ames$ContrastSummary
+```
+
+#### Mixed Effects Location Scale, continuous predictor
+
+``` r
+h <- .001
+ames <- brmsmargins(
+  object = model,
+  add = data.frame(x = c(0, h)),
+  contrasts = cbind("AME x" = c(-1 / h, 1 / h)),
+  dpar = "sigma",
+  effects = "integrateoutRE")
+  
+ames$ContrastSummary
+```
+
+#### Mixed Effects Location Scale, discrete predictor
+
+``` r
+ames <- brmsmargins(
+  object = model,
+  at = data.frame(x = c(0, 1)),
+  contrasts = cbind("AME x" = c(-1, 1)),
+  dpar = "sigma",
+  effects = "integrateoutRE")
+
+ames$Summary
+ames$ContrastSummary
+```
+
+Note that even on mixed effects models, it is possible to generate
+predictions and marginal effects from the fixed effects only, just by
+specifying `effects = "fixedonly"` but this is probably not a good idea
+generally so not shown by default.
+
+Also note that for all of these examples `ames$Summary` would have a
+summary of the averaged predicted values. These often are useful for
+discrete predictors. For continuous predictors, if the focus is on
+marginal effects, they often are not interesting. However, the `at`
+argument can be used with continuous predictors to generate interesting
+averaged predicted values. For example, this would get predicted values
+integrating out random effects for a range of ages averaging
+(marginalizing) all other predictors / covariates.
+
+``` r
+ames <- brmsmargins(
+  object = model,
+  at = data.frame(age = c(20, 30, 40, 50, 60)),
+  effects = "integrateoutRE")
+
+ames$Summary
+```
+
+## Installation
+
+You can install the package from CRAN by running this code:
+
+``` r
+install.packages("brmsmargins")
+```
+
+Alternately, for the latest, development version, run:
+
+``` r
+remotes::install_github("JWiley/brmsmargins")
+```
+
+## Learn More
+
+There are three vignettes that introduce how to use the package for
+several scenarios.
+
+- [Fixed effects only
+  models](https://joshuawiley.com/brmsmargins/articles/fixed-effects-marginaleffects.html)
+  (also called single level models). This also is the best place to
+  start learning about how to use the package. It includes a brief
+  amount of motivation for why we would want to calculate marginal
+  effects at all.
+- [Mixed effects
+  models](https://joshuawiley.com/brmsmargins/articles/mixed-effects-marginaleffects.html)
+  (also called multilevel models). This shows how to calculate marginal
+  effects for mixed effects / multilevel models. There are runnable
+  examples, but not much background.
+- [Location scale
+  models](https://joshuawiley.com/brmsmargins/articles/location-scale-marginaleffects.html).
+  Location scale models are models where both the location (e.g., mean)
+  and scale (e.g., variance / residual standard deviation) are
+  explicitly modeled as outcomes. These require use of distributional
+  parameters `dpar` in `brms`. This vignette shows how to calculate
+  marginal effects from location scale models for the scale part.
+
+# Package index
+
+## All functions
+
+- [`brmsmargins()`](https://joshuawiley.com/brmsmargins/reference/brmsmargins.md)
+  : Calculate Marginal Effects from 'brms' Models
+- [`bsummary()`](https://joshuawiley.com/brmsmargins/reference/bsummary.md)
+  : Personal Preference Based Bayesian Summary
+- [`integratemvn()`](https://joshuawiley.com/brmsmargins/reference/integratemvn.md)
+  [`integratemvnR()`](https://joshuawiley.com/brmsmargins/reference/integratemvn.md)
+  : Integrate over Multivariate Normal Random Effects
+- [`integratere()`](https://joshuawiley.com/brmsmargins/reference/integratere.md)
+  [`integratereR()`](https://joshuawiley.com/brmsmargins/reference/integratere.md)
+  : Integrate over Random Effects
+- [`lmcpp()`](https://joshuawiley.com/brmsmargins/reference/lmcpp.md) :
+  Fast Linear Regression
+- [`marginalcoef()`](https://joshuawiley.com/brmsmargins/reference/marginalcoef.md)
+  : Marginal Coefficients from a 'brms' Model
+- [`prediction()`](https://joshuawiley.com/brmsmargins/reference/prediction.md)
+  : Marginal Posterior Predictions from a 'brms' Model
+- [`rowBootMeans()`](https://joshuawiley.com/brmsmargins/reference/rowBootMeans.md)
+  : Bootstrap Row Means
+- [`tab2mat()`](https://joshuawiley.com/brmsmargins/reference/tab2mat.md)
+  [`tab2matR()`](https://joshuawiley.com/brmsmargins/reference/tab2mat.md)
+  : Convert a Row of a Table to a Square Matrix
+
+# Articles
+
+### Vignettes
+
+- [Marginal Effects for Fixed Effects
+  Models](https://joshuawiley.com/brmsmargins/articles/fixed-effects-marginaleffects.md):
+- [Marginal Effects for Mixed Effects
+  Models](https://joshuawiley.com/brmsmargins/articles/mixed-effects-marginaleffects.md):
+- [Marginal Effects for Location Scale
+  Models](https://joshuawiley.com/brmsmargins/articles/location-scale-marginaleffects.md):
