@@ -86,7 +86,7 @@
 #' @importFrom data.table as.data.table
 #' @importFrom stats fitted formula
 #' @importFrom posterior as_draws_df ndraws
-#' @importFrom brms standata
+#' @importFrom brms standata brmsterms
 #' @export
 prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
                        index, dpar = NULL, resample = 0L, resampleseed = FALSE,
@@ -186,7 +186,8 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
   }
 
   if (identical(family(object)$family, "binomial")) {
-    trials <- standata(object)$trials
+    trial.var <- all.vars(brmsterms(formula(object))$adforms$trials)
+    trials <- data[[trial.var]]
     if (length(trials) > 0L) {
       if (identical(length(trials), ncol(yhat))) {
         yhat <- sweep(yhat, 2, trials, "*")
