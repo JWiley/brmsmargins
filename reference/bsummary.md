@@ -93,7 +93,7 @@ Kruschke, J. K. (2018).
 bsummary(rnorm(1000))
 #>              M         Mdn        LL       UL PercentROPE PercentMID    CI
 #>          <num>       <num>     <num>    <num>       <num>      <num> <num>
-#> 1: 0.004931787 0.008198255 -2.645212 2.411659          NA         NA  0.99
+#> 1: 0.004339615 0.008579051 -2.645212 2.411659          NA         NA  0.99
 #>    CIType   ROPE    MID
 #>    <char> <char> <char>
 #> 1:    HDI   <NA>   <NA>
@@ -101,7 +101,7 @@ bsummary(rnorm(1000))
 bsummary(rnorm(1000), ROPE = c(-.5, .5), MID = c(-1, 1))
 #>              M         Mdn        LL       UL PercentROPE PercentMID    CI
 #>          <num>       <num>     <num>    <num>       <num>      <num> <num>
-#> 1: -0.01575683 -0.05125453 -2.422911 2.368512        38.7       30.9  0.99
+#> 1: -0.01626336 -0.05466379 -2.422911 2.368512        38.7       30.9  0.99
 #>    CIType        ROPE                   MID
 #>    <char>      <char>                <char>
 #> 1:    HDI [-0.5, 0.5] [-Inf, -1] | [1, Inf]
