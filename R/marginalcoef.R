@@ -56,8 +56,8 @@ marginalcoef <- function(object, summarize = TRUE, posterior = FALSE, index,
   .assertfamily(object)
   ## assert the link function used is a supported one
   .assertlink(object)
-  ## assert that all random effects in the model are Gaussian
-  .assertgaussian(object)
+  ## assert that all random effects in the model are Gaussian or student-t
+  .assertRE(object)
 
   if (isTRUE(missingArg(index))) {
     index <- seq_len(ndraws(object))

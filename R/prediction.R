@@ -120,8 +120,8 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
     .assertfamily(object)
     ## assert the link function used is a supported one
     .assertlink(object, dpar = dpar)
-    ## assert that all random effects in the model are Gaussian
-    .assertgaussian(object)
+    ## assert that all random effects in the model are Gaussian or student-t
+    .assertRE(object)
   }
 
   if (isTRUE(missing(index))) {
@@ -168,7 +168,7 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
       blocks <- unique(re$id)
       nblocks <- length(blocks)
 
-      d2 <- sd <- L <- vector("list", nblocks)
+      d2 <- sd <- L <- df <- vector("list", nblocks)
 
       for (i in seq_len(nblocks)) {
         useblock <- blocks[i]
@@ -178,9 +178,13 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
         sd[[i]] <- .buildSD(data = post, ranef = usere, block = useblock, dpar = dpar)
         L[[i]] <- .buildL(data = post, block = useblock, number = num)
         names(d2)[i] <- names(sd)[i] <- names(L)[i] <- sprintf("Block%d", useblock)
+        if (identical(usere$dist[1], "student")) {
+          df[[i]] <- .buildDF(data = post, ranef = usere, block = useblock)
+          names(df)[i] <- sprintf("Block%d", useblock)
+        }
       }
 
-      yhat <- integratere(d = d2, sd = sd, L = L, k = k,
+      yhat <- integratereR(d = d2, sd = sd, L = L, k = k, df = df,
                           yhat = yhat, backtrans = links$useilinknum)
     }
   }

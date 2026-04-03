@@ -6,6 +6,8 @@
 \alias{.buildL}
 \alias{.namesSD}
 \alias{.buildSD}
+\alias{.namesDF}
+\alias{.buildDF}
 \alias{.namesZ}
 \alias{.buildZ}
 \title{Build the Variable Names or Data Objects for Estimation}
@@ -17,6 +19,10 @@
 .namesSD(ranef, block, dpar)
 
 .buildSD(data, ranef, block, dpar)
+
+.namesDF(ranef, block)
+
+.buildDF(data, ranef, block)
 
 .namesZ(block, number, dpar)
 

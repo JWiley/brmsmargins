@@ -3,7 +3,7 @@
 \name{assertall}
 \alias{assertall}
 \alias{.assertbrmsfit}
-\alias{.assertgaussian}
+\alias{.assertRE}
 \alias{.assertfamily}
 \alias{.assertdpar}
 \alias{.assertlink}
@@ -11,7 +11,7 @@
 \usage{
 .assertbrmsfit(object)
 
-.assertgaussian(object)
+.assertRE(object)
 
 .assertfamily(object)
 
@@ -43,7 +43,7 @@ All of them result in a \code{stop} error if the assertion is not met.
 \details{
 \itemize{
 \item \code{.assertbrmsfit}: asserts that the object should be \link[brms:brmsfit-class]{brms::brmsfit}.
-\item \code{.assertgaussian}: asserts that all random effects are Gaussian.
+\item \code{.assertRE}: asserts that all random effects are Gaussian or student-t.
 \item \code{.assertfamily}: asserts that the distribution (family) of the outcome is a currently supported family. Only applies when integrating out random effects.
 \item \code{.assertlink}: asserts that the link function is a currently supported link function. Only applies when integrating out random effects.
 }

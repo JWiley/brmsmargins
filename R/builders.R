@@ -83,6 +83,20 @@ utils::globalVariables(c("group", "coef", "id"))
   as.matrix(data[, ..n])
 }
 
+#' @rdname builders
+.namesDF <- function(ranef, block) {
+  stopifnot(is.data.table(ranef))
+  n <- ranef[id == block]
+  n[, sprintf("df_%s", group)]
+}
+
+#' @rdname builders
+.buildDF <- function(data, ranef, block) {
+  stopifnot(is.data.table(data))
+  n <- .namesDF(ranef, block)
+  as.matrix(data[, ..n])
+}
+
 ## make Rcmd check happy
 utils::globalVariables(c("Number"))
 

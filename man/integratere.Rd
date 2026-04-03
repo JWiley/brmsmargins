@@ -7,7 +7,7 @@
 \usage{
 integratere(d, sd, L, k, yhat, backtrans)
 
-integratereR(d, sd, L, k, yhat, backtrans)
+integratereR(d, sd, L, k, df, yhat, backtrans)
 }
 \arguments{
 \item{d}{A list with model matrices for each random effect block.}

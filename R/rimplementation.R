@@ -12,6 +12,21 @@ integratemvnR <- function(X, k, sd, chol) {
   X %*% t(Z)
 }
 
+#' @describeIn integratemvt Pure `R` implementation of [integratemvt()].
+#' @importFrom stats rnorm
+integratemvtR <- function(X, k, sd, chol, df) {
+  n <- length(sd)
+  Z <- matrix(rnorm(k * n, mean = 0, sd = 1), nrow = k, ncol = n)
+  w <- rchisq(k, df = df)
+  if (n > 1) {
+    Z <- Z %*% chol
+  }
+  for (i in seq_len(n)) {
+    Z[, i] <- Z[, i] * sd[i] * sqrt(df / w)
+  }
+  X %*% t(Z)
+}
+
 #' @describeIn tab2mat Pure `R` implementation of [tab2mat()].
 tab2matR <- function(X) {
   X <- as.vector(X)
@@ -20,7 +35,7 @@ tab2matR <- function(X) {
 }
 
 #' @describeIn integratere Pure `R` implementation of [integratere()].
-integratereR <- function(d, sd, L, k, yhat, backtrans) {
+integratereR <- function(d, sd, L, k, df, yhat, backtrans) {
   M <- nrow(yhat)
   N <- ncol(yhat)
   J <- length(sd)
@@ -30,7 +45,11 @@ integratereR <- function(d, sd, L, k, yhat, backtrans) {
     for (re in seq_len(J)) {
       cholmat <- tab2matR(L[[re]][i, ])
       dmat <- d[[re]]
-      Z[[re]] <- integratemvnR(dmat, k, sd[[re]][i, ], cholmat)
+      if (!is.null(df[[re]])) {
+        Z[[re]] <- integratemvtR(dmat, k, sd[[re]][i, ], cholmat, df[[re]][i])
+      } else {
+        Z[[re]] <- integratemvnR(dmat, k, sd[[re]][i, ], cholmat)
+      }
     }
     Zall <- Z[[1]]
     if (J > 1) {

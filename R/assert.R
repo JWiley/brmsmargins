@@ -11,7 +11,7 @@
 #'
 #' @details
 #' - `.assertbrmsfit`: asserts that the object should be [brms::brmsfit-class].
-#' - `.assertgaussian`: asserts that all random effects are Gaussian.
+#' - `.assertRE`: asserts that all random effects are Gaussian or student-t.
 #' - `.assertfamily`: asserts that the distribution (family) of the outcome is a currently supported family. Only applies when integrating out random effects.
 #' - `.assertlink`: asserts that the link function is a currently supported link function. Only applies when integrating out random effects.
 #'
@@ -40,15 +40,24 @@ NULL
 }
 
 #' @rdname assertall
-.assertgaussian <- function(object) {
+#' @importFrom data.table as.data.table
+#' @importFrom JWileymisc nzchar
+.assertRE <- function(object) {
   .assertbrmsfit(object)
+
+  tmpd <- as.data.table(object$ranef)
 
   result <- FALSE
   if (isTRUE(is.random(object))) {
-    if (isFALSE(all(object$ranef$dist == "gaussian"))) {
-      err <- sprintf(paste0("Currently only gaussian random effects are supported, ",
+    if (isFALSE(all(tmpd$dist %in% c("gaussian", "student")))) {
+      err <- sprintf(paste0("Currently only gaussian and student-t random effects are supported, ",
                             "but the following distribution(s) were found '%s'."),
-                     paste(unique(object$ranef$dist), collapse = "; "))
+                     paste(unique(tmpd$dist), collapse = "; "))
+      stop(err)
+    } else if (isTRUE(any(tmpd[nzchar(dpar), dist] %nin% c("gaussian")))) {
+      err <- sprintf(paste0("Currently only gaussian random effects are supported for dpar, ",
+                            "but the following distribution(s) were found '%s'."),
+                     paste(unique(tmpd[!nzchar(dpar), dist]), collapse = "; "))
       stop(err)
     } else {
       result <- TRUE
