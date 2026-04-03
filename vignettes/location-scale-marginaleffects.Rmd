@@ -85,7 +85,6 @@ ls.fe <- brm(bf(
   save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Loading required namespace: rstan
 ```
 
 
@@ -279,8 +278,6 @@ ls.me <- brm(bf(
   save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Warning: 989 of 4000 (25.0%) transitions hit the maximum treedepth limit of 10.
-#> See https://mc-stan.org/misc/warnings for details.
 ```
 
 Note that this model has not achieved good convergence, but 

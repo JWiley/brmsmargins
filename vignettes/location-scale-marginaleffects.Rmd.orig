@@ -56,7 +56,7 @@ intraindividual variability (IIV).
 To start with, we will look at a fixed effects only location scale model.
 We will simulate a dataset.
 
-```{r fit-location-scale-fixed, results = 'hide'}
+```{r fit-location-scale-fixed, results = 'hide', message = FALSE}
 d <- withr::with_seed(
   seed = 12345, code = {
     nObs <- 1000L
@@ -166,7 +166,7 @@ d[, .(SD = sd(y)), by = grp][, diff(SD)]
 We will simulate some multilevel location scale data for model
 and fit the mixed effects location scale model.
 
-```{r fit-location-scale-mixed, results = 'hide'}
+```{r fit-location-scale-mixed, results = 'hide', message = FALSE}
 dmixed <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100

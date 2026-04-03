@@ -130,7 +130,7 @@ added, back transformed, and averaged.
 Thus, if you wanted AMEs across a dataset of 1,000 people, 
 with 2,000 posterior draws, and you wanted to use 100 points for the 
 numerical integration, a total of 200 million (1,000 x 2,000 x 100) 
-values are calculated. The monte carlo integration is implemented in C++
+values are calculated. The Monte Carlo integration is implemented in C++
 code to try to help speed up the process, but it is not "quick"
 and also may be memory intensive.
 
@@ -144,7 +144,7 @@ We will simulate some multilevel binary data for our
 mixed effects logistic regression model with individual differences
 in both the intercept and slope.
 
-```{r fit-mixed-logistic, results = 'hide'}
+```{r fit-mixed-logistic, results = 'hide', message = FALSE}
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -283,7 +283,7 @@ knitr::kable(ame.noerror$ContrastSummary, digits = 3)
 ### Marginal Coefficients
 
 The fixed effects coefficients are conditional on the random effects.
-To aide interpretation, we also can calculate marginal coefficients or 
+To aid interpretation, we also can calculate marginal coefficients or 
 population averaged coefficients. The function to do this is 
 `marginalcoef()` which uses the method described by Hedeker and colleagues
 (2018). Here is an example and comparison to results using a single level 
@@ -318,7 +318,7 @@ We will simulate some multilevel poisson data for our
 mixed effects poisson regression model with individual differences
 in both the intercept and slope.
 
-```{r fit-mixed-poisson, results = 'hide'}
+```{r fit-mixed-poisson, results = 'hide', message = FALSE}
 dpoisson <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -401,8 +401,8 @@ poisson regression that ignores the clustering in the data.
 ## calculate marginal coefficients
 mc.pois <- marginalcoef(mpois, CI = 0.95, seed = 1234)
 
-## calculate single level logistic regression
-glm.pois <- glm(y ~ 1 + x, family = "poisson", data = d)
+## calculate single level poisson regression
+glm.pois <- glm(y ~ 1 + x, family = "poisson", data = dpoisson)
 glm.pois <- as.data.table(cbind(Est = coef(glm.pois), confint(glm.pois)))
 ```
 
@@ -425,7 +425,7 @@ knitr::kable(cbind(
 Negative binomial models work the same way as for poisson models.
 We use the same dataset, just for demonstration.
 
-```{r fit-mixed-negbin, results = 'hide'}
+```{r fit-mixed-negbin, results = 'hide', message = FALSE}
 dnb <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -515,7 +515,7 @@ knitr::kable(
 
 Binomial data works largely the same.
 Here we have an example dataset of a trial with 
-participants randomised to treatment (1) or control (0)
+participants randomized to treatment (1) or control (0)
 coded in `trt`, continuous age in years ranging from 8 to 16.
 The outcome is binomial, such as in cognitive tasks where there are multiple
 trials as the number of correct trials at each timepoint are recorded.
@@ -524,7 +524,7 @@ across participants. We fit a binomial model in `brms` where the
 outcome is the number of correct trials and the total number of 
 trials is stored in `total`.
 
-```{r fit-mixed-binomial, results = 'hide'}
+```{r fit-mixed-binomial, results = 'hide', message = FALSE}
 dbinom <- withr::with_seed(
   seed = 12345, code = {
   library(data.table)
@@ -661,7 +661,7 @@ and a derivative makes sense.
 In contrast to continuous predictors where it is common, it is relatively 
 *un*common to center categorical predictors. However, research 
 (Yaremych, Preacher, & Hedeker, 2021) highlights how the same rationale 
-that apply to continuous predictors, in regards to the benefits of centering,
+that applies to continuous predictors, in regards to the benefits of centering,
 equally apply to categorical predictors. 
 One area where particular attention has been paid to the importance 
 of centering, whether continuous or categorical predictors,
@@ -703,7 +703,7 @@ for one category are not constant by ID.
 
 To address, this, `brmsmargins` implements an additional argument, `wat` 
 for within level `at`. This argument is used to give the values to be used 
-at each ID level. The `wat` argument is used in conjuction with the `at` argument.
+at each ID level. The `wat` argument is used in conjunction with the `at` argument.
 The `at` argument continues to be used for the general setup, with `wat` used 
 for the specific values.
 
@@ -744,7 +744,7 @@ which we will call `xb` and `xw`. We also fit the `brms` model, using
 so that variable is omitted. Any variation not explained by it will go into 
 the random intercept, anyways.
 
-```{r fit-centered-categorical-logistic, results = "hide"}
+```{r fit-centered-categorical-logistic, results = "hide", message = FALSE}
 ## within person centering binary predictor
 d[, xb := mean(x), by = ID]
 d[, xw := x - xb]
@@ -799,7 +799,7 @@ for ID 1 would be if moving from one category to another.
 
 Now we can use `brmsmargins()` to calculate the AME.
 We must still specify the `at` argument. Here we use
-our arbitrary lables of `a` and `b` for the variable,
+our arbitrary labels of `a` and `b` for the variable,
 `xw`. We also pass our list to the argument `wat`.
 Internally, `brmsmargins()` will substitute `a` for
 all the values for `a` by ID from our list, and similarly for 
@@ -843,9 +843,9 @@ To map these to a concrete potential research question, suppose that
 (Group = 0) or an emotion regulation intervention designed to help 
 manage stress (Group = 1). After completing the intervention, 
 participants completed 20 days of daily diaries. Sleep was recorded 
-each day and categorized as a good night sleep 
-(`y` = 1) or a poor night sleep (`y` = 0).
-Each day participants' also reported whether they experienced 
+each day and categorized as a good night' sleep 
+(`y` = 1) or a poor night's sleep (`y` = 0).
+Each day participants also reported whether they experienced 
 no stressor (`x` = 0) or any stressor (`x` = 1).
 
 The goal is to examine whether the intervention group moderates 
@@ -923,7 +923,7 @@ is associated with a good or poor night sleep and whether that differs
 between people randomized to the waitlist control or the intervention.
 The model can be fit as in the following code.
 
-```{r fit-interaction-logistic, results = "hide"}
+```{r fit-interaction-logistic, results = "hide", message = FALSE}
 mlogitcentint <- brms::brm(
   y ~ 1 + xw * group + xb + (1 + xw | ID), family = "bernoulli",
   data = d, seed = 1234,

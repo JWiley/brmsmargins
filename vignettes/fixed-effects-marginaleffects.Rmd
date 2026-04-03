@@ -248,7 +248,6 @@ bayes.logistic <- brm(
   silent = 2, refresh = 0,
   save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Loading required namespace: rstan
 ```
 
 

@@ -208,7 +208,7 @@ The main function for users to use is `brmsmargins()`. Here is an
 example calculating AMEs for `mpg` and `am`. First we will fit the same
 logistic regression model using `brms`.
 
-```{r fit-bayes-logistic, results = 'hide'}
+```{r fit-bayes-logistic, results = 'hide', message = FALSE}
 bayes.logistic <- brm(
   vs ~ am + mpg, data = mtcars,
   family = "bernoulli", seed = 1234,
@@ -278,7 +278,7 @@ Here is a short example for Poisson regression used for
 count outcomes. We use a dataset drawn from:
 https://stats.oarc.ucla.edu/r/dae/poisson-regression/
 
-```{r fit-bayes-poisson, results = 'hide'}
+```{r fit-bayes-poisson, results = 'hide', message = FALSE}
 
 d <- fread("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
 d[, prog := factor(prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))]
@@ -334,7 +334,7 @@ kable(ame2.p$ContrastSummary, digits = 3)
 Here is a short example for Negative Binomial regression used for 
 count outcomes.
 
-```{r fit-bayes-negbin, results = 'hide'}
+```{r fit-bayes-negbin, results = 'hide', message = FALSE}
 d <- fread("https://stats.oarc.ucla.edu/stat/data/fish.csv")
 d[, nofish := factor(nofish, levels = 0:1, labels = c("no fish", "fish"))]
 
@@ -386,7 +386,7 @@ kable(ame2.nb$ContrastSummary, digits = 3)
 Here is a short example for a Binomial regression used for 
 multiple trials.
 
-```{r fit-bayes-binom, results = 'hide'}
+```{r fit-bayes-binom, results = 'hide', message = FALSE}
 data(esoph)
 esoph <- as.data.table(esoph)
 esoph[, total := ncases + ncontrols]

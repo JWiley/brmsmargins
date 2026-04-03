@@ -137,7 +137,7 @@ added, back transformed, and averaged.
 Thus, if you wanted AMEs across a dataset of 1,000 people, 
 with 2,000 posterior draws, and you wanted to use 100 points for the 
 numerical integration, a total of 200 million (1,000 x 2,000 x 100) 
-values are calculated. The monte carlo integration is implemented in C++
+values are calculated. The Monte Carlo integration is implemented in C++
 code to try to help speed up the process, but it is not "quick"
 and also may be memory intensive.
 
@@ -189,9 +189,6 @@ mlogit <- brms::brm(
     prior(student_t(3, .5, .5), class = "sd", coef = "x", group = "ID"),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Warning: 24 of 4000 (1.0%) transitions ended with a divergence.
-#> See https://mc-stan.org/misc/warnings for details.
-#> Loading required namespace: rstan
 ```
 
 
@@ -377,7 +374,7 @@ knitr::kable(ame.noerror$ContrastSummary, digits = 3)
 ### Marginal Coefficients
 
 The fixed effects coefficients are conditional on the random effects.
-To aide interpretation, we also can calculate marginal coefficients or 
+To aid interpretation, we also can calculate marginal coefficients or 
 population averaged coefficients. The function to do this is 
 `marginalcoef()` which uses the method described by Hedeker and colleagues
 (2018). Here is an example and comparison to results using a single level 
@@ -549,8 +546,8 @@ poisson regression that ignores the clustering in the data.
 ## calculate marginal coefficients
 mc.pois <- marginalcoef(mpois, CI = 0.95, seed = 1234)
 
-## calculate single level logistic regression
-glm.pois <- glm(y ~ 1 + x, family = "poisson", data = d)
+## calculate single level poisson regression
+glm.pois <- glm(y ~ 1 + x, family = "poisson", data = dpoisson)
 glm.pois <- as.data.table(cbind(Est = coef(glm.pois), confint(glm.pois)))
 #> Waiting for profiling to be done...
 ```
@@ -730,7 +727,7 @@ knitr::kable(
 
 Binomial data works largely the same.
 Here we have an example dataset of a trial with 
-participants randomised to treatment (1) or control (0)
+participants randomized to treatment (1) or control (0)
 coded in `trt`, continuous age in years ranging from 8 to 16.
 The outcome is binomial, such as in cognitive tasks where there are multiple
 trials as the number of correct trials at each timepoint are recorded.
@@ -926,7 +923,7 @@ and a derivative makes sense.
 In contrast to continuous predictors where it is common, it is relatively 
 *un*common to center categorical predictors. However, research 
 (Yaremych, Preacher, & Hedeker, 2021) highlights how the same rationale 
-that apply to continuous predictors, in regards to the benefits of centering,
+that applies to continuous predictors, in regards to the benefits of centering,
 equally apply to categorical predictors. 
 One area where particular attention has been paid to the importance 
 of centering, whether continuous or categorical predictors,
@@ -968,7 +965,7 @@ for one category are not constant by ID.
 
 To address, this, `brmsmargins` implements an additional argument, `wat` 
 for within level `at`. This argument is used to give the values to be used 
-at each ID level. The `wat` argument is used in conjuction with the `at` argument.
+at each ID level. The `wat` argument is used in conjunction with the `at` argument.
 The `at` argument continues to be used for the general setup, with `wat` used 
 for the specific values.
 
@@ -1082,7 +1079,7 @@ for ID 1 would be if moving from one category to another.
 
 Now we can use `brmsmargins()` to calculate the AME.
 We must still specify the `at` argument. Here we use
-our arbitrary lables of `a` and `b` for the variable,
+our arbitrary labels of `a` and `b` for the variable,
 `xw`. We also pass our list to the argument `wat`.
 Internally, `brmsmargins()` will substitute `a` for
 all the values for `a` by ID from our list, and similarly for 
@@ -1145,9 +1142,9 @@ To map these to a concrete potential research question, suppose that
 (Group = 0) or an emotion regulation intervention designed to help 
 manage stress (Group = 1). After completing the intervention, 
 participants completed 20 days of daily diaries. Sleep was recorded 
-each day and categorized as a good night sleep 
-(`y` = 1) or a poor night sleep (`y` = 0).
-Each day participants' also reported whether they experienced 
+each day and categorized as a good night' sleep 
+(`y` = 1) or a poor night's sleep (`y` = 0).
+Each day participants also reported whether they experienced 
 no stressor (`x` = 0) or any stressor (`x` = 1).
 
 The goal is to examine whether the intervention group moderates 
