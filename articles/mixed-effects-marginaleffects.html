@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brmsmargins</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
+<span><span class="co">#&gt; data.table 1.18.2.1 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: Rcpp</span></span>
 <span><span class="co">#&gt; Loading 'brms' package (version 2.23.0). Useful instructions</span></span>
@@ -203,7 +203,7 @@ transformed, and averaged.</p>
 <p>Thus, if you wanted AMEs across a dataset of 1,000 people, with 2,000
 posterior draws, and you wanted to use 100 points for the numerical
 integration, a total of 200 million (1,000 x 2,000 x 100) values are
-calculated. The monte carlo integration is implemented in C++ code to
+calculated. The Monte Carlo integration is implemented in C++ code to
 try to help speed up the process, but it is not “quick” and also may be
 memory intensive.</p>
 <p>Because of the complexity involved, only limited types of mixed
@@ -251,10 +251,7 @@ intercept and slope.</p>
 <span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1.25</span>, <span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"Intercept"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span>, coef <span class="op">=</span> <span class="st">"x"</span>, group <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: 24 of 4000 (1.0%) transitions ended with a divergence.</span></span>
-<span><span class="co">#&gt; See https://mc-stan.org/misc/warnings for details.</span></span>
-<span><span class="co">#&gt; Loading required namespace: rstan</span></span></code></pre></div>
+<span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mlogit</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: There were 24 divergent transitions after warmup. Increasing</span></span>
@@ -596,7 +593,7 @@ rows of the data.</p>
 <h3 id="marginal-coefficients">Marginal Coefficients<a class="anchor" aria-label="anchor" href="#marginal-coefficients"></a>
 </h3>
 <p>The fixed effects coefficients are conditional on the random effects.
-To aide interpretation, we also can calculate marginal coefficients or
+To aid interpretation, we also can calculate marginal coefficients or
 population averaged coefficients. The function to do this is
 <code><a href="../reference/marginalcoef.html">marginalcoef()</a></code> which uses the method described by Hedeker
 and colleagues (2018). Here is an example and comparison to results
@@ -829,8 +826,8 @@ level poisson regression that ignores the clustering in the data.</p>
 <code class="sourceCode R"><span><span class="co">## calculate marginal coefficients</span></span>
 <span><span class="va">mc.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginalcoef.html">marginalcoef</a></span><span class="op">(</span><span class="va">mpois</span>, CI <span class="op">=</span> <span class="fl">0.95</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## calculate single level logistic regression</span></span>
-<span><span class="va">glm.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span>, family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">d</span><span class="op">)</span></span>
+<span><span class="co">## calculate single level poisson regression</span></span>
+<span><span class="va">glm.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">x</span>, family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">dpoisson</span><span class="op">)</span></span>
 <span><span class="va">glm.pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>Est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">glm.pois</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">glm.pois</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Waiting for profiling to be done...</span></span></code></pre></div>
 <p>Now we can view and compare the results.</p>
@@ -1074,6 +1071,242 @@ values from <code>brms</code>.</p>
 </div>
 </div>
 <div class="section level2">
+<h2 id="mixed-effects-binomial-regression">Mixed Effects Binomial Regression<a class="anchor" aria-label="anchor" href="#mixed-effects-binomial-regression"></a>
+</h2>
+<p>Binomial data works largely the same. Here we have an example dataset
+of a trial with participants randomized to treatment (1) or control (0)
+coded in <code>trt</code>, continuous age in years ranging from 8 to 16.
+The outcome is binomial, such as in cognitive tasks where there are
+multiple trials as the number of correct trials at each timepoint are
+recorded. In this example, the number of trials completed each time
+varies some across participants. We fit a binomial model in
+<code>brms</code> where the outcome is the number of correct trials and
+the total number of trials is stored in <code>total</code>.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dbinom</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">12345</span>, code <span class="op">=</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">200L</span></span>
+<span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/J.html" class="external-link">CJ</a></span><span class="op">(</span>ID <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span>, time <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span>, <span class="fu">`:=`</span><span class="op">(</span></span>
+<span>      trt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">1</span>, <span class="fl">.5</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>      age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">8</span>, <span class="fl">16</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>      u   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">.6</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">]</span><span class="op">[</span>, <span class="va">total</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">15</span>, <span class="va">.N</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span><span class="op">[</span></span>
+<span>    , <span class="va">p</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">0.8</span> <span class="op">*</span> <span class="va">trt</span> <span class="op">+</span> <span class="fl">0.25</span> <span class="op">*</span> <span class="op">(</span><span class="va">age</span> <span class="op">-</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.3</span> <span class="op">*</span> <span class="va">time</span> <span class="op">+</span> <span class="va">u</span><span class="op">)</span><span class="op">]</span><span class="op">[</span></span>
+<span>    , <span class="va">correct</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">.N</span>, <span class="va">total</span>, <span class="va">p</span><span class="op">)</span><span class="op">]</span><span class="op">[</span></span>
+<span>    , <span class="fu">.</span><span class="op">(</span><span class="va">ID</span>, <span class="va">trt</span>, <span class="va">age</span>, <span class="va">time</span>, <span class="va">total</span>, <span class="va">correct</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mbinom</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
+<span>  <span class="va">correct</span> <span class="op">|</span> <span class="fu">trials</span><span class="op">(</span><span class="va">total</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"binomial"</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">dbinom</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  save_pars <span class="op">=</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/save_pars.html" class="external-link">save_pars</a></span><span class="op">(</span>group <span class="op">=</span> <span class="cn">TRUE</span>, latent <span class="op">=</span> <span class="cn">FALSE</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  chains <span class="op">=</span> <span class="fl">4L</span>, cores <span class="op">=</span> <span class="fl">4L</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,</span>
+<span>  silent <span class="op">=</span> <span class="fl">2</span>, refresh <span class="op">=</span> <span class="fl">0</span>, adapt_delta <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mbinom</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  Family: binomial </span></span>
+<span><span class="co">#&gt;   Links: mu = logit </span></span>
+<span><span class="co">#&gt; Formula: correct | trials(total) ~ 1 + trt + age + (1 | ID) </span></span>
+<span><span class="co">#&gt;    Data: dbinom (Number of observations: 600) </span></span>
+<span><span class="co">#&gt;   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
+<span><span class="co">#&gt;          total post-warmup draws = 4000</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Multilevel Hyperparameters:</span></span>
+<span><span class="co">#&gt; ~ID (Number of levels: 200) </span></span>
+<span><span class="co">#&gt;               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
+<span><span class="co">#&gt; sd(Intercept)     0.59      0.04     0.50     0.67 1.00     1721     2572</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Regression Coefficients:</span></span>
+<span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
+<span><span class="co">#&gt; Intercept    -3.39      0.28    -3.93    -2.85 1.00     1798     2301</span></span>
+<span><span class="co">#&gt; trt           0.69      0.10     0.49     0.89 1.00     1828     2495</span></span>
+<span><span class="co">#&gt; age           0.24      0.02     0.19     0.28 1.00     1707     2320</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
+<span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
+<span><span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="ames-3">AMEs<a class="anchor" aria-label="anchor" href="#ames-3"></a>
+</h3>
+<p>We use <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> in the same way as for the other
+models. Here is an example with a numeric derivative treating
+<code>age</code> as continuous. What we can see is that one year of age
+is associated with getting 0.628 more trials correct. However, given
+that the exact number of trials varies, we may rather have the
+probability of getting a trial correct, rather than have units on the
+number of successes scale.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">.001</span></span>
+<span><span class="va">ame1.binom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
+<span>  <span class="va">mbinom</span>,</span>
+<span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME age"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame1.binom</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="6%">
+<col width="8%">
+<col width="6%">
+<col width="16%">
+<col width="14%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="10%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.628</td>
+<td align="right">0.63</td>
+<td align="right">0.482</td>
+<td align="right">0.76</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME age</td>
+</tr></tbody>
+</table>
+<p>To do this for continuous variables, we need to still use the
+<code>add</code> argument to <code>brmsmargins</code>, but we want to
+modify the data so that all of the <code>total</code>s are 1 as for 1
+trial, it will be the probability. We can do this by passing the data to
+<code>newdata</code> (which normally just uses the model frame as its
+default). Now we can see that a one year increase in age is associated
+with an increase in the average marginal probability of getting a trial
+correct. While the direction will be the same, the scale is now the
+probability scale, rather than an average number of trials scale.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">.001</span></span>
+<span><span class="va">tmpd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.frame.html" class="external-link">model.frame</a></span><span class="op">(</span><span class="va">mbinom</span><span class="op">)</span></span>
+<span><span class="va">tmpd</span><span class="op">$</span><span class="va">total</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span><span class="va">ame2.binom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
+<span>  <span class="va">mbinom</span>,</span>
+<span>  add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  newdata <span class="op">=</span> <span class="va">tmpd</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME age"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="va">h</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame2.binom</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="6%">
+<col width="6%">
+<col width="8%">
+<col width="6%">
+<col width="16%">
+<col width="15%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="10%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.05</td>
+<td align="right">0.05</td>
+<td align="right">0.038</td>
+<td align="right">0.06</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME age</td>
+</tr></tbody>
+</table>
+<p>Here is an example treating <code>trt</code> (treatment) as discrete.
+Note that when using <code>at</code> rather than modify the
+<code>newdata</code>, we can also simply add <code>total = 1</code> to
+the <code>at</code> call. Either would work in this case. Again we can
+see that the average marginal probability of getting a trial correct is
+higher in the treatment than in the control group.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ame3.binom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
+<span>  <span class="va">mbinom</span>,</span>
+<span>  at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>trt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, total <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME trt"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">100L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame3.binom</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="6%">
+<col width="6%">
+<col width="8%">
+<col width="8%">
+<col width="16%">
+<col width="14%">
+<col width="6%">
+<col width="9%">
+<col width="6%">
+<col width="5%">
+<col width="10%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">M</th>
+<th align="right">Mdn</th>
+<th align="right">LL</th>
+<th align="right">UL</th>
+<th align="right">PercentROPE</th>
+<th align="right">PercentMID</th>
+<th align="right">CI</th>
+<th align="left">CIType</th>
+<th align="left">ROPE</th>
+<th align="left">MID</th>
+<th align="left">Label</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.15</td>
+<td align="right">0.15</td>
+<td align="right">0.093</td>
+<td align="right">0.203</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.99</td>
+<td align="left">HDI</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">AME trt</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<div class="section level2">
 <h2 id="centered-categorical-predictors">Centered Categorical Predictors<a class="anchor" aria-label="anchor" href="#centered-categorical-predictors"></a>
 </h2>
 <p>In mixed effects models, it is common to center continuous
@@ -1153,7 +1386,7 @@ sense.</p>
 <p>In contrast to continuous predictors where it is common, it is
 relatively <em>un</em>common to center categorical predictors. However,
 research (Yaremych, Preacher, &amp; Hedeker, 2021) highlights how the
-same rationale that apply to continuous predictors, in regards to the
+same rationale that applies to continuous predictors, in regards to the
 benefits of centering, equally apply to categorical predictors. One area
 where particular attention has been paid to the importance of centering,
 whether continuous or categorical predictors, are in individual
@@ -1260,13 +1493,14 @@ centered by ID, the values for one category are not constant by ID.</p>
 <p>To address, this, <code>brmsmargins</code> implements an additional
 argument, <code>wat</code> for within level <code>at</code>. This
 argument is used to give the values to be used at each ID level. The
-<code>wat</code> argument is used in conjuction with the <code>at</code>
-argument. The <code>at</code> argument continues to be used for the
-general setup, with <code>wat</code> used for the specific values.</p>
+<code>wat</code> argument is used in conjunction with the
+<code>at</code> argument. The <code>at</code> argument continues to be
+used for the general setup, with <code>wat</code> used for the specific
+values.</p>
 <p>This is more easily shown than said. Here we simulate some multilevel
 data with a binary predictor, <code>x</code> and a binary outcome,
 <code>y</code>.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span></span>
 <span>  seed <span class="op">=</span> <span class="fl">12345</span>, code <span class="op">=</span> <span class="op">{</span></span>
 <span>    <span class="va">nGroups</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
@@ -1298,7 +1532,7 @@ We also fit the <code>brms</code> model, using <code>xw</code>. In this
 instance we are not interested in any between person effects, so that
 variable is omitted. Any variation not explained by it will go into the
 random intercept, anyways.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## within person centering binary predictor</span></span>
 <span><span class="va">d</span><span class="op">[</span>, <span class="va">xb</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">ID</span><span class="op">]</span></span>
 <span><span class="va">d</span><span class="op">[</span>, <span class="va">xw</span> <span class="op">:=</span> <span class="va">x</span> <span class="op">-</span> <span class="va">xb</span><span class="op">]</span></span>
@@ -1331,7 +1565,7 @@ to use for each ID and for each label we chose, here <code>a</code> and
 <code>b</code>.</li>
 </ol>
 <p>The table shows a few examples of what the dataset looks like.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">xwid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span></span>
 <span>  <span class="va">d</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>a <span class="op">=</span> <span class="fl">0</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">xb</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
@@ -1400,7 +1634,7 @@ the “true” change for ID 1 would be if moving from one category to
 another.</p>
 <p>Now we can use <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> to calculate the AME. We
 must still specify the <code>at</code> argument. Here we use our
-arbitrary lables of <code>a</code> and <code>b</code> for the variable,
+arbitrary labels of <code>a</code> and <code>b</code> for the variable,
 <code>xw</code>. We also pass our list to the argument <code>wat</code>.
 Internally, <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> will substitute <code>a</code>
 for all the values for <code>a</code> by ID from our list, and similarly
@@ -1412,13 +1646,13 @@ variables as well, had there been other predictors in the model.</p>
 when <code>xw</code> is at 0 on <code>x</code> <strong>for that
 ID</strong> and when it is at 1 for <code>x</code> <strong>for that
 ID</strong>.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ame.cent</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
 <span>  object <span class="op">=</span> <span class="va">mlogitcent</span>,</span>
 <span>  at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>xw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  wat <span class="op">=</span> <span class="va">usewat</span>,</span>
 <span>  contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="st">"AME xw"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">20L</span><span class="op">)</span></span>
+<span>  effects <span class="op">=</span> <span class="st">"integrateoutRE"</span>, k <span class="op">=</span> <span class="fl">20L</span>, seed <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">Summary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -1450,8 +1684,8 @@ ID</strong>.</p>
 <tr class="odd">
 <td align="right">0.122</td>
 <td align="right">0.119</td>
-<td align="right">0.052</td>
-<td align="right">0.214</td>
+<td align="right">0.055</td>
+<td align="right">0.213</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1461,9 +1695,9 @@ ID</strong>.</p>
 </tr>
 <tr class="even">
 <td align="right">0.231</td>
-<td align="right">0.228</td>
-<td align="right">0.128</td>
-<td align="right">0.357</td>
+<td align="right">0.229</td>
+<td align="right">0.132</td>
+<td align="right">0.364</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1475,7 +1709,7 @@ ID</strong>.</p>
 </table>
 <p>Just as in other examples, we can get a summary of the contrast of
 these two values, our AME.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.cent</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -1506,9 +1740,9 @@ these two values, our AME.</p>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">0.109</td>
-<td align="right">0.107</td>
-<td align="right">0.043</td>
-<td align="right">0.179</td>
+<td align="right">0.108</td>
+<td align="right">0.044</td>
+<td align="right">0.183</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">0.99</td>
@@ -1532,10 +1766,10 @@ that is constant within units so only varies between units.</p>
 = 0) or an emotion regulation intervention designed to help manage
 stress (Group = 1). After completing the intervention, participants
 completed 20 days of daily diaries. Sleep was recorded each day and
-categorized as a good night sleep (<code>y</code> = 1) or a poor night
-sleep (<code>y</code> = 0). Each day participants’ also reported whether
-they experienced no stressor (<code>x</code> = 0) or any stressor
-(<code>x</code> = 1).</p>
+categorized as a good night’ sleep (<code>y</code> = 1) or a poor
+night’s sleep (<code>y</code> = 0). Each day participants also reported
+whether they experienced no stressor (<code>x</code> = 0) or any
+stressor (<code>x</code> = 1).</p>
 <p>The goal is to examine whether the intervention group moderates
 participants’ stress reactivity, defined as the association between
 experiencing a stressor or not on a given day and whether they have good
@@ -1548,7 +1782,7 @@ smallest difference that is clinically meaningful. Thus the MID is set
 at less than or equal to -0.05 or greater than or equal to +0.05.</p>
 <p>To show this example, we first simulate a dataset, using a similar
 process as in previous examples.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span></span>
 <span>  seed <span class="op">=</span> <span class="fl">12345</span>, code <span class="op">=</span> <span class="op">{</span></span>
 <span>    <span class="va">nGroups</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
@@ -1584,7 +1818,7 @@ We call the within person variable, <code>xw</code>. As in the example
 on centering within person categorical variables, we also create a
 dataset with the within person hypothetical values for each person,
 <code>usewat</code>.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## within person centering binary predictor</span></span>
 <span><span class="va">d</span><span class="op">[</span>, <span class="va">xb</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">ID</span><span class="op">]</span></span>
 <span><span class="va">d</span><span class="op">[</span>, <span class="va">xw</span> <span class="op">:=</span> <span class="va">x</span> <span class="op">-</span> <span class="va">xb</span><span class="op">]</span></span>
@@ -1603,7 +1837,7 @@ experiencing a stressor on a given day, at the within person level, is
 associated with a good or poor night sleep and whether that differs
 between people randomized to the waitlist control or the intervention.
 The model can be fit as in the following code.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mlogitcentint</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">xw</span> <span class="op">*</span> <span class="va">group</span> <span class="op">+</span> <span class="va">xb</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">xw</span> <span class="op">|</span> <span class="va">ID</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"bernoulli"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1234</span>,</span>
@@ -1614,7 +1848,7 @@ The model can be fit as in the following code.</p>
 group and with within person stressor exposure held at none and any. The
 grid of possibilities is created and stored in <code>use.at</code> and
 shown in the following table.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">use.at</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>group <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, xw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">use.at</span>, digits <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -1659,7 +1893,7 @@ for our 1st and 2nd questions. Then we take the difference in contrast
 weights between these two which are the weights for the 3rd question.
 The code to do this and the resulting contrast matrix with labels is
 shown in the following code and table.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">contr.mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>xw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/kronecker.html" class="external-link">%x%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">contr.mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
 <span>  <span class="va">contr.mat</span>,</span>
@@ -1706,7 +1940,7 @@ that we want 95% credible intervals, and we specify the desired ROPE and
 MID regions as well as the seed so that we can reproduce the results
 exactly. Once run, we can see the average marginal predictions for our
 grid of values in <code>use.at</code> in the following table.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ame.centint</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/brmsmargins.html">brmsmargins</a></span><span class="op">(</span></span>
 <span>  object <span class="op">=</span> <span class="va">mlogitcentint</span>,</span>
 <span>  at <span class="op">=</span> <span class="va">use.at</span>,</span>
@@ -1785,7 +2019,7 @@ suggests that within people, days they are exposed to a stressor or not
 is associated with their sleep that night, and that the emotion
 regulation intervention moderates the association between within person
 stressor exposure and sleep.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ame.centint</span><span class="op">$</span><span class="va">ContrastSummary</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>

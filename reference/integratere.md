@@ -6,9 +6,9 @@ Not intended to be called directly by most users.
 ## Usage
 
 ``` r
-integratere(d, sd, L, k, yhat, backtrans)
+integratere(d, sd, L, k, df, yhat, backtrans)
 
-integratereR(d, sd, L, k, yhat, backtrans)
+integratereR(d, sd, L, k, df, yhat, backtrans)
 ```
 
 ## Arguments
@@ -31,6 +31,12 @@ integratereR(d, sd, L, k, yhat, backtrans)
 - k:
 
   An integer, the number of samples for Monte Carlo integration.
+
+- df:
+
+  A list with either `NULL` for Gaussian random effect blocks or a
+  numeric matrix of degrees of freedom for Student-t random effect
+  blocks.
 
 - yhat:
 
@@ -64,9 +70,10 @@ integratere(
   sd = list(matrix(1, 2, 1)),
   L = list(matrix(1, 2, 1)),
   k = 10L,
+  df = list(NULL),
   yhat = matrix(0, 2, 1),
   backtrans = 0L)
 #>           [,1]
-#> [1,] 0.4898854
-#> [2,] 0.5277880
+#> [1,] 0.4667541
+#> [2,] 0.4647319
 ```

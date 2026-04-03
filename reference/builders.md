@@ -14,6 +14,10 @@ general use.
 
 .buildSD(data, ranef, block, dpar)
 
+.namesDF(ranef, block)
+
+.buildDF(data, ranef, block)
+
 .namesZ(block, number, dpar)
 
 .buildZ(data, block, number, dpar)

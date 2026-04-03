@@ -2,7 +2,7 @@
 
 Returns a summary of a posterior distribution for a single parameter /
 value. It is based on personal preference. Notably, it does not only use
-[`bayestestR::describe_posterior()`](https://easystats.github.io/bayestestR/reference/describe_posterior.html),
+[`bayestestR::describe_posterior()`](https://rdrr.io/pkg/bayestestR/man/describe_posterior.html),
 an excellent function, because of the desire to also describe the
 percentage of the full posterior distribution that is at or exceeding
 the value of a Minimally Important Difference (MID). MIDs are used in
@@ -36,7 +36,7 @@ bsummary(x, CI = 0.99, CIType = "HDI", ROPE = NULL, MID = NULL)
 
   A character string indicating the type of credible interval, passed on
   to the
-  [`bayestestR::ci()`](https://easystats.github.io/bayestestR/reference/ci.html)
+  [`bayestestR::ci()`](https://rdrr.io/pkg/bayestestR/man/ci.html)
   function as the method for CIs.
 
 - ROPE:

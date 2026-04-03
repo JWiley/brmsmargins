@@ -3,7 +3,7 @@
 ``` r
 library(knitr)
 library(data.table)
-#> data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
+#> data.table 1.18.2.1 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
 #> Loading required package: Rcpp
 #> Loading 'brms' package (version 2.23.0). Useful instructions
@@ -103,7 +103,7 @@ effects distribution are drawn, added, back transformed, and averaged.
 Thus, if you wanted AMEs across a dataset of 1,000 people, with 2,000
 posterior draws, and you wanted to use 100 points for the numerical
 integration, a total of 200 million (1,000 x 2,000 x 100) values are
-calculated. The monte carlo integration is implemented in C++ code to
+calculated. The Monte Carlo integration is implemented in C++ code to
 try to help speed up the process, but it is not “quick” and also may be
 memory intensive.
 
@@ -153,9 +153,6 @@ mlogit <- brms::brm(
     prior(student_t(3, .5, .5), class = "sd", coef = "x", group = "ID"),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Warning: 24 of 4000 (1.0%) transitions ended with a divergence.
-#> See https://mc-stan.org/misc/warnings for details.
-#> Loading required namespace: rstan
 ```
 
 ``` r
@@ -310,7 +307,7 @@ knitr::kable(ame.noerror$ContrastSummary, digits = 3)
 ### Marginal Coefficients
 
 The fixed effects coefficients are conditional on the random effects. To
-aide interpretation, we also can calculate marginal coefficients or
+aid interpretation, we also can calculate marginal coefficients or
 population averaged coefficients. The function to do this is
 [`marginalcoef()`](https://joshuawiley.com/brmsmargins/reference/marginalcoef.md)
 which uses the method described by Hedeker and colleagues (2018). Here
@@ -465,8 +462,8 @@ poisson regression that ignores the clustering in the data.
 ## calculate marginal coefficients
 mc.pois <- marginalcoef(mpois, CI = 0.95, seed = 1234)
 
-## calculate single level logistic regression
-glm.pois <- glm(y ~ 1 + x, family = "poisson", data = d)
+## calculate single level poisson regression
+glm.pois <- glm(y ~ 1 + x, family = "poisson", data = dpoisson)
 glm.pois <- as.data.table(cbind(Est = coef(glm.pois), confint(glm.pois)))
 #> Waiting for profiling to be done...
 ```
@@ -622,6 +619,141 @@ knitr::kable(
 | -1.805   | \[-2.296, -1.264\] |
 | 0.929    | \[0.590, 1.301\]   |
 
+## Mixed Effects Binomial Regression
+
+Binomial data works largely the same. Here we have an example dataset of
+a trial with participants randomized to treatment (1) or control (0)
+coded in `trt`, continuous age in years ranging from 8 to 16. The
+outcome is binomial, such as in cognitive tasks where there are multiple
+trials as the number of correct trials at each timepoint are recorded.
+In this example, the number of trials completed each time varies some
+across participants. We fit a binomial model in `brms` where the outcome
+is the number of correct trials and the total number of trials is stored
+in `total`.
+
+``` r
+dbinom <- withr::with_seed(
+  seed = 12345, code = {
+  library(data.table)
+  n <- 200L
+  d <- CJ(ID = 1:n, time = 0:2)[, `:=`(
+      trt = rep(rbinom(n, 1, .5), each = 3),
+      age = rep(runif(n, 8, 16), each = 3),
+      u   = rep(rnorm(n, 0, .6), each = 3)
+    )][, total := sample(10:15, .N, TRUE)][
+    , p := plogis(-1 + 0.8 * trt + 0.25 * (age - 12) + 0.3 * time + u)][
+    , correct := rbinom(.N, total, p)][
+    , .(ID, trt, age, time, total, correct)]
+  copy(d)
+})
+
+mbinom <- brms::brm(
+  correct | trials(total) ~ 1 + trt + age + (1 | ID), family = "binomial",
+  data = dbinom, seed = 1234,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
+  chains = 4L, cores = 4L, backend = "cmdstanr",
+  silent = 2, refresh = 0, adapt_delta = 0.99)
+```
+
+``` r
+summary(mbinom)
+#>  Family: binomial 
+#>   Links: mu = logit 
+#> Formula: correct | trials(total) ~ 1 + trt + age + (1 | ID) 
+#>    Data: dbinom (Number of observations: 600) 
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Multilevel Hyperparameters:
+#> ~ID (Number of levels: 200) 
+#>               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> sd(Intercept)     0.59      0.04     0.50     0.67 1.00     1721     2572
+#> 
+#> Regression Coefficients:
+#>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept    -3.39      0.28    -3.93    -2.85 1.00     1798     2301
+#> trt           0.69      0.10     0.49     0.89 1.00     1828     2495
+#> age           0.24      0.02     0.19     0.28 1.00     1707     2320
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+### AMEs
+
+We use
+[`brmsmargins()`](https://joshuawiley.com/brmsmargins/reference/brmsmargins.md)
+in the same way as for the other models. Here is an example with a
+numeric derivative treating `age` as continuous. What we can see is that
+one year of age is associated with getting 0.628 more trials correct.
+However, given that the exact number of trials varies, we may rather
+have the probability of getting a trial correct, rather than have units
+on the number of successes scale.
+
+``` r
+h <- .001
+ame1.binom <- brmsmargins(
+  mbinom,
+  add = data.frame(age = c(0, h)),
+  contrasts = cbind("AME age" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1.binom$ContrastSummary, digits = 3)
+```
+
+|     M |  Mdn |    LL |   UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label   |
+|------:|-----:|------:|-----:|------------:|-----------:|-----:|:-------|:-----|:----|:--------|
+| 0.628 | 0.63 | 0.482 | 0.76 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME age |
+
+To do this for continuous variables, we need to still use the `add`
+argument to `brmsmargins`, but we want to modify the data so that all of
+the `total`s are 1 as for 1 trial, it will be the probability. We can do
+this by passing the data to `newdata` (which normally just uses the
+model frame as its default). Now we can see that a one year increase in
+age is associated with an increase in the average marginal probability
+of getting a trial correct. While the direction will be the same, the
+scale is now the probability scale, rather than an average number of
+trials scale.
+
+``` r
+h <- .001
+tmpd <- model.frame(mbinom)
+tmpd$total <- 1
+ame2.binom <- brmsmargins(
+  mbinom,
+  add = data.frame(age = c(0, h)),
+  newdata = tmpd,
+  contrasts = cbind("AME age" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame2.binom$ContrastSummary, digits = 3)
+```
+
+|    M |  Mdn |    LL |   UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label   |
+|-----:|-----:|------:|-----:|------------:|-----------:|-----:|:-------|:-----|:----|:--------|
+| 0.05 | 0.05 | 0.038 | 0.06 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME age |
+
+Here is an example treating `trt` (treatment) as discrete. Note that
+when using `at` rather than modify the `newdata`, we can also simply add
+`total = 1` to the `at` call. Either would work in this case. Again we
+can see that the average marginal probability of getting a trial correct
+is higher in the treatment than in the control group.
+
+``` r
+ame3.binom <- brmsmargins(
+  mbinom,
+  at = data.frame(trt = c(0, 1), total = 1),
+  contrasts = cbind("AME trt" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame3.binom$ContrastSummary, digits = 3)
+```
+
+|    M |  Mdn |    LL |    UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label   |
+|-----:|-----:|------:|------:|------------:|-----------:|-----:|:-------|:-----|:----|:--------|
+| 0.15 | 0.15 | 0.093 | 0.203 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME trt |
+
 ## Centered Categorical Predictors
 
 In mixed effects models, it is common to center continuous predictors.
@@ -668,7 +800,7 @@ generally both variables remain continuous and a derivative makes sense.
 In contrast to continuous predictors where it is common, it is
 relatively *un*common to center categorical predictors. However,
 research (Yaremych, Preacher, & Hedeker, 2021) highlights how the same
-rationale that apply to continuous predictors, in regards to the
+rationale that applies to continuous predictors, in regards to the
 benefits of centering, equally apply to categorical predictors. One area
 where particular attention has been paid to the importance of centering,
 whether continuous or categorical predictors, are in individual
@@ -710,9 +842,9 @@ are not constant by ID.
 
 To address, this, `brmsmargins` implements an additional argument, `wat`
 for within level `at`. This argument is used to give the values to be
-used at each ID level. The `wat` argument is used in conjuction with the
-`at` argument. The `at` argument continues to be used for the general
-setup, with `wat` used for the specific values.
+used at each ID level. The `wat` argument is used in conjunction with
+the `at` argument. The `at` argument continues to be used for the
+general setup, with `wat` used for the specific values.
 
 This is more easily shown than said. Here we simulate some multilevel
 data with a binary predictor, `x` and a binary outcome, `y`.
@@ -819,7 +951,7 @@ category to another.
 Now we can use
 [`brmsmargins()`](https://joshuawiley.com/brmsmargins/reference/brmsmargins.md)
 to calculate the AME. We must still specify the `at` argument. Here we
-use our arbitrary lables of `a` and `b` for the variable, `xw`. We also
+use our arbitrary labels of `a` and `b` for the variable, `xw`. We also
 pass our list to the argument `wat`. Internally,
 [`brmsmargins()`](https://joshuawiley.com/brmsmargins/reference/brmsmargins.md)
 will substitute `a` for all the values for `a` by ID from our list, and
@@ -837,15 +969,15 @@ ame.cent <- brmsmargins(
   at = expand.grid(xw = c("a", "b")),
   wat = usewat,
   contrasts = cbind("AME xw" = c(-1, 1)),
-  effects = "integrateoutRE", k = 20L)
+  effects = "integrateoutRE", k = 20L, seed = 1234)
 
 knitr::kable(ame.cent$Summary, digits = 3)
 ```
 
 |     M |   Mdn |    LL |    UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID |
 |------:|------:|------:|------:|------------:|-----------:|-----:|:-------|:-----|:----|
-| 0.122 | 0.119 | 0.052 | 0.214 |          NA |         NA | 0.99 | HDI    | NA   | NA  |
-| 0.231 | 0.228 | 0.128 | 0.357 |          NA |         NA | 0.99 | HDI    | NA   | NA  |
+| 0.122 | 0.119 | 0.055 | 0.213 |          NA |         NA | 0.99 | HDI    | NA   | NA  |
+| 0.231 | 0.229 | 0.132 | 0.364 |          NA |         NA | 0.99 | HDI    | NA   | NA  |
 
 Just as in other examples, we can get a summary of the contrast of these
 two values, our AME.
@@ -856,7 +988,7 @@ knitr::kable(ame.cent$ContrastSummary, digits = 3)
 
 |     M |   Mdn |    LL |    UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label  |
 |------:|------:|------:|------:|------------:|-----------:|-----:|:-------|:-----|:----|:-------|
-| 0.109 | 0.107 | 0.043 | 0.179 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME xw |
+| 0.109 | 0.108 | 0.044 | 0.183 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME xw |
 
 ## Interactions and Marginal Effects
 
@@ -871,9 +1003,9 @@ people were randomized 1:1 to either a waitlist control group (Group =
 0) or an emotion regulation intervention designed to help manage stress
 (Group = 1). After completing the intervention, participants completed
 20 days of daily diaries. Sleep was recorded each day and categorized as
-a good night sleep (`y` = 1) or a poor night sleep (`y` = 0). Each day
-participants’ also reported whether they experienced no stressor (`x` =
-0) or any stressor (`x` = 1).
+a good night’ sleep (`y` = 1) or a poor night’s sleep (`y` = 0). Each
+day participants also reported whether they experienced no stressor (`x`
+= 0) or any stressor (`x` = 1).
 
 The goal is to examine whether the intervention group moderates
 participants’ stress reactivity, defined as the association between

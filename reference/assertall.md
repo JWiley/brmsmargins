@@ -11,7 +11,7 @@ result in a `stop` error if the assertion is not met.
 ``` r
 .assertbrmsfit(object)
 
-.assertgaussian(object)
+.assertRE(object)
 
 .assertfamily(object)
 
@@ -44,7 +44,8 @@ error message if the assertion is not met.
 - `.assertbrmsfit`: asserts that the object should be
   [brms::brmsfit](https://paulbuerkner.com/brms/reference/brmsfit-class.html).
 
-- `.assertgaussian`: asserts that all random effects are Gaussian.
+- `.assertRE`: asserts that all random effects are Gaussian or
+  student-t.
 
 - `.assertfamily`: asserts that the distribution (family) of the outcome
   is a currently supported family. Only applies when integrating out

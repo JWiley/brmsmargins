@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brmsmargins</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,8 +45,9 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.2" id="brmsmargins-022">brmsmargins 0.2.2<a class="anchor" aria-label="anchor" href="#brmsmargins-022"></a></h2>
-<ul><li>added preliminary support for binomial family</li>
+<h2 class="pkg-version" data-toc-text="0.3.0" id="brmsmargins-030">brmsmargins 0.3.0<a class="anchor" aria-label="anchor" href="#brmsmargins-030"></a></h2>
+<ul><li>Now supports response variables with a binomial distribution. Predictions that marginalise over random effects will use the number of trials. For contrasts, such as using <code><a href="../reference/brmsmargins.html">brmsmargins()</a></code> you can use the <code>at =</code> argument to force trials to 1 to get marginal probabilities rather than counts of successful trials.</li>
+<li>Experimental support for integrating out random effects from a student t distribution. Currently only supports this for location parameters. When <code>dpar</code> is not empty in <code>brms</code> only Gaussian distributions are supported. Some caution is needed here as <code>brms</code> uses the same degree of freedom parameter for all random effects of the same grouping variable, so for complex random effect structures, there may be errors in how they are integrated out.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="brmsmargins-021">brmsmargins 0.2.1<a class="anchor" aria-label="anchor" href="#brmsmargins-021"></a></h2><p class="text-muted">CRAN release: 2025-09-26</p>

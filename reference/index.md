@@ -9,6 +9,9 @@
 - [`integratemvn()`](https://joshuawiley.com/brmsmargins/reference/integratemvn.md)
   [`integratemvnR()`](https://joshuawiley.com/brmsmargins/reference/integratemvn.md)
   : Integrate over Multivariate Normal Random Effects
+- [`integratemvt()`](https://joshuawiley.com/brmsmargins/reference/integratemvt.md)
+  [`integratemvtR()`](https://joshuawiley.com/brmsmargins/reference/integratemvt.md)
+  : Integrate over Multivariate Student-t Random Effects
 - [`integratere()`](https://joshuawiley.com/brmsmargins/reference/integratere.md)
   [`integratereR()`](https://joshuawiley.com/brmsmargins/reference/integratere.md)
   : Integrate over Random Effects
