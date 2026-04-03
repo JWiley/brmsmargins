@@ -25,6 +25,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// integratemvt
+arma::mat integratemvt(const arma::mat& X, const arma::uword& k, const arma::rowvec& sd, const arma::mat& chol, const double& df);
+RcppExport SEXP _brmsmargins_integratemvt(SEXP XSEXP, SEXP kSEXP, SEXP sdSEXP, SEXP cholSEXP, SEXP dfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::uword& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type sd(sdSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type chol(cholSEXP);
+    Rcpp::traits::input_parameter< const double& >::type df(dfSEXP);
+    rcpp_result_gen = Rcpp::wrap(integratemvt(X, k, sd, chol, df));
+    return rcpp_result_gen;
+END_RCPP
+}
 // integratere
 arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int backtrans);
 RcppExport SEXP _brmsmargins_integratere(SEXP dSEXP, SEXP sdSEXP, SEXP LSEXP, SEXP kSEXP, SEXP yhatSEXP, SEXP backtransSEXP) {
@@ -78,6 +93,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_brmsmargins_integratemvn", (DL_FUNC) &_brmsmargins_integratemvn, 4},
+    {"_brmsmargins_integratemvt", (DL_FUNC) &_brmsmargins_integratemvt, 5},
     {"_brmsmargins_integratere", (DL_FUNC) &_brmsmargins_integratere, 6},
     {"_brmsmargins_lmcpp", (DL_FUNC) &_brmsmargins_lmcpp, 2},
     {"_brmsmargins_rowBootMeans", (DL_FUNC) &_brmsmargins_rowBootMeans, 1},

@@ -184,7 +184,7 @@ prediction <- function(object, data, summarize = TRUE, posterior = FALSE,
         }
       }
 
-      yhat <- integratereR(d = d2, sd = sd, L = L, k = k, df = df,
+      yhat <- integratere(d = d2, sd = sd, L = L, k = k, df = df,
                           yhat = yhat, backtrans = links$useilinknum)
     }
   }

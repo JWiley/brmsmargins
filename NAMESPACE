@@ -3,6 +3,7 @@
 export(brmsmargins)
 export(bsummary)
 export(integratemvn)
+export(integratemvt)
 export(integratere)
 export(lmcpp)
 export(marginalcoef)
