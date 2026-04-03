@@ -19,7 +19,7 @@ vignette: >
 ``` r
 library(knitr)
 library(data.table)
-#> data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
+#> data.table 1.18.2.1 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
 #> Loading required package: Rcpp
 #> Loading 'brms' package (version 2.23.0). Useful instructions

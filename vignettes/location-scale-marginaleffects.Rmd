@@ -19,7 +19,7 @@ vignette: >
 ``` r
 library(knitr)
 library(data.table)
-#> data.table 1.17.8 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
+#> data.table 1.18.2.1 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
 library(brms)
 #> Loading required package: Rcpp
 #> Loading 'brms' package (version 2.23.0). Useful instructions
@@ -279,7 +279,7 @@ ls.me <- brm(bf(
   save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
   silent = 2, refresh = 0,
   chains = 4L, cores = 4L, backend = "cmdstanr")
-#> Warning: 19 of 4000 (0.0%) transitions hit the maximum treedepth limit of 10.
+#> Warning: 989 of 4000 (25.0%) transitions hit the maximum treedepth limit of 10.
 #> See https://mc-stan.org/misc/warnings for details.
 ```
 
@@ -303,26 +303,26 @@ summary(ls.me)
 #> Multilevel Hyperparameters:
 #> ~ID (Number of levels: 100) 
 #>                              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-#> sd(Intercept)                    1.20      0.10     1.03     1.41 1.03      194
-#> sd(x)                            0.43      0.04     0.36     0.52 1.00      552
-#> sd(sigma_Intercept)              1.27      0.10     1.10     1.47 1.01      428
-#> sd(sigma_x)                      0.50      0.05     0.40     0.61 1.00     1419
-#> cor(Intercept,x)                -0.40      0.12    -0.61    -0.14 1.00      577
-#> cor(sigma_Intercept,sigma_x)    -0.35      0.11    -0.55    -0.12 1.00     1399
+#> sd(Intercept)                    1.19      0.09     1.03     1.37 1.03      210
+#> sd(x)                            0.42      0.04     0.35     0.51 1.00      606
+#> sd(sigma_Intercept)              1.26      0.10     1.09     1.48 1.01      299
+#> sd(sigma_x)                      0.50      0.06     0.40     0.61 1.00     1306
+#> cor(Intercept,x)                -0.39      0.12    -0.61    -0.14 1.00      533
+#> cor(sigma_Intercept,sigma_x)    -0.36      0.11    -0.55    -0.13 1.00     1289
 #>                              Tail_ESS
-#> sd(Intercept)                     320
-#> sd(x)                            1083
-#> sd(sigma_Intercept)              1015
-#> sd(sigma_x)                      2107
-#> cor(Intercept,x)                  960
-#> cor(sigma_Intercept,sigma_x)     2360
+#> sd(Intercept)                     577
+#> sd(x)                            1334
+#> sd(sigma_Intercept)               727
+#> sd(sigma_x)                      2193
+#> cor(Intercept,x)                 1421
+#> cor(sigma_Intercept,sigma_x)     2262
 #> 
 #> Regression Coefficients:
 #>                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> Intercept          -2.56      0.11    -2.78    -2.33 1.03      116      265
-#> sigma_Intercept    -1.50      0.14    -1.78    -1.23 1.04      120      276
-#> x                   0.94      0.06     0.83     1.05 1.01      430     1302
-#> sigma_x             0.97      0.06     0.85     1.09 1.00      860     1944
+#> Intercept          -2.55      0.12    -2.75    -2.29 1.03       90      185
+#> sigma_Intercept    -1.47      0.14    -1.72    -1.19 1.02      178      418
+#> x                   0.94      0.06     0.83     1.05 1.01      589     1312
+#> sigma_x             0.97      0.06     0.85     1.09 1.00      852     2096
 #> 
 #> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -351,9 +351,9 @@ knitr::kable(ame1a.lsme$ContrastSummary, digits = 3)
 
 
 
-|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.401| 0.397| 0.272| 0.554|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|    M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.41| 0.406| 0.282| 0.571|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 
 
@@ -375,9 +375,9 @@ knitr::kable(ame1b.lsme$ContrastSummary, digits = 3)
 
 
 
-|     M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|-----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.791| 0.75| 0.357| 1.596|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.803| 0.762| 0.377| 1.617|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 
 
@@ -399,9 +399,9 @@ knitr::kable(ame2a.lsme$ContrastSummary)
 
 
 
-|         M|      Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|---------:|--------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.3713619| 0.368748| 0.2533034| 0.5077644|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|        M|       Mdn|        LL|        UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|--------:|---------:|---------:|---------:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.380072| 0.3762964| 0.2628432| 0.5264977|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 
 
@@ -422,9 +422,9 @@ knitr::kable(ame2b.lsme$ContrastSummary)
 
 
 
-|         M|       Mdn|        LL|       UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
-|---------:|---------:|---------:|--------:|-----------:|----------:|----:|:------|:----|:---|:-----|
-| 0.7016545| 0.6668309| 0.3358997| 1.416038|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
+|         M|       Mdn|        LL|      UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label |
+|---------:|---------:|---------:|-------:|-----------:|----------:|----:|:------|:----|:---|:-----|
+| 0.7123491| 0.6784262| 0.2900437| 1.37436|          NA|         NA| 0.99|HDI    |NA   |NA  |AME x |
 
 
 
