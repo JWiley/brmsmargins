@@ -13,7 +13,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r global-chunk-options, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -56,7 +56,7 @@ intraindividual variability (IIV).
 To start with, we will look at a fixed effects only location scale model.
 We will simulate a dataset.
 
-```{r, results = 'hide'}
+```{r fit-location-scale-fixed, results = 'hide'}
 d <- withr::with_seed(
   seed = 12345, code = {
     nObs <- 1000L
@@ -80,7 +80,7 @@ ls.fe <- brm(bf(
 ```
 
 
-```{r}
+```{r summary-location-scale-fixed}
 summary(ls.fe)
 ```
 
@@ -92,7 +92,7 @@ regression coefficients.
 
 Here is an example continuous AME.
 
-```{r, results = 'asis'}
+```{r ame-location-mean-continuous, results = 'asis'}
 h <- .001
 ame1 <- brmsmargins(
   ls.fe,
@@ -106,7 +106,7 @@ knitr::kable(ame1$ContrastSummary, digits = 3)
 
 Here is an AME for discrete / categorical predictors.
 
-```{r, results = 'asis'}
+```{r ame-location-mean-discrete, results = 'asis'}
 ame2 <- brmsmargins(
   ls.fe,
   at = data.frame(grp = c(0, 1)),
@@ -126,7 +126,7 @@ the link scale (log transformed).
 We specify that we want AMEs for `sigma` by setting:
 `dpar = "sigma"`. Here is a continuous example.
 
-```{r, results = 'asis'}
+```{r ame-location-sigma-continuous, results = 'asis'}
 h <- .001
 ame3 <- brmsmargins(
   ls.fe,
@@ -140,7 +140,7 @@ knitr::kable(ame3$ContrastSummary, digits = 3)
 
 Here is a discrete / categorical example.
 
-```{r, results = 'asis'}
+```{r ame-location-sigma-discrete, results = 'asis'}
 ame4 <- brmsmargins(
   ls.fe,
   at = data.frame(grp = c(0, 1)),
@@ -157,7 +157,7 @@ align. However, in this instance as `x` and `grp` were simulated
 to be uncorrelated, the simple unadjusted results match the 
 regression results closely.
 
-```{r, results = 'asis'}
+```{r observed-sd-difference-by-group, results = 'asis'}
 d[, .(SD = sd(y)), by = grp][, diff(SD)]
 ```
 
@@ -166,7 +166,7 @@ d[, .(SD = sd(y)), by = grp][, diff(SD)]
 We will simulate some multilevel location scale data for model
 and fit the mixed effects location scale model.
 
-```{r, results = 'hide'}
+```{r fit-location-scale-mixed, results = 'hide'}
 dmixed <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -217,7 +217,7 @@ for the sake of demonstration we continue. In practice,
 one would want to make adjustments to ensure good convergence 
 and an adequate effective sample size.
 
-```{r}
+```{r summary-location-scale-mixed}
 summary(ls.me)
 ```
 
@@ -228,7 +228,7 @@ mixed effects models.
 Here is an example treating `x` as continuous using only the 
 fixed effects for the AME for the scale parameter, `sigma`.
 
-```{r, results = 'asis'}
+```{r ame-mixed-sigma-continuous-fixedonly, results = 'asis'}
 h <- .001
 ame1a.lsme <- brmsmargins(
   ls.me,
@@ -243,7 +243,7 @@ knitr::kable(ame1a.lsme$ContrastSummary, digits = 3)
 Here is the example again, this time integrating out the random effects,
 which results in a considerable difference in the estimate of the AME.
 
-```{r, results = 'asis'}
+```{r ame-mixed-sigma-continuous-integrated, results = 'asis'}
 h <- .001
 ame1b.lsme <- brmsmargins(
   ls.me,
@@ -259,7 +259,7 @@ Here is an example treating `x` as discrete, using only
 the fixed effects.
 
 
-```{r, results = 'asis'}
+```{r ame-mixed-sigma-discrete-fixedonly, results = 'asis'}
 ame2a.lsme <- brmsmargins(
   ls.me,
   at = data.frame(x = c(0, 1)),
@@ -273,7 +273,7 @@ knitr::kable(ame2a.lsme$ContrastSummary)
 Here is the example again, this time integrating out the random effects,
 likely the more appropriate estimate for most use cases.
 
-```{r, results = 'asis'}
+```{r ame-mixed-sigma-discrete-integrated, results = 'asis'}
 ame2b.lsme <- brmsmargins(
   ls.me,
   at = data.frame(x = c(0, 1)),
@@ -288,7 +288,7 @@ This also is relatively close calculating all the
 individual standard deviations and taking their differences,
 then averaging.
 
-```{r}
+```{r observed-sd-difference-by-id}
 dmixed[, .(SD = sd(y)), by = .(ID, x)
        ][, .(SDdiff = diff(SD)), by = ID][, mean(SDdiff)]
 ```

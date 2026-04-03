@@ -13,7 +13,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r global-chunk-options, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -144,7 +144,7 @@ We will simulate some multilevel binary data for our
 mixed effects logistic regression model with individual differences
 in both the intercept and slope.
 
-```{r, results = 'hide'}
+```{r fit-mixed-logistic, results = 'hide'}
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -184,7 +184,7 @@ mlogit <- brms::brm(
 ```
 
 
-```{r}
+```{r summary-mixed-logistic}
 summary(mlogit)
 ```
 
@@ -197,7 +197,7 @@ values used for numerical integration are set via the argument, `k`,
 here `k = 100L`, the default. 
 More details are in: `?brmsmargins:::.predict`
 
-```{r, results = 'asis'}
+```{r ame-mixed-logistic-continuous, results = 'asis'}
 h <- .001
 ame1 <- brmsmargins(
   mlogit,
@@ -214,7 +214,7 @@ predictions is more interesting as well, since they are at meaningfully
 different values of `x`. They also agree quite closely with the 
 average probability at different `x` values calculated in the data.
 
-```{r}
+```{r ame-mixed-logistic-discrete}
 ame2 <- brmsmargins(
   mlogit,
   at = data.frame(x = c(0, 1)),
@@ -224,15 +224,15 @@ ame2 <- brmsmargins(
 
 Here is a summary of the predictions.
 
-```{r, results = 'asis'}
+```{r summary-ame-mixed-logistic-discrete, results = 'asis'}
 knitr::kable(ame2$Summary, digits = 3)
 ```
 
-```{r, results = 'asis'}
+```{r contrasts-ame-mixed-logistic-discrete, results = 'asis'}
 knitr::kable(ame2$ContrastSummary, digits = 3)
 ```
 
-```{r, results = 'asis'}
+```{r observed-means-mixed-logistic, results = 'asis'}
 knitr::kable(d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x])
 ```
 
@@ -252,7 +252,7 @@ In both cases, we use exactly `x = 0`, so the difference is due to
 Monte Carlo variation only, but with `k = 10L` the small error, 
 when divided by `h = .001` becomes very large, impossibly so.
 
-```{r, results = 'asis'}
+```{r ame-mixed-logistic-seed-error, results = 'asis'}
 h <- .001
 ame.error <- brmsmargins(
   mlogit,
@@ -269,7 +269,7 @@ we would expect. Note that you do not need to specify a seed for each
 row of the data. You can specify one seed (or rely on `brmsmargins()` default),
 which will then be used for all rows of the data.
 
-```{r, results = 'asis'}
+```{r ame-mixed-logistic-seed-matched, results = 'asis'}
 h <- .001
 ame.noerror <- brmsmargins(
   mlogit,
@@ -289,7 +289,7 @@ population averaged coefficients. The function to do this is
 (2018). Here is an example and comparison to results using a single level 
 logistic regression that ignores the clustering in the data.
 
-```{r}
+```{r margcoef-mixed-logistic-comparison}
 ## calculate marginal coefficients
 mc.logit <- marginalcoef(mlogit, CI = 0.95, seed = 1234)
 
@@ -300,7 +300,7 @@ glm.logit <- as.data.table(cbind(Est = coef(glm.logit), confint(glm.logit)))
 
 Now we can view and compare the results.
 
-```{r, results = 'asis'}
+```{r table-margcoef-mixed-logistic-comparison, results = 'asis'}
 
 knitr::kable(cbind(
   mc.logit$Summary[, .(
@@ -318,7 +318,7 @@ We will simulate some multilevel poisson data for our
 mixed effects poisson regression model with individual differences
 in both the intercept and slope.
 
-```{r, results = 'hide'}
+```{r fit-mixed-poisson, results = 'hide'}
 dpoisson <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -356,7 +356,7 @@ mpois <- brms::brm(
   silent = 2, refresh = 0, adapt_delta = 0.99)
 ```
 
-```{r}
+```{r summary-mixed-poisson}
 summary(mpois)
 ```
 
@@ -365,7 +365,7 @@ summary(mpois)
 We use `brmsmargins()` in the same way as for the mixed effects logistic regression.
 Here is an example with a numeric derivative treating `x` as continuous.
 
-```{r, results = 'asis'}
+```{r ame-mixed-poisson-continuous, results = 'asis'}
 h <- .001
 ame1.pois <- brmsmargins(
   mpois,
@@ -378,7 +378,7 @@ knitr::kable(ame1.pois$ContrastSummary, digits = 3)
 
 Here is an example treating `x` as discrete.
 
-```{r, results = 'asis'}
+```{r ame-mixed-poisson-discrete, results = 'asis'}
 ame2.pois <- brmsmargins(
   mpois,
   at = data.frame(x = c(0, 1)),
@@ -397,7 +397,7 @@ by Hedeker and colleagues (2018).
 Here is an example and comparison to results using a single level 
 poisson regression that ignores the clustering in the data.
 
-```{r}
+```{r margcoef-mixed-poisson-comparison}
 ## calculate marginal coefficients
 mc.pois <- marginalcoef(mpois, CI = 0.95, seed = 1234)
 
@@ -408,7 +408,7 @@ glm.pois <- as.data.table(cbind(Est = coef(glm.pois), confint(glm.pois)))
 
 Now we can view and compare the results.
 
-```{r, results = 'asis'}
+```{r table-margcoef-mixed-poisson-comparison, results = 'asis'}
 
 knitr::kable(cbind(
   mc.pois$Summary[, .(
@@ -425,7 +425,7 @@ knitr::kable(cbind(
 Negative binomial models work the same way as for poisson models.
 We use the same dataset, just for demonstration.
 
-```{r, results = 'hide'}
+```{r fit-mixed-negbin, results = 'hide'}
 dnb <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -460,7 +460,7 @@ mnb <- brms::brm(
   silent = 2, refresh = 0, adapt_delta = 0.99)
 ```
 
-```{r}
+```{r summary-mixed-negbin}
 summary(mnb)
 ```
 
@@ -469,7 +469,7 @@ summary(mnb)
 We use `brmsmargins()` in the same way as for the mixed effects poisson regression.
 Here is an example with a numeric derivative treating `x` as continuous.
 
-```{r, results = 'asis'}
+```{r ame-mixed-negbin-continuous, results = 'asis'}
 h <- .001
 ame1.nb <- brmsmargins(
   mnb,
@@ -482,7 +482,7 @@ knitr::kable(ame1.nb$ContrastSummary, digits = 3)
 
 Here is an example treating `x` as discrete.
 
-```{r, results = 'asis'}
+```{r ame-mixed-negbin-discrete, results = 'asis'}
 ame2.nb <- brmsmargins(
   mnb,
   at = data.frame(x = c(0, 1)),
@@ -497,18 +497,121 @@ knitr::kable(ame2.nb$ContrastSummary, digits = 3)
 Negative binomial models cannot be fit by the `glm()` function in `R`
 so we just show the population averaged values from `brms`.
 
-```{r}
+```{r margcoef-mixed-negbin}
 ## calculate marginal coefficients
 mc.nb <- marginalcoef(mnb, CI = 0.95, seed = 1234)
 ```
 
 View the results.
 
-```{r, results = 'asis'}
+```{r table-margcoef-mixed-negbin, results = 'asis'}
 knitr::kable(
   mc.nb$Summary[, .(
     MargCoef = sprintf("%0.3f", round(M, 3)),
     MargCoefCI = sprintf("[%0.3f, %0.3f]", round(LL, 3), round(UL, 3)))])
+```
+
+## Mixed Effects Binomial Regression
+
+Binomial data works largely the same.
+Here we have an example dataset of a trial with 
+participants randomised to treatment (1) or control (0)
+coded in `trt`, continuous age in years ranging from 8 to 16.
+The outcome is binomial, such as in cognitive tasks where there are multiple
+trials as the number of correct trials at each timepoint are recorded.
+In this example, the number of trials completed each time varies some 
+across participants. We fit a binomial model in `brms` where the 
+outcome is the number of correct trials and the total number of 
+trials is stored in `total`.
+
+```{r fit-mixed-binomial, results = 'hide'}
+dbinom <- withr::with_seed(
+  seed = 12345, code = {
+  library(data.table)
+  n <- 200L
+  d <- CJ(ID = 1:n, time = 0:2)[, `:=`(
+      trt = rep(rbinom(n, 1, .5), each = 3),
+      age = rep(runif(n, 8, 16), each = 3),
+      u   = rep(rnorm(n, 0, .6), each = 3)
+    )][, total := sample(10:15, .N, TRUE)][
+    , p := plogis(-1 + 0.8 * trt + 0.25 * (age - 12) + 0.3 * time + u)][
+    , correct := rbinom(.N, total, p)][
+    , .(ID, trt, age, time, total, correct)]
+  copy(d)
+})
+
+mbinom <- brms::brm(
+  correct | trials(total) ~ 1 + trt + age + (1 | ID), family = "binomial",
+  data = dbinom, seed = 1234,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
+  chains = 4L, cores = 4L, backend = "cmdstanr",
+  silent = 2, refresh = 0, adapt_delta = 0.99)
+```
+
+```{r summary-mixed-binomial}
+summary(mbinom)
+```
+
+### AMEs
+
+We use `brmsmargins()` in the same way as for the other models.
+Here is an example with a numeric derivative treating `age` as continuous.
+What we can see is that one year of age is associated with getting 0.628 
+more trials correct. However, given that the exact number of trials varies,
+we may rather have the probability of getting a trial correct, rather 
+than have units on the number of successes scale.
+
+```{r ame-mixed-binomial-age-count-scale, results = 'asis'}
+h <- .001
+ame1.binom <- brmsmargins(
+  mbinom,
+  add = data.frame(age = c(0, h)),
+  contrasts = cbind("AME age" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1.binom$ContrastSummary, digits = 3)
+```
+
+To do this for continuous variables, we need to still use the
+`add` argument to `brmsmargins`, but we want to modify the data
+so that all of the `total`s are 1 as for 1 trial, it will be 
+the probability. We can do this by passing the data to
+`newdata` (which normally just uses the model frame as its default).
+Now we can see that a one year increase in age is associated 
+with an increase in the average marginal probability of 
+getting a trial correct. While the direction will be the same,
+the scale is now the probability scale, rather than an 
+average number of trials scale.
+
+```{r ame-mixed-binomial-age-probability-scale, results = 'asis'}
+h <- .001
+tmpd <- model.frame(mbinom)
+tmpd$total <- 1
+ame2.binom <- brmsmargins(
+  mbinom,
+  add = data.frame(age = c(0, h)),
+  newdata = tmpd,
+  contrasts = cbind("AME age" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame2.binom$ContrastSummary, digits = 3)
+```
+
+Here is an example treating `trt` (treatment) as discrete.
+Note that when using `at` rather than modify the `newdata`,
+we can also simply add `total = 1` to the `at` call.
+Either would work in this case. Again we can see that the 
+average marginal probability of getting a trial 
+correct is higher in the treatment than in the control group.
+
+```{r ame-mixed-binomial-treatment-probability-scale, results = 'asis'}
+ame3.binom <- brmsmargins(
+  mbinom,
+  at = data.frame(trt = c(0, 1), total = 1),
+  contrasts = cbind("AME trt" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame3.binom$ContrastSummary, digits = 3)
 ```
 
 ## Centered Categorical Predictors
@@ -607,7 +710,7 @@ for the specific values.
 This is more easily shown than said. Here we simulate some multilevel data
 with a binary predictor, `x` and a binary outcome, `y`.
 
-```{r}
+```{r simulate-centered-categorical-data}
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -641,7 +744,7 @@ which we will call `xb` and `xw`. We also fit the `brms` model, using
 so that variable is omitted. Any variation not explained by it will go into 
 the random intercept, anyways.
 
-```{r, results = "hide"}
+```{r fit-centered-categorical-logistic, results = "hide"}
 ## within person centering binary predictor
 d[, xb := mean(x), by = ID]
 d[, xw := x - xb]
@@ -674,7 +777,7 @@ The list must have two elements at a minimum:
    
 The table shows a few examples of what the dataset looks like.
 
-```{r, results = "asis"}
+```{r build-centered-categorical-wat, results = "asis"}
 
 xwid <- melt(
   d[, .(a = 0 - na.omit(xb)[1],
@@ -709,13 +812,13 @@ for `xw = a` and `xw = b` which in our case refers to when
 `xw` is at 0 on `x` **for that ID** and when it is at 1 for `x`
 **for that ID**.
 
-```{r, results = "asis"}
+```{r ame-centered-categorical, results = "asis"}
 ame.cent <- brmsmargins(
   object = mlogitcent,
   at = expand.grid(xw = c("a", "b")),
   wat = usewat,
   contrasts = cbind("AME xw" = c(-1, 1)),
-  effects = "integrateoutRE", k = 20L)
+  effects = "integrateoutRE", k = 20L, seed = 1234)
 
 knitr::kable(ame.cent$Summary, digits = 3)
 ```
@@ -723,7 +826,7 @@ knitr::kable(ame.cent$Summary, digits = 3)
 Just as in other examples, we can get a summary of the
 contrast of these two values, our AME.
 
-```{r, results = "asis"}
+```{r contrasts-ame-centered-categorical, results = "asis"}
 knitr::kable(ame.cent$ContrastSummary, digits = 3)
 ```
 
@@ -760,7 +863,7 @@ greater than or equal to +0.05.
 To show this example, we first simulate a dataset, using a similar 
 process as in previous examples.
 
-```{r}
+```{r simulate-interaction-data}
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -799,7 +902,7 @@ centering within person categorical variables, we also create a
 dataset with the within person hypothetical values for each person,
 `usewat`.
 
-```{r}
+```{r center-interaction-predictor}
 ## within person centering binary predictor
 d[, xb := mean(x), by = ID]
 d[, xw := x - xb]
@@ -820,7 +923,7 @@ is associated with a good or poor night sleep and whether that differs
 between people randomized to the waitlist control or the intervention.
 The model can be fit as in the following code.
 
-```{r, results = "hide"}
+```{r fit-interaction-logistic, results = "hide"}
 mlogitcentint <- brms::brm(
   y ~ 1 + xw * group + xb + (1 + xw | ID), family = "bernoulli",
   data = d, seed = 1234,
@@ -834,7 +937,7 @@ for each group and with within person stressor exposure held at
 none and any. The grid of possibilities is created and stored in 
 `use.at` and shown in the following table.
 
-```{r, results = "asis"}
+```{r grid-interaction-predictions, results = "asis"}
 use.at <- expand.grid(group = 0:1, xw = c("a", "b"))
 knitr::kable(use.at, digits = 0)
 ```
@@ -858,7 +961,7 @@ weights between these two which are the weights for the 3rd question.
 The code to do this and the resulting contrast matrix with labels 
 is shown in the following code and table.
 
-```{r, results = "asis"}
+```{r contrasts-interaction-matrix, results = "asis"}
 contr.mat <- cbind(xw = c(-1, 1)) %x% diag(2)
 contr.mat <- cbind(
   contr.mat,
@@ -880,7 +983,7 @@ seed so that we can reproduce the results exactly.
 Once run, we can see the average marginal predictions for our grid 
 of values in `use.at` in the following table.
 
-```{r, results = "asis"}
+```{r ame-interaction-summary, results = "asis"}
 ame.centint <- brmsmargins(
   object = mlogitcentint,
   at = use.at,
@@ -926,7 +1029,7 @@ within people, days they are exposed to a stressor or not is associated
 with their sleep that night, and that the emotion regulation intervention 
 moderates the association between within person stressor exposure and sleep.
 
-```{r, results = "asis"}
+```{r contrasts-ame-interaction, results = "asis"}
 knitr::kable(ame.centint$ContrastSummary, digits = 3)
 ```
 

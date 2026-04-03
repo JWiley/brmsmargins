@@ -726,6 +726,159 @@ knitr::kable(
 
 
 
+## Mixed Effects Binomial Regression
+
+Binomial data works largely the same.
+Here we have an example dataset of a trial with 
+participants randomised to treatment (1) or control (0)
+coded in `trt`, continuous age in years ranging from 8 to 16.
+The outcome is binomial, such as in cognitive tasks where there are multiple
+trials as the number of correct trials at each timepoint are recorded.
+In this example, the number of trials completed each time varies some 
+across participants. We fit a binomial model in `brms` where the 
+outcome is the number of correct trials and the total number of 
+trials is stored in `total`.
+
+
+``` r
+dbinom <- withr::with_seed(
+  seed = 12345, code = {
+  library(data.table)
+  n <- 200L
+  d <- CJ(ID = 1:n, time = 0:2)[, `:=`(
+      trt = rep(rbinom(n, 1, .5), each = 3),
+      age = rep(runif(n, 8, 16), each = 3),
+      u   = rep(rnorm(n, 0, .6), each = 3)
+    )][, total := sample(10:15, .N, TRUE)][
+    , p := plogis(-1 + 0.8 * trt + 0.25 * (age - 12) + 0.3 * time + u)][
+    , correct := rbinom(.N, total, p)][
+    , .(ID, trt, age, time, total, correct)]
+  copy(d)
+})
+
+mbinom <- brms::brm(
+  correct | trials(total) ~ 1 + trt + age + (1 | ID), family = "binomial",
+  data = dbinom, seed = 1234,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
+  chains = 4L, cores = 4L, backend = "cmdstanr",
+  silent = 2, refresh = 0, adapt_delta = 0.99)
+```
+
+
+``` r
+summary(mbinom)
+#>  Family: binomial 
+#>   Links: mu = logit 
+#> Formula: correct | trials(total) ~ 1 + trt + age + (1 | ID) 
+#>    Data: dbinom (Number of observations: 600) 
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Multilevel Hyperparameters:
+#> ~ID (Number of levels: 200) 
+#>               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> sd(Intercept)     0.59      0.04     0.50     0.67 1.00     1721     2572
+#> 
+#> Regression Coefficients:
+#>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept    -3.39      0.28    -3.93    -2.85 1.00     1798     2301
+#> trt           0.69      0.10     0.49     0.89 1.00     1828     2495
+#> age           0.24      0.02     0.19     0.28 1.00     1707     2320
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+### AMEs
+
+We use `brmsmargins()` in the same way as for the other models.
+Here is an example with a numeric derivative treating `age` as continuous.
+What we can see is that one year of age is associated with getting 0.628 
+more trials correct. However, given that the exact number of trials varies,
+we may rather have the probability of getting a trial correct, rather 
+than have units on the number of successes scale.
+
+
+``` r
+h <- .001
+ame1.binom <- brmsmargins(
+  mbinom,
+  add = data.frame(age = c(0, h)),
+  contrasts = cbind("AME age" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame1.binom$ContrastSummary, digits = 3)
+```
+
+
+
+|     M|  Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
+|-----:|----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|:-------|
+| 0.628| 0.63| 0.482| 0.76|          NA|         NA| 0.99|HDI    |NA   |NA  |AME age |
+
+
+
+To do this for continuous variables, we need to still use the
+`add` argument to `brmsmargins`, but we want to modify the data
+so that all of the `total`s are 1 as for 1 trial, it will be 
+the probability. We can do this by passing the data to
+`newdata` (which normally just uses the model frame as its default).
+Now we can see that a one year increase in age is associated 
+with an increase in the average marginal probability of 
+getting a trial correct. While the direction will be the same,
+the scale is now the probability scale, rather than an 
+average number of trials scale.
+
+
+``` r
+h <- .001
+tmpd <- model.frame(mbinom)
+tmpd$total <- 1
+ame2.binom <- brmsmargins(
+  mbinom,
+  add = data.frame(age = c(0, h)),
+  newdata = tmpd,
+  contrasts = cbind("AME age" = c(-1 / h, 1 / h)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame2.binom$ContrastSummary, digits = 3)
+```
+
+
+
+|    M|  Mdn|    LL|   UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
+|----:|----:|-----:|----:|-----------:|----------:|----:|:------|:----|:---|:-------|
+| 0.05| 0.05| 0.038| 0.06|          NA|         NA| 0.99|HDI    |NA   |NA  |AME age |
+
+
+
+Here is an example treating `trt` (treatment) as discrete.
+Note that when using `at` rather than modify the `newdata`,
+we can also simply add `total = 1` to the `at` call.
+Either would work in this case. Again we can see that the 
+average marginal probability of getting a trial 
+correct is higher in the treatment than in the control group.
+
+
+``` r
+ame3.binom <- brmsmargins(
+  mbinom,
+  at = data.frame(trt = c(0, 1), total = 1),
+  contrasts = cbind("AME trt" = c(-1, 1)),
+  effects = "integrateoutRE", k = 100L, seed = 1234)
+
+knitr::kable(ame3.binom$ContrastSummary, digits = 3)
+```
+
+
+
+|    M|  Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label   |
+|----:|----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:-------|
+| 0.15| 0.15| 0.093| 0.203|          NA|         NA| 0.99|HDI    |NA   |NA  |AME trt |
+
+
+
 ## Centered Categorical Predictors
 
 In mixed effects models, it is common to center continuous predictors.
@@ -949,7 +1102,7 @@ ame.cent <- brmsmargins(
   at = expand.grid(xw = c("a", "b")),
   wat = usewat,
   contrasts = cbind("AME xw" = c(-1, 1)),
-  effects = "integrateoutRE", k = 20L)
+  effects = "integrateoutRE", k = 20L, seed = 1234)
 
 knitr::kable(ame.cent$Summary, digits = 3)
 ```
@@ -958,8 +1111,8 @@ knitr::kable(ame.cent$Summary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
-| 0.122| 0.119| 0.052| 0.214|          NA|         NA| 0.99|HDI    |NA   |NA  |
-| 0.231| 0.228| 0.128| 0.357|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.122| 0.119| 0.055| 0.213|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.231| 0.229| 0.132| 0.364|          NA|         NA| 0.99|HDI    |NA   |NA  |
 
 
 
@@ -975,7 +1128,7 @@ knitr::kable(ame.cent$ContrastSummary, digits = 3)
 
 |     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label  |
 |-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|:------|
-| 0.109| 0.107| 0.043| 0.179|          NA|         NA| 0.99|HDI    |NA   |NA  |AME xw |
+| 0.109| 0.108| 0.044| 0.183|          NA|         NA| 0.99|HDI    |NA   |NA  |AME xw |
 
 
 

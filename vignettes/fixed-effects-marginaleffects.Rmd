@@ -560,6 +560,138 @@ kable(ame2.nb$ContrastSummary, digits = 3)
 
 
 
+## AMEs for Binomial Regression
+
+Here is a short example for a Binomial regression used for 
+multiple trials.
+
+
+``` r
+data(esoph)
+esoph <- as.data.table(esoph)
+esoph[, total := ncases + ncontrols]
+
+bayes.binom <- brm(
+  ncases | trials(total) ~ agegp, data = esoph,
+  family = "binomial", seed = 1234,
+  silent = 2, refresh = 0,
+  save_pars = save_pars(group = TRUE, latent = FALSE, all = TRUE),
+  chains = 4L, cores = 4L, backend = "cmdstanr")
+  
+```
+
+
+``` r
+summary(bayes.binom)
+#>  Family: binomial 
+#>   Links: mu = logit 
+#> Formula: ncases | trials(total) ~ agegp 
+#>    Data: esoph (Number of observations: 88) 
+#>   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+#>          total post-warmup draws = 4000
+#> 
+#> Regression Coefficients:
+#>           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+#> Intercept    -2.00      0.23    -2.55    -1.63 1.00      821      854
+#> agegp.L       3.55      0.79     2.34     5.38 1.01      822      826
+#> agegp.Q      -2.04      0.73    -3.84    -0.94 1.01      752      745
+#> agegp.C       0.20      0.54    -0.69     1.47 1.00      801      830
+#> agegpE4       0.18      0.35    -0.58     0.83 1.00      913     1000
+#> agegpE5      -0.17      0.20    -0.55     0.23 1.00     1354     1635
+#> 
+#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+#> and Tail_ESS are effective sample size measures, and Rhat is the potential
+#> scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+AME for a categorical variable. Here we calculate pairwise contrasts
+for the youngest age group (25-34) versus the oldest (75+).
+The summary shows the expected number of cases for each age group.
+
+
+``` r
+ame1.binom <- brmsmargins(
+  bayes.binom,
+  at = data.frame(
+    agegp = factor(c("25-34", "75+"),
+      levels = levels(esoph$agegp), ordered = TRUE)),
+  contrasts = cbind(
+    "AME 25-34 v 75+" = c(1, -1)))
+    
+kable(ame1.binom$Summary, digits = 3)
+```
+
+
+
+|      M|    Mdn|     LL|      UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|------:|------:|------:|-------:|-----------:|----------:|----:|:------|:----|:---|
+|  2.538|  1.821|  0.001|  11.522|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 83.659| 82.995| 40.360| 137.283|          NA|         NA| 0.99|HDI    |NA   |NA  |
+
+
+
+The contrast is the difference in the number of cases,
+indicating that 25-34 year olds have a lower number of 
+expected cases compared to 75+.
+
+
+
+``` r
+kable(ame1.binom$ContrastSummary, digits = 3)
+```
+
+
+
+|       M|     Mdn|      LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label           |
+|-------:|-------:|-------:|------:|-----------:|----------:|----:|:------|:----|:---|:---------------|
+| -81.121| -80.255| -133.46| -34.84|          NA|         NA| 0.99|HDI    |NA   |NA  |AME 25-34 v 75+ |
+
+
+
+We can instead calculate the probability of being a case
+by fixing the total cases to 1, which is done by modifying 
+the data passed in `at`.
+
+
+``` r
+ame2.binom <- brmsmargins(
+  bayes.binom,
+  at = data.frame(
+    agegp = factor(c("25-34", "75+"),
+      levels = levels(esoph$agegp), ordered = TRUE),
+    total = 1),
+  contrasts = cbind(
+    "AME 25-34 v 75+" = c(1, -1)))
+    
+kable(ame2.binom$Summary, digits = 3)
+```
+
+
+
+|     M|   Mdn|    LL|    UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |
+|-----:|-----:|-----:|-----:|-----------:|----------:|----:|:------|:----|:---|
+| 0.009| 0.006| 0.000| 0.041|          NA|         NA| 0.99|HDI    |NA   |NA  |
+| 0.296| 0.293| 0.143| 0.485|          NA|         NA| 0.99|HDI    |NA   |NA  |
+
+
+
+Now the contrast is the difference in the probability of 
+being a case, showing that 25-34 year olds have a lower
+average probability of being a case compared to 75+ year olds.
+
+
+``` r
+kable(ame2.binom$ContrastSummary, digits = 3)
+```
+
+
+
+|      M|    Mdn|     LL|     UL| PercentROPE| PercentMID|   CI|CIType |ROPE |MID |Label           |
+|------:|------:|------:|------:|-----------:|----------:|----:|:------|:----|:---|:---------------|
+| -0.287| -0.284| -0.472| -0.123|          NA|         NA| 0.99|HDI    |NA   |NA  |AME 25-34 v 75+ |
+
+
+
 ## References
 
 These references may be useful.
