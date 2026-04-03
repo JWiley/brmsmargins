@@ -39,6 +39,9 @@ NULL
   }
 }
 
+## make Rcmd check happy
+utils::globalVariables(c("dpar", "dist"))
+
 #' @rdname assertall
 #' @importFrom data.table as.data.table
 .assertRE <- function(object) {

@@ -84,7 +84,7 @@
 #' \doi{10.1111/j.1467-985X.2009.00587.x}
 #' \dQuote{Prediction in multilevel generalized linear models}
 #' @importFrom data.table as.data.table
-#' @importFrom stats fitted formula
+#' @importFrom stats fitted formula family
 #' @importFrom posterior as_draws_df ndraws
 #' @importFrom brms standata brmsterms
 #' @export

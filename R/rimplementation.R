@@ -13,7 +13,7 @@ integratemvnR <- function(X, k, sd, chol) {
 }
 
 #' @describeIn integratemvt Pure `R` implementation of [integratemvt()].
-#' @importFrom stats rnorm
+#' @importFrom stats rnorm rchisq
 integratemvtR <- function(X, k, sd, chol, df) {
   n <- length(sd)
   Z <- matrix(rnorm(k * n, mean = 0, sd = 1), nrow = k, ncol = n)
