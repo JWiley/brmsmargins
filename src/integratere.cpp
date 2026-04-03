@@ -1,5 +1,6 @@
 #include <RcppArmadillo.h>
 #include "integratemvn.h"
+#include "integratemvt.h"
 #include "tab2mat.h"
 // [[Rcpp::depends(RcppArmadillo)]]
 
@@ -16,6 +17,8 @@ using namespace Rcpp;
 //' @param L A list with matrices for each random effect block containing the parts of
 //'   the L matrix, the Cholesky decomposition of the random effect correlation matrix.
 //' @param k An integer, the number of samples for Monte Carlo integration.
+//' @param df A list with either `NULL` for Gaussian random effect blocks or a numeric
+//'   matrix of degrees of freedom for Student-t random effect blocks.
 //' @param yhat A matrix of the fixed effects predictions
 //' @param backtrans An integer, indicating the type of back transformation.
 //'   0 indicates inverse logit (e.g., for logistic regression).
@@ -32,10 +35,11 @@ using namespace Rcpp;
 //'   sd = list(matrix(1, 2, 1)),
 //'   L = list(matrix(1, 2, 1)),
 //'   k = 10L,
+//'   df = list(NULL),
 //'   yhat = matrix(0, 2, 1),
 //'   backtrans = 0L)
 // [[Rcpp::export]]
-arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int backtrans) {
+arma::mat integratere(List d, List sd, List L, int k, List df, const arma::mat& yhat, int backtrans) {
   int M = yhat.n_rows;
   int N = yhat.n_cols;
   int J = sd.length();
@@ -58,7 +62,13 @@ arma::mat integratere(List d, List sd, List L, int k, const arma::mat& yhat, int
       arma::rowvec sdvec(sdvec_nv.begin(), sdvec_nv.size(),
                       /*copy_aux_mem=*/false, /*strict=*/true);
 
-      Z[re] = integratemvn(dmat, k, sdvec, cholmat);
+      SEXP df_sexp = df[re];
+      if (Rf_isNull(df_sexp)) {
+        Z[re] = integratemvn(dmat, k, sdvec, cholmat);
+      } else {
+        NumericVector dfvec(df_sexp);
+        Z[re] = integratemvt(dmat, k, sdvec, cholmat, dfvec[i]);
+      }
     }
 
     // initialize matrix for all random effect predictions

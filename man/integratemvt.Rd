@@ -20,7 +20,7 @@ integratemvtR(X, k, sd, chol, df)
 correlation matrix of the multivariate Student-t distribution.}
 
 \item{df}{A numeric scalar giving the degrees of freedom of the
-multivariate Student-t distribution.}
+(multivariate) Student-t distribution.}
 }
 \value{
 A numeric matrix with random values

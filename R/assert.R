@@ -41,7 +41,6 @@ NULL
 
 #' @rdname assertall
 #' @importFrom data.table as.data.table
-#' @importFrom JWileymisc nzchar
 .assertRE <- function(object) {
   .assertbrmsfit(object)
 
@@ -54,10 +53,10 @@ NULL
                             "but the following distribution(s) were found '%s'."),
                      paste(unique(tmpd$dist), collapse = "; "))
       stop(err)
-    } else if (isTRUE(any(tmpd[nzchar(dpar), dist] %nin% c("gaussian")))) {
+    } else if (isTRUE(any(tmpd[nchar(dpar) > 0, dist] %nin% c("gaussian")))) {
       err <- sprintf(paste0("Currently only gaussian random effects are supported for dpar, ",
                             "but the following distribution(s) were found '%s'."),
-                     paste(unique(tmpd[!nzchar(dpar), dist]), collapse = "; "))
+                     paste(unique(tmpd[nchar(dpar) > 0, dist]), collapse = "; "))
       stop(err)
     } else {
       result <- TRUE

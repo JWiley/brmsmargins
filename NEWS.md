@@ -1,5 +1,15 @@
-# brmsmargins 0.2.2
-* added preliminary support for binomial family
+# brmsmargins 0.3.0
+* Now supports response variables with a binomial distribution.
+  Predictions that marginalise over random effects will use the number of trials.
+  For contrasts, such as using `brmsmargins()` you can use the `at =` argument to
+  force trials to 1 to get marginal probabilities rather than counts of successful
+  trials.
+* Experimental support for integrating out random effects from a student t distribution.
+  Currently only supports this for location parameters. When `dpar` is not
+  empty in `brms` only Gaussian distributions are supported. Some caution is
+  needed here as `brms` uses the same degree of freedom parameter for all random
+  effects of the same grouping variable, so for complex random effect structures,
+  there may be errors in how they are integrated out.
 
 # brmsmargins 0.2.1
 

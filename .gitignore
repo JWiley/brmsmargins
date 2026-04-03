@@ -16,3 +16,5 @@ inst/doc
 docs
 internal.md
 onlyinternal.R
+.codex
+*.csv

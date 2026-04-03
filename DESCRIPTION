@@ -1,6 +1,6 @@
 Package: brmsmargins
 Title: Bayesian Marginal Effects for 'brms' Models
-Version: 0.2.2
+Version: 0.3.0
 Authors@R: 
     c(person(given = "Joshua F.",
              family = "Wiley",

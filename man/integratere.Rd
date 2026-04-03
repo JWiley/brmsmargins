@@ -5,7 +5,7 @@
 \alias{integratereR}
 \title{Integrate over Random Effects}
 \usage{
-integratere(d, sd, L, k, yhat, backtrans)
+integratere(d, sd, L, k, df, yhat, backtrans)
 
 integratereR(d, sd, L, k, df, yhat, backtrans)
 }
@@ -19,6 +19,9 @@ where rows are different posterior draws.}
 the L matrix, the Cholesky decomposition of the random effect correlation matrix.}
 
 \item{k}{An integer, the number of samples for Monte Carlo integration.}
+
+\item{df}{A list with either \code{NULL} for Gaussian random effect blocks or a numeric
+matrix of degrees of freedom for Student-t random effect blocks.}
 
 \item{yhat}{A matrix of the fixed effects predictions}
 
@@ -48,6 +51,7 @@ integratere(
   sd = list(matrix(1, 2, 1)),
   L = list(matrix(1, 2, 1)),
   k = 10L,
+  df = list(NULL),
   yhat = matrix(0, 2, 1),
   backtrans = 0L)
 }

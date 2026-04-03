@@ -42,7 +42,7 @@ integratemvn <- function(X, k, sd, chol) {
 #' @param chol A numeric matrix, which should be the Cholesky decomposition of the
 #'   correlation matrix of the multivariate Student-t distribution.
 #' @param df A numeric scalar giving the degrees of freedom of the
-#'   multivariate Student-t distribution.
+#'   (multivariate) Student-t distribution.
 #' @return A numeric matrix with random values
 #' @export
 #' @examples
@@ -69,6 +69,8 @@ integratemvt <- function(X, k, sd, chol, df) {
 #' @param L A list with matrices for each random effect block containing the parts of
 #'   the L matrix, the Cholesky decomposition of the random effect correlation matrix.
 #' @param k An integer, the number of samples for Monte Carlo integration.
+#' @param df A list with either `NULL` for Gaussian random effect blocks or a numeric
+#'   matrix of degrees of freedom for Student-t random effect blocks.
 #' @param yhat A matrix of the fixed effects predictions
 #' @param backtrans An integer, indicating the type of back transformation.
 #'   0 indicates inverse logit (e.g., for logistic regression).
@@ -85,10 +87,11 @@ integratemvt <- function(X, k, sd, chol, df) {
 #'   sd = list(matrix(1, 2, 1)),
 #'   L = list(matrix(1, 2, 1)),
 #'   k = 10L,
+#'   df = list(NULL),
 #'   yhat = matrix(0, 2, 1),
 #'   backtrans = 0L)
-integratere <- function(d, sd, L, k, yhat, backtrans) {
-    .Call(`_brmsmargins_integratere`, d, sd, L, k, yhat, backtrans)
+integratere <- function(d, sd, L, k, df, yhat, backtrans) {
+    .Call(`_brmsmargins_integratere`, d, sd, L, k, df, yhat, backtrans)
 }
 
 #' Fast Linear Regression
