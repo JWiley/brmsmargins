@@ -15,6 +15,7 @@ means mixed effects models.
 |------------------------------------------------|-------|-------|
 | Gaussian / Normal                              | ✔️    | ✔️    |
 | Bernoulli (logistic)                           | ✔️    | ✔️    |
+| Binomial (logistic)                            | ✔️    | ✔️    |
 | Poisson                                        | ✔️    | ✔️    |
 | Negative Binomial                              | ✔️    | ✔️    |
 | Gamma                                          | ✔️    | ✔️    |
@@ -25,13 +26,16 @@ means mixed effects models.
 | Natural log / square root transformed outcomes | ✔️    | ✔️    |
 | Monotonic predictors                           | ✔️    | ✔️    |
 | Custom outcome transformations                 | ❌    | ❌    |
+| Student t random effects                       | ❌    | ✔️\*  |
 
-In general, any distribution supported by `brms` that generates one and
-only one predicted value (e.g., not multinomial logistic regression
-models) should be supported for fixed effects only models. Also note
-that currently, only Gaussian random effects are supported. This is not
-too limiting as even for Bernoulli, Poisson, etc. outcomes, the random
-effects are commonly assumed to have a Gaussian distribution.
+\*limitted support for relatively simple random effect sturctures.
+Experimental. In general, any distribution supported by `brms` that
+generates one and only one predicted value (e.g., not multinomial
+logistic regression models) should be supported for fixed effects only
+models. Also note that currently, only Gaussian random effects are
+supported. This is not too limiting as even for Bernoulli, Poisson, etc.
+outcomes, the random effects are commonly assumed to have a Gaussian
+distribution.
 
 Here is a quick syntax overview of how to use the main function,
 [`brmsmargins()`](https://joshuawiley.com/brmsmargins/reference/brmsmargins.md).

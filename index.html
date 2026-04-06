@@ -73,9 +73,9 @@
 <p>This table shows an overview of currently supported models / features where “X” indicates a specific model / feature is currently supported. The column ‘Fixed’ means fixed effects only models. The column ‘Mixed’ means mixed effects models.</p>
 <table class="table">
 <colgroup>
-<col width="54%">
+<col width="53%">
 <col width="22%">
-<col width="22%">
+<col width="23%">
 </colgroup>
 <thead><tr class="header">
 <th>Distribution / Feature</th>
@@ -94,58 +94,69 @@
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 </tr>
 <tr class="odd">
+<td>Binomial (logistic)</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="even">
 <td>Poisson</td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Negative Binomial</td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Gamma</td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Beta</td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Multinomial logistic</td>
 <td><span class="emoji" data-emoji="x">❌</span></td>
 <td><span class="emoji" data-emoji="x">❌</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Multivariate models</td>
 <td><span class="emoji" data-emoji="x">❌</span></td>
 <td><span class="emoji" data-emoji="x">❌</span></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Gaussian location scale models</td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Natural log / square root transformed outcomes</td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Monotonic predictors</td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 <td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Custom outcome transformations</td>
 <td><span class="emoji" data-emoji="x">❌</span></td>
 <td><span class="emoji" data-emoji="x">❌</span></td>
 </tr>
+<tr class="even">
+<td>Student t random effects</td>
+<td><span class="emoji" data-emoji="x">❌</span></td>
+<td>
+<span class="emoji" data-emoji="heavy_check_mark">✔️</span>*</td>
+</tr>
 </tbody>
 </table>
-<p>In general, any distribution supported by <code>brms</code> that generates one and only one predicted value (e.g., not multinomial logistic regression models) should be supported for fixed effects only models. Also note that currently, only Gaussian random effects are supported. This is not too limiting as even for Bernoulli, Poisson, etc. outcomes, the random effects are commonly assumed to have a Gaussian distribution.</p>
+<p>*limitted support for relatively simple random effect sturctures. Experimental. In general, any distribution supported by <code>brms</code> that generates one and only one predicted value (e.g., not multinomial logistic regression models) should be supported for fixed effects only models. Also note that currently, only Gaussian random effects are supported. This is not too limiting as even for Bernoulli, Poisson, etc. outcomes, the random effects are commonly assumed to have a Gaussian distribution.</p>
 <p>Here is a quick syntax overview of how to use the main function, <code><a href="reference/brmsmargins.html">brmsmargins()</a></code>.</p>
 <div class="section level4">
 <h4 id="fixed-effects-continuous-predictor">Fixed effects, continuous predictor.<a class="anchor" aria-label="anchor" href="#fixed-effects-continuous-predictor"></a>
@@ -301,7 +312,7 @@
 <li><a href="https://cran.r-project.org/package=brmsmargins" class="external-link"><img src="https://www.r-pkg.org/badges/version/brmsmargins" alt="CRAN-status"></a></li>
 <li><a href="https://github.com/JWiley/brmsmargins/actions" class="external-link"><img src="https://github.com/JWiley/brmsmargins/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://app.codecov.io/gh/JWiley/brmsmargins/" class="external-link"><img src="https://codecov.io/gh/JWiley/brmsmargins/graph/badge.svg?token=VXf0Qo0PRY" alt="codecov"></a></li>
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg" alt="lifecycle"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg" alt="lifecycle"></a></li>
 </ul>
 </div>
 
