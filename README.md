@@ -2,7 +2,7 @@
 [![CRAN-status](https://www.r-pkg.org/badges/version/brmsmargins)](https://cran.r-project.org/package=brmsmargins)
 [![R-CMD-check](https://github.com/JWiley/brmsmargins/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JWiley/brmsmargins/actions)
 [![codecov](https://codecov.io/gh/JWiley/brmsmargins/graph/badge.svg?token=VXf0Qo0PRY)](https://app.codecov.io/gh/JWiley/brmsmargins/)
-[![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 ## Overview
@@ -18,21 +18,25 @@ models / features where "X" indicates a specific model / feature
 is currently supported. The column 'Fixed' means fixed effects only models.
 The column 'Mixed' means mixed effects models.
 
-| Distribution / Feature                         | Fixed              | Mixed              |
-|------------------------------------------------|--------------------|--------------------|
-| Gaussian / Normal                              | :heavy_check_mark: | :heavy_check_mark: |
-| Bernoulli (logistic)                           | :heavy_check_mark: | :heavy_check_mark: |
-| Poisson                                        | :heavy_check_mark: | :heavy_check_mark: |
-| Negative Binomial                              | :heavy_check_mark: | :heavy_check_mark: |
-| Gamma                                          | :heavy_check_mark: | :heavy_check_mark: |
-| Beta                                           | :heavy_check_mark: | :heavy_check_mark: |
-| Multinomial logistic                           | :x:                | :x:                |
-| Multivariate models                            | :x:                | :x:                |
-| Gaussian location scale models                 | :heavy_check_mark: | :heavy_check_mark: |
-| Natural log / square root transformed outcomes | :heavy_check_mark: | :heavy_check_mark: |
-| Monotonic predictors                           | :heavy_check_mark: | :heavy_check_mark: |
-| Custom outcome transformations                 | :x:                | :x:                |
+| Distribution / Feature                         | Fixed              | Mixed               |
+|------------------------------------------------|--------------------|---------------------|
+| Gaussian / Normal                              | :heavy_check_mark: | :heavy_check_mark:  |
+| Bernoulli (logistic)                           | :heavy_check_mark: | :heavy_check_mark:  |
+| Binomial (logistic)                            | :heavy_check_mark: | :heavy_check_mark:  |
+| Poisson                                        | :heavy_check_mark: | :heavy_check_mark:  |
+| Negative Binomial                              | :heavy_check_mark: | :heavy_check_mark:  |
+| Gamma                                          | :heavy_check_mark: | :heavy_check_mark:  |
+| Beta                                           | :heavy_check_mark: | :heavy_check_mark:  |
+| Multinomial logistic                           | :x:                | :x:                 |
+| Multivariate models                            | :x:                | :x:                 |
+| Gaussian location scale models                 | :heavy_check_mark: | :heavy_check_mark:  |
+| Natural log / square root transformed outcomes | :heavy_check_mark: | :heavy_check_mark:  |
+| Monotonic predictors                           | :heavy_check_mark: | :heavy_check_mark:  |
+| Custom outcome transformations                 | :x:                | :x:                 |
+| Student t random effects                       | :x:                | :heavy_check_mark:* |
 
+
+*limitted support for relatively simple random effect sturctures. Experimental.
 In general, any distribution supported by `brms` that generates one and 
 only one predicted value (e.g., not multinomial logistic regression models)
 should be supported for fixed effects only models.
