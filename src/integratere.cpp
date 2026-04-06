@@ -85,7 +85,7 @@ arma::mat integratere(List d, List sd, List L, int k, List df, const arma::mat& 
     switch (backtrans) {
       case 0: Zall = 1.0 / (1.0 + arma::exp(-Zall)); break;
       case 1: Zall = arma::exp(Zall); break;
-      case 2: Zall %= Zall; break;
+      case 2: Zall = arma::square(Zall); break;
       case 3: Zall = 1.0 / Zall; break;
       default: break;
     }
