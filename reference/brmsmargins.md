@@ -83,7 +83,7 @@ brmsmargins(
   to
   [`bsummary()`](https://joshuawiley.com/brmsmargins/reference/bsummary.md)
   which in turn passes it to
-  [`bayestestR::ci()`](https://rdrr.io/pkg/bayestestR/man/ci.html).
+  [`bayestestR::ci()`](https://easystats.github.io/bayestestR/reference/ci.html).
   Defaults to "HDI".
 
 - contrasts:
