@@ -263,6 +263,125 @@ test_that("random effect and builder helpers work with real mixed brms models", 
     brmsmargins:::.namesZ(block = block_sigma, number = number_sigma, dpar = "sigma"))
 })
 
+test_that("pure R low-level integration helpers are reproducible", {
+  d_multi <- matrix(c(1, 0, 0, 1), nrow = 2, byrow = TRUE)
+  sd_multi <- c(1.5, 0.5)
+  L_multi <- chol(matrix(c(1, 0.25, 0.25, 1), nrow = 2))
+
+  mvn1 <- withr::with_seed(
+    101,
+    brmsmargins:::integratemvnR(d_multi, 8L, sd_multi, L_multi))
+  mvn2 <- withr::with_seed(
+    101,
+    brmsmargins:::integratemvnR(d_multi, 8L, sd_multi, L_multi))
+  mvn3 <- withr::with_seed(
+    102,
+    brmsmargins:::integratemvnR(d_multi, 8L, sd_multi, L_multi))
+
+  expect_equal(mvn1, mvn2)
+  expect_equal(dim(mvn1), c(2L, 8L))
+  expect_false(isTRUE(all.equal(mvn1, mvn3)))
+
+  expect_equal(
+    withr::with_seed(
+      103,
+      brmsmargins:::integratemvnR(matrix(0, 1, 1), 5L, c(1), matrix(1, 1, 1))),
+    matrix(0, 1, 5L))
+
+  mvt1 <- withr::with_seed(
+    201,
+    brmsmargins:::integratemvtR(d_multi, 8L, sd_multi, L_multi, df = 6))
+  mvt2 <- withr::with_seed(
+    201,
+    brmsmargins:::integratemvtR(d_multi, 8L, sd_multi, L_multi, df = 6))
+  mvt3 <- withr::with_seed(
+    202,
+    brmsmargins:::integratemvtR(d_multi, 8L, sd_multi, L_multi, df = 6))
+
+  expect_equal(mvt1, mvt2)
+  expect_equal(dim(mvt1), c(2L, 8L))
+  expect_false(isTRUE(all.equal(mvt1, mvt3)))
+
+  expect_equal(
+    withr::with_seed(
+      203,
+      brmsmargins:::integratemvtR(matrix(0, 1, 1), 5L, c(1), matrix(1, 1, 1), df = 5)),
+    matrix(0, 1, 5L))
+})
+
+test_that("pure R tab2mat helper reconstructs square matrices", {
+  expect_equal(
+    brmsmargins:::tab2matR(matrix(c(1, 2, 3, 4), nrow = 1)),
+    matrix(c(1, 2, 3, 4), nrow = 2, byrow = TRUE))
+  expect_equal(
+    brmsmargins:::tab2matR(matrix(5, nrow = 1)),
+    matrix(5, nrow = 1))
+})
+
+test_that("pure R random effect integration handles all back transformations", {
+  d <- list(
+    diag(2),
+    matrix(c(0.5, 1.5), nrow = 2))
+  sd <- list(
+    matrix(c(1, 2), nrow = 1),
+    matrix(c(0.75), nrow = 1))
+  L <- list(
+    matrix(c(1, 0, 0.25, sqrt(1 - 0.25^2)), nrow = 1),
+    matrix(1, nrow = 1))
+  df <- list(
+    NULL,
+    matrix(5, nrow = 1))
+  yhat <- matrix(c(-0.5, 0.25), nrow = 1)
+  k <- 8L
+
+  identity_res <- withr::with_seed(
+    301,
+    brmsmargins:::integratereR(
+      d = d,
+      sd = sd,
+      L = L,
+      k = k,
+      df = df,
+      yhat = yhat,
+      backtrans = -9L))
+  logistic_res <- withr::with_seed(
+    302,
+    brmsmargins:::integratereR(
+      d = d,
+      sd = sd,
+      L = L,
+      k = k,
+      df = df,
+      yhat = yhat,
+      backtrans = 0L))
+  exp_res <- withr::with_seed(
+    303,
+    brmsmargins:::integratereR(
+      d = d,
+      sd = sd,
+      L = L,
+      k = k,
+      df = df,
+      yhat = yhat,
+      backtrans = 1L))
+  square_res <- withr::with_seed(
+    304,
+    brmsmargins:::integratereR(
+      d = d,
+      sd = sd,
+      L = L,
+      k = k,
+      df = df,
+      yhat = yhat,
+      backtrans = 2L))
+
+  expect_equal(dim(identity_res), c(1L, 2L))
+  expect_true(any(identity_res < 0))
+  expect_true(all(logistic_res > 0 & logistic_res < 1))
+  expect_true(all(exp_res > 0))
+  expect_true(all(square_res >= 0))
+})
+
 test_that("average posterior and prediction branches work with real brms models", {
   posterior <- matrix(1:12, nrow = 3, byrow = TRUE)
 
