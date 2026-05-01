@@ -1,6 +1,7 @@
 # Marginal Effects for Location Scale Models
 
 ``` r
+
 library(knitr)
 library(data.table)
 #> data.table 1.18.2.1 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
@@ -46,6 +47,7 @@ To start with, we will look at a fixed effects only location scale
 model. We will simulate a dataset.
 
 ``` r
+
 d <- withr::with_seed(
   seed = 12345, code = {
     nObs <- 1000L
@@ -69,6 +71,7 @@ ls.fe <- brm(bf(
 ```
 
 ``` r
+
 summary(ls.fe)
 #>  Family: gaussian 
 #>   Links: mu = identity; sigma = log 
@@ -101,6 +104,7 @@ the AMEs are the same as the regression coefficients.
 Here is an example continuous AME.
 
 ``` r
+
 h <- .001
 ame1 <- brmsmargins(
   ls.fe,
@@ -119,6 +123,7 @@ knitr::kable(ame1$ContrastSummary, digits = 3)
 Here is an AME for discrete / categorical predictors.
 
 ``` r
+
 ame2 <- brmsmargins(
   ls.fe,
   at = data.frame(grp = c(0, 1)),
@@ -142,6 +147,7 @@ We specify that we want AMEs for `sigma` by setting: `dpar = "sigma"`.
 Here is a continuous example.
 
 ``` r
+
 h <- .001
 ame3 <- brmsmargins(
   ls.fe,
@@ -160,6 +166,7 @@ knitr::kable(ame3$ContrastSummary, digits = 3)
 Here is a discrete / categorical example.
 
 ``` r
+
 ame4 <- brmsmargins(
   ls.fe,
   at = data.frame(grp = c(0, 1)),
@@ -181,6 +188,7 @@ uncorrelated, the simple unadjusted results match the regression results
 closely.
 
 ``` r
+
 d[, .(SD = sd(y)), by = grp][, diff(SD)]
 ```
 
@@ -192,6 +200,7 @@ We will simulate some multilevel location scale data for model and fit
 the mixed effects location scale model.
 
 ``` r
+
 dmixed <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -242,6 +251,7 @@ continue. In practice, one would want to make adjustments to ensure good
 convergence and an adequate effective sample size.
 
 ``` r
+
 summary(ls.me)
 #>  Family: gaussian 
 #>   Links: mu = identity; sigma = log 
@@ -289,6 +299,7 @@ Here is an example treating `x` as continuous using only the fixed
 effects for the AME for the scale parameter, `sigma`.
 
 ``` r
+
 h <- .001
 ame1a.lsme <- brmsmargins(
   ls.me,
@@ -308,6 +319,7 @@ Here is the example again, this time integrating out the random effects,
 which results in a considerable difference in the estimate of the AME.
 
 ``` r
+
 h <- .001
 ame1b.lsme <- brmsmargins(
   ls.me,
@@ -327,6 +339,7 @@ Here is an example treating `x` as discrete, using only the fixed
 effects.
 
 ``` r
+
 ame2a.lsme <- brmsmargins(
   ls.me,
   at = data.frame(x = c(0, 1)),
@@ -337,14 +350,15 @@ ame2a.lsme <- brmsmargins(
 knitr::kable(ame2a.lsme$ContrastSummary)
 ```
 
-|        M |       Mdn |        LL |        UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label |
-|---------:|----------:|----------:|----------:|------------:|-----------:|-----:|:-------|:-----|:----|:------|
-| 0.380072 | 0.3762964 | 0.2628432 | 0.5264977 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME x |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| 0.380072 | 0.3762964 | 0.2628432 | 0.5264977 | NA | NA | 0.99 | HDI | NA | NA | AME x |
 
 Here is the example again, this time integrating out the random effects,
 likely the more appropriate estimate for most use cases.
 
 ``` r
+
 ame2b.lsme <- brmsmargins(
   ls.me,
   at = data.frame(x = c(0, 1)),
@@ -355,14 +369,15 @@ ame2b.lsme <- brmsmargins(
 knitr::kable(ame2b.lsme$ContrastSummary)
 ```
 
-|         M |       Mdn |        LL |      UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label |
-|----------:|----------:|----------:|--------:|------------:|-----------:|-----:|:-------|:-----|:----|:------|
-| 0.7123491 | 0.6784262 | 0.2900437 | 1.37436 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME x |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| 0.7123491 | 0.6784262 | 0.2900437 | 1.37436 | NA | NA | 0.99 | HDI | NA | NA | AME x |
 
 This also is relatively close calculating all the individual standard
 deviations and taking their differences, then averaging.
 
 ``` r
+
 dmixed[, .(SD = sd(y)), by = .(ID, x)
        ][, .(SDdiff = diff(SD)), by = ID][, mean(SDdiff)]
 #> [1] 0.6281889

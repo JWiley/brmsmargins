@@ -90,6 +90,7 @@ Kruschke, J. K. (2018).
 ## Examples
 
 ``` r
+
 bsummary(rnorm(1000))
 #>              M         Mdn        LL       UL PercentROPE PercentMID    CI
 #>          <num>       <num>     <num>    <num>       <num>      <num> <num>

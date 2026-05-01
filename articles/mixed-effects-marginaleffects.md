@@ -1,6 +1,7 @@
 # Marginal Effects for Mixed Effects Models
 
 ``` r
+
 library(knitr)
 library(data.table)
 #> data.table 1.18.2.1 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
@@ -25,30 +26,44 @@ effects for Bayesian regression models involving only mixed effects
 ## Integrating out Random Effects
 
 A random intercept logistic regression model where a binary (0/1)
-outcome, $Y$ is observed at the $i^{th}$ assessment for the $j^{th}$
-person and there are $p$ variables included in the regression model can
-be written as:
+outcome, $`Y`$ is observed at the $`i^{th}`$ assessment for the
+$`j^{th}`$ person and there are $`p`$ variables included in the
+regression model can be written as:
 
-$${\widehat{\pi}}_{ij} = g\left( P\left( Y_{ij} = 1|X_{ij} = x_{ij},u_{j} \right) \right) = \beta_{0} + \sum\limits_{k = 1}^{p}x_{ij,k}\beta_{k} + u_{j}$$
+``` math
+\hat{\pi}_{ij} = g \left(P \left( Y_{ij} = 1 \Big| X_{ij} = x_{ij}, u_j \right) \right) = \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + u_j 
+```
 
-where $g( \cdot )$ indicates the link function, here the logit
+where $`g(\cdot)`$ indicates the link function, here the logit
 
-$$\mu = g(\pi) = ln\left( \frac{\pi}{1 - \pi} \right)$$
+``` math
+\mu = g(\pi) = ln\left(\frac{\pi}{1 - \pi}\right)
+```
 
-and $g^{- 1}( \cdot )$ is the inverse link function:
+and $`g^{-1}(\cdot)`$ is the inverse link function:
 
-$$\pi = g^{- 1}(\mu) = \frac{1}{1 + exp( - \mu)}$$
+``` math
+\pi = g^{-1}(\mu) = \frac{1}{1 + exp(-\mu)}
+```
 
 A conditional predicted probability, conditional on the random effect
 can be calculated as:
 
-$${\widehat{\pi}}_{ij}\left( u_{j} = 0 \right) = P\left( Y_{ij} = 1|X_{ij} = x_{ij},u_{j} = 0 \right) = g^{- 1}\left( \beta_{0} + \sum\limits_{k = 1}^{p}x_{ij,k}\beta_{k} + 0 \right)$$
+``` math
+\hat{\pi}_{ij}(u_j = 0) = 
+  P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij}, u_j = 0 \right) = 
+  g^{-1} \left( \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + 0 \right)
+```
 
 However, to correctly calculate a prediction that is marginal to the
 random effects, the random effects must be integrated out. Not set at a
 specific value or set at their mean (0).
 
-$${\widehat{\pi}}_{ij} = P\left( Y_{ij} = 1|X_{ij} = x_{ij} \right) = \int_{- \infty}^{\infty}g^{- 1}\left( \beta_{0} + \sum\limits_{k = 1}^{p}x_{ij,k}\beta_{k} + u \right)f(u)du$$
+``` math
+\hat{\pi}_{ij} = 
+  P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij} \right) = 
+  \int_{-\infty}^{\infty} g^{-1} \left( \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + u \right)f(u)du
+```
 
 Integrating out the random effects analytically can quickly become
 complex. For example, it rapidly becomes more complex when there are
@@ -59,34 +74,39 @@ distributions are used / assumed.
 Monte Carlo integration is a convenient, numerical approach that uses
 random samples to approximate the integral. Continuing the simple
 example of a logistic regression model where the only random effect is a
-random intercept, $u_{j}$ and where we assume that
-$u_{j} \sim \mathcal{N}\left( 0,\sigma_{u}^{2} \right)$, we could draw
-$Q$ random samples, say 100, from
-$\mathcal{N}\left( 0,\sigma_{u}^{2} \right)$, call these $RE_{a}$, then
-Monte Carlo integration would be:
+random intercept, $`u_j`$ and where we assume that
+$`u_j \sim \mathcal{N}(0, \sigma^{2}_u)`$, we could draw $`Q`$ random
+samples, say 100, from $`\mathcal{N}(0, \sigma^{2}_u)`$, call these
+$`RE_a`$, then Monte Carlo integration would be:
 
-$${\widehat{\pi}}_{ij} = P\left( Y_{ij} = 1|X_{ij} = x_{ij} \right) = \frac{\sum\limits_{a = 1}^{Q}g^{- 1}\left( \beta_{0} + \sum\limits_{k = 1}^{p}x_{ij,k}\beta_{k} + RE_{a} \right)}{Q}$$
+``` math
+\hat{\pi}_{ij} = 
+  P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij} \right) = 
+  \frac{\displaystyle \sum_{a = 1}^{Q} g^{-1} \left( \beta_0 + \sum_{k = 1}^p x_{ij,k} \beta_k + RE_a \right)}{Q}
+```
 
 This approach works for most generalized linear mixed models, although
 the outcome would not be a probability, necessarily, but whatever the
 result of the inverse link function is.
 
 In a Bayesian framework, this approach would be repeated for each
-posterior draw as both the regression coefficients and $RE_{a}$ differs.
+posterior draw as both the regression coefficients and $`RE_a`$ differs.
 Because this is repeated across each posterior draw, a very large number
-of random draws, $Q$, for the Monte Carlo integration is probably not
-needed. Although a modest number, say $Q = 100$, would have a relatively
-large amount of simulation error, it is random error and when repeated
-across typically thousands of posterior draws, the impact is likely
-diminished.
+of random draws, $`Q`$, for the Monte Carlo integration is probably not
+needed. Although a modest number, say $`Q = 100`$, would have a
+relatively large amount of simulation error, it is random error and when
+repeated across typically thousands of posterior draws, the impact is
+likely diminished.
 
 Once we have these marginal predictions, we can calculate marginal
 effects using numerical derivatives as:
 
-$$\frac{P\left( Y_{ij} = 1|X_{ij} = x_{ij} + h \right) - P\left( Y_{ij} = 1|X_{ij} = x_{ij} \right)}{h}$$
+``` math
+\frac{P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij} + h \right) - P\left(Y_{ij} = 1 \Big| X_{ij} = x_{ij} \right)}{h}
+```
 
 which for a continuous variable provides an approximation of the
-derivative, often quite good as long as $h$ is sufficiently small.
+derivative, often quite good as long as $`h`$ is sufficiently small.
 
 ## Using `brmsmargins()`
 
@@ -117,6 +137,7 @@ logistic regression model with individual differences in both the
 intercept and slope.
 
 ``` r
+
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -156,6 +177,7 @@ mlogit <- brms::brm(
 ```
 
 ``` r
+
 summary(mlogit)
 #> Warning: There were 24 divergent transitions after warmup. Increasing
 #> adapt_delta above 0.8 may help. See
@@ -194,6 +216,7 @@ used for numerical integration are set via the argument, `k`, here
 `k = 100L`, the default. More details are in: `?brmsmargins:::.predict`
 
 ``` r
+
 h <- .001
 ame1 <- brmsmargins(
   mlogit,
@@ -215,6 +238,7 @@ interesting as well, since they are at meaningfully different values of
 different `x` values calculated in the data.
 
 ``` r
+
 ame2 <- brmsmargins(
   mlogit,
   at = data.frame(x = c(0, 1)),
@@ -225,6 +249,7 @@ ame2 <- brmsmargins(
 Here is a summary of the predictions.
 
 ``` r
+
 knitr::kable(ame2$Summary, digits = 3)
 ```
 
@@ -234,6 +259,7 @@ knitr::kable(ame2$Summary, digits = 3)
 | 0.228 | 0.228 | 0.161 | 0.305 |          NA |         NA | 0.99 | HDI    | NA   | NA  |
 
 ``` r
+
 knitr::kable(ame2$ContrastSummary, digits = 3)
 ```
 
@@ -242,6 +268,7 @@ knitr::kable(ame2$ContrastSummary, digits = 3)
 | 0.11 | 0.109 | 0.06 | 0.166 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME x |
 
 ``` r
+
 knitr::kable(d[, .(M = mean(y)), by = .(ID, x)][, .(M = mean(M)), by = x])
 ```
 
@@ -268,6 +295,7 @@ with `k = 10L` the small error, when divided by `h = .001` becomes very
 large, impossibly so.
 
 ``` r
+
 h <- .001
 ame.error <- brmsmargins(
   mlogit,
@@ -290,6 +318,7 @@ data. You can specify one seed (or rely on
 default), which will then be used for all rows of the data.
 
 ``` r
+
 h <- .001
 ame.noerror <- brmsmargins(
   mlogit,
@@ -315,6 +344,7 @@ is an example and comparison to results using a single level logistic
 regression that ignores the clustering in the data.
 
 ``` r
+
 ## calculate marginal coefficients
 mc.logit <- marginalcoef(mlogit, CI = 0.95, seed = 1234)
 
@@ -327,6 +357,7 @@ glm.logit <- as.data.table(cbind(Est = coef(glm.logit), confint(glm.logit)))
 Now we can view and compare the results.
 
 ``` r
+
 
 knitr::kable(cbind(
   mc.logit$Summary[, .(
@@ -349,6 +380,7 @@ poisson regression model with individual differences in both the
 intercept and slope.
 
 ``` r
+
 dpoisson <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -387,6 +419,7 @@ mpois <- brms::brm(
 ```
 
 ``` r
+
 summary(mpois)
 #>  Family: poisson 
 #>   Links: mu = log 
@@ -420,6 +453,7 @@ in the same way as for the mixed effects logistic regression. Here is an
 example with a numeric derivative treating `x` as continuous.
 
 ``` r
+
 h <- .001
 ame1.pois <- brmsmargins(
   mpois,
@@ -437,6 +471,7 @@ knitr::kable(ame1.pois$ContrastSummary, digits = 3)
 Here is an example treating `x` as discrete.
 
 ``` r
+
 ame2.pois <- brmsmargins(
   mpois,
   at = data.frame(x = c(0, 1)),
@@ -446,9 +481,9 @@ ame2.pois <- brmsmargins(
 knitr::kable(ame2.pois$ContrastSummary)
 ```
 
-|         M |       Mdn |        LL |        UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label |
-|----------:|----------:|----------:|----------:|------------:|-----------:|-----:|:-------|:-----|:----|:------|
-| 0.2942814 | 0.2782104 | 0.1138293 | 0.6221603 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME x |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| 0.2942814 | 0.2782104 | 0.1138293 | 0.6221603 | NA | NA | 0.99 | HDI | NA | NA | AME x |
 
 ### Marginal Coefficients
 
@@ -459,6 +494,7 @@ Here is an example and comparison to results using a single level
 poisson regression that ignores the clustering in the data.
 
 ``` r
+
 ## calculate marginal coefficients
 mc.pois <- marginalcoef(mpois, CI = 0.95, seed = 1234)
 
@@ -471,6 +507,7 @@ glm.pois <- as.data.table(cbind(Est = coef(glm.pois), confint(glm.pois)))
 Now we can view and compare the results.
 
 ``` r
+
 
 knitr::kable(cbind(
   mc.pois$Summary[, .(
@@ -492,6 +529,7 @@ Negative binomial models work the same way as for poisson models. We use
 the same dataset, just for demonstration.
 
 ``` r
+
 dnb <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -527,6 +565,7 @@ mnb <- brms::brm(
 ```
 
 ``` r
+
 summary(mnb)
 #>  Family: negbinomial 
 #>   Links: mu = log 
@@ -564,6 +603,7 @@ in the same way as for the mixed effects poisson regression. Here is an
 example with a numeric derivative treating `x` as continuous.
 
 ``` r
+
 h <- .001
 ame1.nb <- brmsmargins(
   mnb,
@@ -581,6 +621,7 @@ knitr::kable(ame1.nb$ContrastSummary, digits = 3)
 Here is an example treating `x` as discrete.
 
 ``` r
+
 ame2.nb <- brmsmargins(
   mnb,
   at = data.frame(x = c(0, 1)),
@@ -601,6 +642,7 @@ Negative binomial models cannot be fit by the
 show the population averaged values from `brms`.
 
 ``` r
+
 ## calculate marginal coefficients
 mc.nb <- marginalcoef(mnb, CI = 0.95, seed = 1234)
 ```
@@ -608,6 +650,7 @@ mc.nb <- marginalcoef(mnb, CI = 0.95, seed = 1234)
 View the results.
 
 ``` r
+
 knitr::kable(
   mc.nb$Summary[, .(
     MargCoef = sprintf("%0.3f", round(M, 3)),
@@ -632,6 +675,7 @@ is the number of correct trials and the total number of trials is stored
 in `total`.
 
 ``` r
+
 dbinom <- withr::with_seed(
   seed = 12345, code = {
   library(data.table)
@@ -656,6 +700,7 @@ mbinom <- brms::brm(
 ```
 
 ``` r
+
 summary(mbinom)
 #>  Family: binomial 
 #>   Links: mu = logit 
@@ -692,6 +737,7 @@ have the probability of getting a trial correct, rather than have units
 on the number of successes scale.
 
 ``` r
+
 h <- .001
 ame1.binom <- brmsmargins(
   mbinom,
@@ -717,6 +763,7 @@ scale is now the probability scale, rather than an average number of
 trials scale.
 
 ``` r
+
 h <- .001
 tmpd <- model.frame(mbinom)
 tmpd$total <- 1
@@ -741,6 +788,7 @@ can see that the average marginal probability of getting a trial correct
 is higher in the treatment than in the control group.
 
 ``` r
+
 ame3.binom <- brmsmargins(
   mbinom,
   at = data.frame(trt = c(0, 1), total = 1),
@@ -785,7 +833,9 @@ These values are obtained by averaging the observed sleep values by ID.
 Then by taking the difference between the observed sleep duration values
 and the between person mean sleep values, thus:
 
-$$WSleep = Sleep - BSleep$$
+``` math
+WSleep = Sleep - BSleep
+```
 
 Both `BSleep` and `WSleep` could be included as predictor variables in a
 model, or if the interest is solely in the within person association,
@@ -850,6 +900,7 @@ This is more easily shown than said. Here we simulate some multilevel
 data with a binary predictor, `x` and a binary outcome, `y`.
 
 ``` r
+
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -884,6 +935,7 @@ that variable is omitted. Any variation not explained by it will go into
 the random intercept, anyways.
 
 ``` r
+
 ## within person centering binary predictor
 d[, xb := mean(x), by = ID]
 d[, xw := x - xb]
@@ -918,6 +970,7 @@ a minimum:
 The table shows a few examples of what the dataset looks like.
 
 ``` r
+
 
 xwid <- melt(
   d[, .(a = 0 - na.omit(xb)[1],
@@ -964,6 +1017,7 @@ The resulting summary gives the average marginal predictions for
 `x` **for that ID** and when it is at 1 for `x` **for that ID**.
 
 ``` r
+
 ame.cent <- brmsmargins(
   object = mlogitcent,
   at = expand.grid(xw = c("a", "b")),
@@ -983,6 +1037,7 @@ Just as in other examples, we can get a summary of the contrast of these
 two values, our AME.
 
 ``` r
+
 knitr::kable(ame.cent$ContrastSummary, digits = 3)
 ```
 
@@ -1022,6 +1077,7 @@ To show this example, we first simulate a dataset, using a similar
 process as in previous examples.
 
 ``` r
+
 d <- withr::with_seed(
   seed = 12345, code = {
     nGroups <- 100
@@ -1060,6 +1116,7 @@ categorical variables, we also create a dataset with the within person
 hypothetical values for each person, `usewat`.
 
 ``` r
+
 ## within person centering binary predictor
 d[, xb := mean(x), by = ID]
 d[, xw := x - xb]
@@ -1082,6 +1139,7 @@ control or the intervention. The model can be fit as in the following
 code.
 
 ``` r
+
 mlogitcentint <- brms::brm(
   y ~ 1 + xw * group + xb + (1 + xw | ID), family = "bernoulli",
   data = d, seed = 1234,
@@ -1096,6 +1154,7 @@ of possibilities is created and stored in `use.at` and shown in the
 following table.
 
 ``` r
+
 use.at <- expand.grid(group = 0:1, xw = c("a", "b"))
 knitr::kable(use.at, digits = 0)
 ```
@@ -1127,6 +1186,7 @@ to do this and the resulting contrast matrix with labels is shown in the
 following code and table.
 
 ``` r
+
 contr.mat <- cbind(xw = c(-1, 1)) %x% diag(2)
 contr.mat <- cbind(
   contr.mat,
@@ -1157,6 +1217,7 @@ average marginal predictions for our grid of values in `use.at` in the
 following table.
 
 ``` r
+
 ame.centint <- brmsmargins(
   object = mlogitcentint,
   at = use.at,
@@ -1210,14 +1271,15 @@ intervention moderates the association between within person stressor
 exposure and sleep.
 
 ``` r
+
 knitr::kable(ame.centint$ContrastSummary, digits = 3)
 ```
 
-|      M |    Mdn |     LL |     UL | PercentROPE | PercentMID |   CI | CIType | ROPE            | MID                              | Label         |
-|-------:|-------:|-------:|-------:|------------:|-----------:|-----:|:-------|:----------------|:---------------------------------|:--------------|
-| -0.072 | -0.069 | -0.134 | -0.012 |       3.175 |     73.675 | 0.95 | HDI    | \[-0.02, 0.02\] | \[-Inf, -0.05\] \| \[0.05, Inf\] | AME xw: Grp 0 |
-|  0.123 |  0.122 |  0.039 |  0.211 |       0.775 |     96.100 | 0.95 | HDI    | \[-0.02, 0.02\] | \[-Inf, -0.05\] \| \[0.05, Inf\] | AME xw: Grp 1 |
-|  0.195 |  0.192 |  0.096 |  0.297 |       0.025 |     99.850 | 0.95 | HDI    | \[-0.02, 0.02\] | \[-Inf, -0.05\] \| \[0.05, Inf\] | delta AME xw  |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| -0.072 | -0.069 | -0.134 | -0.012 | 3.175 | 73.675 | 0.95 | HDI | \[-0.02, 0.02\] | \[-Inf, -0.05\] \| \[0.05, Inf\] | AME xw: Grp 0 |
+| 0.123 | 0.122 | 0.039 | 0.211 | 0.775 | 96.100 | 0.95 | HDI | \[-0.02, 0.02\] | \[-Inf, -0.05\] \| \[0.05, Inf\] | AME xw: Grp 1 |
+| 0.195 | 0.192 | 0.096 | 0.297 | 0.025 | 99.850 | 0.95 | HDI | \[-0.02, 0.02\] | \[-Inf, -0.05\] \| \[0.05, Inf\] | delta AME xw |
 
 ## References
 

@@ -2,6 +2,8 @@
 
 ## brmsmargins 0.3.0
 
+CRAN release: 2026-04-06
+
 - Now supports response variables with a binomial distribution.
   Predictions that marginalise over random effects will use the number
   of trials. For contrasts, such as using

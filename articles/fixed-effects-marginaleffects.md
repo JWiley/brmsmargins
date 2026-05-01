@@ -1,6 +1,7 @@
 # Marginal Effects for Fixed Effects Models
 
 ``` r
+
 library(knitr)
 library(data.table)
 #> data.table 1.18.2.1 using 12 threads (see ?getDTthreads).  Latest news: r-datatable.com
@@ -36,6 +37,7 @@ regression model of the association between `mpg` and `hp`. Here we can
 see the estimated regression coefficient for `mpg`.
 
 ``` r
+
 m.linear <- lm(hp ~ am + mpg, data = mtcars)
 
 coef(m.linear)["mpg"]
@@ -51,6 +53,7 @@ difference in the outcome for a one unit difference in `mpg` from 0 to
 1, holding `am = 0`.
 
 ``` r
+
 yhat <- predict(
   m.linear,
   newdata = data.frame(am = 0, mpg = c(0, 1)),
@@ -65,6 +68,7 @@ We can look at the same estimate but moving `mpg` from 10 to 11 instead
 0 to 1, holding `am = 1`.
 
 ``` r
+
 yhat <- predict(
   m.linear,
   newdata = data.frame(am = 1, mpg = c(10, 11)),
@@ -87,6 +91,7 @@ convenient for interpretation, as the log odds scale is not the same
 scale as our outcome.
 
 ``` r
+
 m.logistic <- glm(vs ~ am + mpg, data = mtcars, family = binomial())
 
 coef(m.logistic)["mpg"]
@@ -98,6 +103,7 @@ We can find predicted differences on the probability scale. Here moving
 `mpg` from 10 to 11 holding `am = 0`.
 
 ``` r
+
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 0, mpg = c(10, 11)),
@@ -112,6 +118,7 @@ We can look at the same estimate but moving `mpg` from 20 to 21 instead
 10 to 11 again holding `am = 0`.
 
 ``` r
+
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 0, mpg = c(20, 21)),
@@ -126,6 +133,7 @@ We can look at the same estimate moving `mpg` from 20 to 21 as before,
 but this time holding `am = 1`.
 
 ``` r
+
 yhat <- predict(
   m.logistic,
   newdata = data.frame(am = 1, mpg = c(20, 21)),
@@ -157,6 +165,7 @@ the probability scale for a one unit shift in the predictor, `mpg`, for
 each person. When we average all of these, we get the AME.
 
 ``` r
+
 h <- .001
 
 nd.1 <- nd.0 <- model.frame(m.logistic)
@@ -181,6 +190,7 @@ values: 0 or 1. So we calculate predicted probabilities if everyone had
 `am = 0` and then again if everyone had `am = 1`.
 
 ``` r
+
 nd.1 <- nd.0 <- model.frame(m.logistic)
 nd.0$am <- 0
 nd.1$am <- 1
@@ -213,6 +223,7 @@ Here is an example calculating AMEs for `mpg` and `am`. First we will
 fit the same logistic regression model using `brms`.
 
 ``` r
+
 bayes.logistic <- brm(
   vs ~ am + mpg, data = mtcars,
   family = "bernoulli", seed = 1234,
@@ -222,6 +233,7 @@ bayes.logistic <- brm(
 ```
 
 ``` r
+
 summary(bayes.logistic)
 #>  Family: bernoulli 
 #>   Links: mu = logit 
@@ -255,6 +267,7 @@ a summary of the posterior for the contrasts. Here we just have the one
 contrast, but multiple could have been specified.
 
 ``` r
+
 h <- .001
 ame1 <- brmsmargins(
   bayes.logistic,
@@ -277,6 +290,7 @@ summary of the posterior for the predictions. These predictions average
 across all values of `mpg`.
 
 ``` r
+
 ame2 <- brmsmargins(
   bayes.logistic,
   at = data.frame(am = c(0, 1)),
@@ -292,12 +306,13 @@ kable(ame2$Summary, digits = 3)
 | 0.283 | 0.274 | 0.170 | 0.41 |          NA |         NA | 0.95 | HDI    | NA   | NA  |
 
 ``` r
+
 kable(ame2$ContrastSummary)
 ```
 
-|          M |        Mdn |         LL |         UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label  |
-|-----------:|-----------:|-----------:|-----------:|------------:|-----------:|-----:|:-------|:-----|:----|:-------|
-| -0.2599408 | -0.2668172 | -0.4330838 | -0.0820307 |          NA |         NA | 0.95 | HDI    | NA   | NA  | AME am |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| -0.2599408 | -0.2668172 | -0.4330838 | -0.0820307 | NA | NA | 0.95 | HDI | NA | NA | AME am |
 
 Note that by default,
 [`brmsmargins()`](https://joshuawiley.com/brmsmargins/reference/brmsmargins.md)
@@ -314,6 +329,7 @@ We use a dataset drawn from:
 
 ``` r
 
+
 d <- fread("https://stats.oarc.ucla.edu/stat/data/poisson_sim.csv")
 d[, prog := factor(prog, levels = 1:3, labels = c("General", "Academic", "Vocational"))]
 
@@ -326,6 +342,7 @@ bayes.poisson <- brm(
 ```
 
 ``` r
+
 summary(bayes.poisson)
 #>  Family: poisson 
 #>   Links: mu = log 
@@ -349,6 +366,7 @@ summary(bayes.poisson)
 AME for a continuous variable, using default CI interval and type.
 
 ``` r
+
 h <- .001
 ame1.p <- brmsmargins(
   bayes.poisson,
@@ -366,6 +384,7 @@ AME for a categorical variable. Here we calculate pairwise contrasts for
 all three program types. These are the predicted number of awards.
 
 ``` r
+
 ame2.p <- brmsmargins(
   bayes.poisson,
   at = data.frame(
@@ -386,14 +405,15 @@ kable(ame2.p$Summary, digits = 3)
 | 0.379 | 0.367 | 0.152 | 0.702 |          NA |         NA | 0.99 | HDI    | NA   | NA  |
 
 ``` r
+
 kable(ame2.p$ContrastSummary, digits = 3)
 ```
 
-|      M |    Mdn |     LL |     UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label                     |
-|-------:|-------:|-------:|-------:|------------:|-----------:|-----:|:-------|:-----|:----|:--------------------------|
-| -0.515 | -0.521 | -0.817 | -0.185 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME General v Academic    |
-| -0.114 | -0.110 | -0.504 |  0.258 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME General v Vocational  |
-|  0.401 |  0.408 |  0.020 |  0.758 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME Academic v Vocational |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| -0.515 | -0.521 | -0.817 | -0.185 | NA | NA | 0.99 | HDI | NA | NA | AME General v Academic |
+| -0.114 | -0.110 | -0.504 | 0.258 | NA | NA | 0.99 | HDI | NA | NA | AME General v Vocational |
+| 0.401 | 0.408 | 0.020 | 0.758 | NA | NA | 0.99 | HDI | NA | NA | AME Academic v Vocational |
 
 ## AMEs for Negative Binomial Regression
 
@@ -401,6 +421,7 @@ Here is a short example for Negative Binomial regression used for count
 outcomes.
 
 ``` r
+
 d <- fread("https://stats.oarc.ucla.edu/stat/data/fish.csv")
 d[, nofish := factor(nofish, levels = 0:1, labels = c("no fish", "fish"))]
 
@@ -413,6 +434,7 @@ bayes.nb <- brm(
 ```
 
 ``` r
+
 summary(bayes.nb)
 #>  Family: negbinomial 
 #>   Links: mu = log 
@@ -439,6 +461,7 @@ summary(bayes.nb)
 AME for a continuous variable, using default CI interval and type.
 
 ``` r
+
 h <- .001
 ame1.nb <- brmsmargins(
   bayes.nb,
@@ -456,6 +479,7 @@ AME for a categorical variable. Here we calculate pairwise contrasts for
 no fish versus fish. The estimate is how many are caught.
 
 ``` r
+
 ame2.nb <- brmsmargins(
   bayes.nb,
   at = data.frame(
@@ -473,12 +497,13 @@ kable(ame2.nb$Summary, digits = 3)
 | 4.254 | 3.971 | 1.692 | 9.248 |          NA |         NA | 0.99 | HDI    | NA   | NA  |
 
 ``` r
+
 kable(ame2.nb$ContrastSummary, digits = 3)
 ```
 
-|     M |   Mdn |     LL |    UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label              |
-|------:|------:|-------:|------:|------------:|-----------:|-----:|:-------|:-----|:----|:-------------------|
-| 0.258 | 0.364 | -3.213 | 2.957 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME No Fish v Fish |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| 0.258 | 0.364 | -3.213 | 2.957 | NA | NA | 0.99 | HDI | NA | NA | AME No Fish v Fish |
 
 ## AMEs for Binomial Regression
 
@@ -486,6 +511,7 @@ Here is a short example for a Binomial regression used for multiple
 trials.
 
 ``` r
+
 data(esoph)
 esoph <- as.data.table(esoph)
 esoph[, total := ncases + ncontrols]
@@ -500,6 +526,7 @@ bayes.binom <- brm(
 ```
 
 ``` r
+
 summary(bayes.binom)
 #>  Family: binomial 
 #>   Links: mu = logit 
@@ -527,6 +554,7 @@ the youngest age group (25-34) versus the oldest (75+). The summary
 shows the expected number of cases for each age group.
 
 ``` r
+
 ame1.binom <- brmsmargins(
   bayes.binom,
   at = data.frame(
@@ -547,17 +575,19 @@ The contrast is the difference in the number of cases, indicating that
 25-34 year olds have a lower number of expected cases compared to 75+.
 
 ``` r
+
 kable(ame1.binom$ContrastSummary, digits = 3)
 ```
 
-|       M |     Mdn |      LL |     UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label           |
-|--------:|--------:|--------:|-------:|------------:|-----------:|-----:|:-------|:-----|:----|:----------------|
-| -81.121 | -80.255 | -133.46 | -34.84 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME 25-34 v 75+ |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| -81.121 | -80.255 | -133.46 | -34.84 | NA | NA | 0.99 | HDI | NA | NA | AME 25-34 v 75+ |
 
 We can instead calculate the probability of being a case by fixing the
 total cases to 1, which is done by modifying the data passed in `at`.
 
 ``` r
+
 ame2.binom <- brmsmargins(
   bayes.binom,
   at = data.frame(
@@ -580,12 +610,13 @@ showing that 25-34 year olds have a lower average probability of being a
 case compared to 75+ year olds.
 
 ``` r
+
 kable(ame2.binom$ContrastSummary, digits = 3)
 ```
 
-|      M |    Mdn |     LL |     UL | PercentROPE | PercentMID |   CI | CIType | ROPE | MID | Label           |
-|-------:|-------:|-------:|-------:|------------:|-----------:|-----:|:-------|:-----|:----|:----------------|
-| -0.287 | -0.284 | -0.472 | -0.123 |          NA |         NA | 0.99 | HDI    | NA   | NA  | AME 25-34 v 75+ |
+| M | Mdn | LL | UL | PercentROPE | PercentMID | CI | CIType | ROPE | MID | Label |
+|---:|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|
+| -0.287 | -0.284 | -0.472 | -0.123 | NA | NA | 0.99 | HDI | NA | NA | AME 25-34 v 75+ |
 
 ## References
 

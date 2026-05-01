@@ -28,6 +28,7 @@ A numeric vector with the simple bootstrapped row means of the matrix
 ## Examples
 
 ``` r
+
 x <- matrix(1:9, byrow = TRUE, 3)
 replicate(10, rowBootMeans(x))
 #>          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]
