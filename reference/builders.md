@@ -39,7 +39,7 @@ general use.
   [`brms::make_standata()`](https://paulbuerkner.com/brms/reference/standata.html)
   for `.buildZ()`, which is a list, or a dataset of the posterior draws
   such as from
-  [`brms::as_draws_df()`](https://paulbuerkner.com/brms/reference/draws-brms.html)
+  [`brms::as_draws_df()`](https://mc-stan.org/posterior/reference/draws_df.html)
   for `.buildL()` and `.buildSD()`.
 
 - dpar:
