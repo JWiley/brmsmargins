@@ -33,9 +33,9 @@
 
 \item{number}{The number of elements in that random effect block. An integer.}
 
-\item{data}{A data object. For example the result of \code{\link[brms:standata]{brms::make_standata()}}
+\item{data}{A data object. For example the result of \code{\link[brms:make_standata]{brms::make_standata()}}
 for \code{\link[=.buildZ]{.buildZ()}}, which is a list,
-or a dataset of the posterior draws such as from \code{\link[brms:draws-brms]{brms::as_draws_df()}}
+or a dataset of the posterior draws such as from \code{\link[brms:as_draws_df]{brms::as_draws_df()}}
 for \code{\link[=.buildL]{.buildL()}} and \code{\link[=.buildSD]{.buildSD()}}.}
 
 \item{dpar}{Which dpar to use. Does not apply to the L matrix.}
